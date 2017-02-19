@@ -168,7 +168,17 @@ namespace Dungeons
 
         private void UpdateDataLabel()
         {
-            dataLabel.Text = $"Mouse: ({mouseMapLocation.X}, {mouseMapLocation.Y})";
+            dataLabel.Text = $"Mouse: ({mouseMapLocation.X}, {mouseMapLocation.Y}) | Computed room type: {GetRoomType(mouseMapLocation)}";
+        }
+
+        private string GetRoomType(Point p)
+        {
+            var bmp = mapPictureBox.Image as Bitmap;
+            if (bmp == null)
+                return string.Empty;
+            var pc = MapToClientCoords(p);
+            var c = bmp.GetPixel(pc.X + 16, pc.Y + 16);
+            return c.R > 100 & c.R < 150 && c.G > 50 && c.G < 120 && c.B < 65 ? "Opened" : "Not opened";
         }
 
         private void findMapButton_Click(object sender, EventArgs e)
@@ -178,6 +188,10 @@ namespace Dungeons
             {
                 this.mapLocation = mapLocation;
                 UpdateMap();
+            }
+            else
+            {
+                statusLabel.Text = "No map found.";
             }
         }
 
