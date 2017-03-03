@@ -58,6 +58,7 @@
             // 
             // timer
             // 
+            this.timer.Enabled = true;
             this.timer.Tick += new System.EventHandler(this.timer_Tick);
             // 
             // statusLabel
@@ -123,7 +124,6 @@
             // pauseButton
             // 
             this.pauseButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(204)))), ((int)(((byte)(181)))), ((int)(((byte)(153)))));
-            this.pauseButton.Enabled = false;
             this.pauseButton.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(119)))), ((int)(((byte)(106)))), ((int)(((byte)(89)))));
             this.pauseButton.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(136)))), ((int)(((byte)(114)))));
             this.pauseButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;

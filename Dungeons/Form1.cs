@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
@@ -19,9 +20,9 @@ namespace Dungeons
         private static readonly Point NotFound = new Point(-1, -1);
 
         private Bitmap mapMarker = Properties.Resources.MapMarker;
-        private Point mapLocation = NotFound;
+        private Point mapLocation = new Point(2703, 370);
         private Point mouseMapLocation;
-        private bool isPaused = true;
+        private bool isPaused = false;
 
         public Form1()
         {
@@ -103,27 +104,30 @@ namespace Dungeons
         {
             pauseButton.Text = "&Resume";
             pauseButton.ForeColor = Color.Green;
+            statusLabel.Text = "Paused.";
             isPaused = true;
             timer.Stop();
         }
 
         private void UpdateMap()
         {
-            var markerCheckBmp = new Bitmap(mapMarker.Width, mapMarker.Height);
+            var bmp = new Bitmap(MapWidth, MapHeight);
 
             if (mapLocation != NotFound)
             {
-                using (var g = Graphics.FromImage(markerCheckBmp))
+                using (var g = Graphics.FromImage(bmp))
                 {
-                    g.CopyFromScreen(mapLocation.X, mapLocation.Y, 0, 0, mapMarker.Size);
-                }
-                if (HasMap(markerCheckBmp, 0, 0))
-                {
-                    var bmp = new Bitmap(MapWidth, MapHeight);
-                    using (var g = Graphics.FromImage(bmp))
+                    try
                     {
                         g.CopyFromScreen(mapLocation.X - MapOffsetX, mapLocation.Y - MapOffsetY, 0, 0, bmp.Size);
                     }
+                    catch (Win32Exception)
+                    {
+                        return;
+                    }
+                }
+                if (HasMap(bmp))
+                {
                     statusLabel.Text = $"Updated map from {mapLocation}.";
                     ResumeTimer();
                     mapPictureBox.Image = bmp;
