@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 
@@ -8,18 +9,19 @@ namespace Dungeons
 {
     public partial class Form1 : Form
     {
-        const int MapOffsetX = 3;
-        const int MapOffsetY = 3;
-        const int MapWidth = 322;
-        const int MapHeight = 314;
-        const int MapGridOffsetX = 30;
-        const int MapGridOffsetY = 28;
+        const int MapOffsetX = 2;
+        const int MapOffsetY = 2;
+        const int MapWidth = 318;
+        const int MapHeight = 310;
+        const int MapGridOffsetX = 29;
+        const int MapGridOffsetY = 27;
 
         private static readonly Point NotFound = new Point(-1, -1);
 
         private Bitmap mapMarker = Properties.Resources.MapMarker;
         private Point mapLocation = NotFound;
         private Point mouseMapLocation;
+        private bool isPaused = true;
 
         public Form1()
         {
@@ -88,6 +90,23 @@ namespace Dungeons
             return FindMapMarker(bmp);
         }
 
+        private void ResumeTimer()
+        {
+            pauseButton.Enabled = true;
+            pauseButton.Text = "&Pause";
+            pauseButton.ForeColor = Color.Maroon;
+            isPaused = false;
+            timer.Start();
+        }
+
+        private void PauseTimer()
+        {
+            pauseButton.Text = "&Resume";
+            pauseButton.ForeColor = Color.Green;
+            isPaused = true;
+            timer.Stop();
+        }
+
         private void UpdateMap()
         {
             var bmp = new Bitmap(MapWidth, MapHeight);
@@ -101,8 +120,9 @@ namespace Dungeons
                 if (HasMap(bmp))
                 {
                     statusLabel.Text = $"Updated map from {mapLocation}.";
-                    timer.Enabled = true;
+                    ResumeTimer();
                     mapPictureBox.Image = bmp;
+                    saveMapButton.Enabled = true;
                     UpdateDataLabel();
                 }
                 else
@@ -208,6 +228,29 @@ namespace Dungeons
                 mouseMapLocation = mapLocation;
                 UpdateDataLabel();
             }
+        }
+
+        private void saveMapButton_Click(object sender, EventArgs e)
+        {
+            var fileName = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss");
+            mapPictureBox.Image.Save(Path.Combine(Properties.Settings.Default.MapSaveLocation, $"map_{fileName}.png"));
+
+            savedLabel.Visible = true;
+            saveLabelHideTimer.Start();
+        }
+
+        private void saveLabelHideTimer_Tick(object sender, EventArgs e)
+        {
+            savedLabel.Visible = false;
+            saveLabelHideTimer.Stop();
+        }
+
+        private void pauseButton_Click(object sender, EventArgs e)
+        {
+            if (isPaused)
+                ResumeTimer();
+            else
+                PauseTimer();
         }
     }
 }
