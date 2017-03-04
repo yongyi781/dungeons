@@ -42,13 +42,13 @@ namespace Dungeons
             return true;
         }
 
-        private unsafe bool HasMap(Bitmap bmp)
+        private unsafe bool HasMap(Bitmap bmp, int mapOffsetX = MapOffsetX, int mapOffsetY = MapOffsetY)
         {
             using (var unsafeBmp = new UnsafeBitmap(bmp, ImageLockMode.ReadOnly, PixelFormat.Format24bppRgb))
             {
                 using (var unsafeMarker = new UnsafeBitmap(mapMarker, ImageLockMode.ReadOnly, PixelFormat.Format24bppRgb))
                 {
-                    return IsMatch(unsafeBmp.BitmapData, unsafeMarker.BitmapData, MapOffsetX, MapOffsetY);
+                    return IsMatch(unsafeBmp.BitmapData, unsafeMarker.BitmapData, mapOffsetX, mapOffsetY);
                 }
             }
         }
@@ -109,16 +109,21 @@ namespace Dungeons
 
         private void UpdateMap()
         {
-            var bmp = new Bitmap(MapWidth, MapHeight);
+            var markerCheckBmp = new Bitmap(mapMarker.Width, mapMarker.Height);
 
             if (mapLocation != NotFound)
             {
-                using (var g = Graphics.FromImage(bmp))
+                using (var g = Graphics.FromImage(markerCheckBmp))
                 {
-                    g.CopyFromScreen(mapLocation.X - MapOffsetX, mapLocation.Y - MapOffsetY, 0, 0, bmp.Size);
+                    g.CopyFromScreen(mapLocation.X, mapLocation.Y, 0, 0, mapMarker.Size);
                 }
-                if (HasMap(bmp))
+                if (HasMap(markerCheckBmp, 0, 0))
                 {
+                    var bmp = new Bitmap(MapWidth, MapHeight);
+                    using (var g = Graphics.FromImage(bmp))
+                    {
+                        g.CopyFromScreen(mapLocation.X - MapOffsetX, mapLocation.Y - MapOffsetY, 0, 0, bmp.Size);
+                    }
                     statusLabel.Text = $"Updated map from {mapLocation}.";
                     ResumeTimer();
                     mapPictureBox.Image = bmp;
