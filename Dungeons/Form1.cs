@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
@@ -17,16 +18,42 @@ namespace Dungeons
         const int MapGridOffsetX = 29;
         const int MapGridOffsetY = 27;
 
+        private static readonly Keys[] KeysToEat =
+        {
+            Keys.Enter,
+            Keys.Space,
+            Keys.Up,
+            Keys.Left,
+            Keys.Right,
+            Keys.Down
+        };
+
         private static readonly Point NotFound = new Point(-1, -1);
 
         private Bitmap mapMarker = Properties.Resources.MapMarker;
         private Point mapLocation = new Point(2703, 370);
-        private Point mouseMapLocation;
         private bool isPaused = false;
 
         public Form1()
         {
             InitializeComponent();
+        }
+
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            if (KeysToEat.Contains(keyData))
+            {
+                mapPictureBox.ProcessKeyDown(keyData);
+                UpdateDataLabel();
+                return true;
+            }
+            return base.ProcessCmdKey(ref msg, keyData);
+        }
+
+        protected override void OnKeyPress(KeyPressEventArgs e)
+        {
+            mapPictureBox.ProcessKeyPress(e);
+            base.OnKeyPress(e);
         }
 
         private unsafe bool IsMatch(BitmapData bmpData, BitmapData templateData, int offX, int offY)
@@ -94,7 +121,7 @@ namespace Dungeons
         private void ResumeTimer()
         {
             pauseButton.Enabled = true;
-            pauseButton.Text = "&Pause";
+            pauseButton.Text = "Pause";
             pauseButton.ForeColor = Color.Maroon;
             isPaused = false;
             timer.Start();
@@ -102,7 +129,7 @@ namespace Dungeons
 
         private void PauseTimer()
         {
-            pauseButton.Text = "&Resume";
+            pauseButton.Text = "Resume";
             pauseButton.ForeColor = Color.Green;
             statusLabel.Text = "Paused.";
             isPaused = true;
@@ -179,25 +206,9 @@ namespace Dungeons
         //    return c.R > 100 & c.R < 150 && c.G > 50 && c.G < 120 && c.B < 65;
         //}
 
-        private Point ClientToMapCoords(Point p)
-        {
-            return new Point(1 + (p.X - MapGridOffsetX) / 32, 8 - (p.Y - MapGridOffsetY) / 32);
-        }
-
-        // Returns the upper-left corner of the square at p.
-        private Point MapToClientCoords(Point p)
-        {
-            return new Point((p.X - 1) * 32 + MapGridOffsetX, (8 - p.Y) * 32 + MapGridOffsetY);
-        }
-
-        private bool IsValidMapCoords(Point p)
-        {
-            return p.X >= 1 && p.X <= 8 && p.Y >= 1 && p.Y <= 8;
-        }
-
         private void UpdateDataLabel()
         {
-            dataLabel.Text = $"Mouse: ({mouseMapLocation.X}, {mouseMapLocation.Y}) | Computed room type: {GetRoomType(mouseMapLocation)}";
+            dataLabel.Text = $"Selected: ({mapPictureBox.SelectedLocation.X}, {mapPictureBox.SelectedLocation.Y}) | Computed room type: {GetRoomType(mapPictureBox.SelectedLocation)}";
         }
 
         private string GetRoomType(Point p)
@@ -205,7 +216,7 @@ namespace Dungeons
             var bmp = mapPictureBox.Image as Bitmap;
             if (bmp == null)
                 return string.Empty;
-            var pc = MapToClientCoords(p);
+            var pc = MapUtils.MapToClientCoords(p);
             var c = bmp.GetPixel(pc.X + 16, pc.Y + 16);
             return c.R > 100 & c.R < 150 && c.G > 50 && c.G < 120 && c.B < 65 ? "Opened" : "Not opened";
         }
@@ -229,16 +240,6 @@ namespace Dungeons
             UpdateMap();
         }
 
-        private void mapPictureBox_MouseMove(object sender, MouseEventArgs e)
-        {
-            var mapLocation = ClientToMapCoords(e.Location);
-            if (IsValidMapCoords(mapLocation) && mouseMapLocation != mapLocation)
-            {
-                mouseMapLocation = mapLocation;
-                UpdateDataLabel();
-            }
-        }
-
         private void saveMapButton_Click(object sender, EventArgs e)
         {
             var fileName = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss");
@@ -260,6 +261,16 @@ namespace Dungeons
                 ResumeTimer();
             else
                 PauseTimer();
+        }
+
+        private void mapPictureBox_MouseDown(object sender, MouseEventArgs e)
+        {
+            UpdateDataLabel();
+        }
+
+        private void clearAnnotationsButton_Click(object sender, EventArgs e)
+        {
+            mapPictureBox.ClearAnnotations();
         }
     }
 }
