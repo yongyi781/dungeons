@@ -1,6 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
@@ -37,6 +37,8 @@ namespace Dungeons
         public Form1()
         {
             InitializeComponent();
+
+            MapUtils.InitializeSignatures();
         }
 
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
@@ -168,57 +170,23 @@ namespace Dungeons
             }
         }
 
-        //private int CountRooms()
-        //{
-        //    var bitmap = mapPictureBox.Image as Bitmap;
-        //    if (bitmap == null)
-        //        return 0;
-
-        //    int count = 0;
-        //    for (int y = 1; y <= 8; y++)
-        //    {
-        //        for (int x = 1; x <= 8; x++)
-        //        {
-        //            var p = MapToClientCoords(new Point(x, y));
-        //            // Take average of 4 colors
-        //            Color[] colors = {
-        //                bitmap.GetPixel(p.X + 8, p.Y + 7),
-        //                bitmap.GetPixel(p.X + 8, p.Y + 25),
-        //                bitmap.GetPixel(p.X + 24, p.Y + 7),
-        //                bitmap.GetPixel(p.X + 24, p.Y + 25)
-        //            };
-
-        //            var averageColor = Color.FromArgb(
-        //                (int)colors.Average(c => c.R),
-        //                (int)colors.Average(c => c.G),
-        //                (int)colors.Average(c => c.B));
-
-        //            if (IsOpenedRoomColor(averageColor))
-        //                ++count;
-        //        }
-        //    }
-
-        //    return count;
-        //}
-
-        //private bool IsOpenedRoomColor(Color c)
-        //{
-        //    return c.R > 100 & c.R < 150 && c.G > 50 && c.G < 120 && c.B < 65;
-        //}
-
         private void UpdateDataLabel()
         {
-            dataLabel.Text = $"Selected: ({mapPictureBox.SelectedLocation.X}, {mapPictureBox.SelectedLocation.Y}) | Computed room type: {GetRoomType(mapPictureBox.SelectedLocation)}";
+            dataLabel.Text = $"{CountOpenedRooms()} rooms opened | Computed room type: {mapPictureBox.GetRoomType(mapPictureBox.SelectedLocation)}";
         }
 
-        private string GetRoomType(Point p)
+        private int CountOpenedRooms()
         {
-            var bmp = mapPictureBox.Image as Bitmap;
-            if (bmp == null)
-                return string.Empty;
-            var pc = MapUtils.MapToClientCoords(p);
-            var c = bmp.GetPixel(pc.X + 16, pc.Y + 16);
-            return c.R > 100 & c.R < 150 && c.G > 50 && c.G < 120 && c.B < 65 ? "Opened" : "Not opened";
+            int numOpened = 0;
+            for (int y = 1; y <= 8; y++)
+            {
+                for (int x = 1; x <= 8; x++)
+                {
+                    if (MapUtils.IsOpened(mapPictureBox.GetRoomType(new Point(x, y))))
+                        ++numOpened;
+                }
+            }
+            return numOpened;
         }
 
         private void findMapButton_Click(object sender, EventArgs e)

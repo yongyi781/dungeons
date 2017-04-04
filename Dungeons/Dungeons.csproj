@@ -73,6 +73,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
+    <Compile Include="RoomType.cs" />
     <Compile Include="UnsafeBitmap.cs" />
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
@@ -90,7 +91,23 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="map-marker.png" />
+    <Content Include="Resources\map-marker.png" />
+    <None Include="Resources\e.png" />
+    <None Include="Resources\es.png" />
+    <None Include="Resources\esn.png" />
+    <None Include="Resources\n.png" />
+    <None Include="Resources\ne.png" />
+    <None Include="Resources\ns.png" />
+    <None Include="Resources\nsw.png" />
+    <None Include="Resources\nw.png" />
+    <None Include="Resources\s.png" />
+    <None Include="Resources\w.png" />
+    <None Include="Resources\we.png" />
+    <None Include="Resources\wen.png" />
+    <None Include="Resources\wes.png" />
+    <None Include="Resources\wesn.png" />
+    <None Include="Resources\ws.png" />
+    <None Include="Resources\wsn.png" />
     <Content Include="ring-of-kinship-32x32.ico" />
     <Content Include="ring-of-kinship.ico" />
     <Content Include="ring-of-kinship.png" />

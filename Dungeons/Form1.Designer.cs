@@ -77,9 +77,8 @@
             this.dataLabel.AutoSize = true;
             this.dataLabel.Location = new System.Drawing.Point(12, 406);
             this.dataLabel.Name = "dataLabel";
-            this.dataLabel.Size = new System.Drawing.Size(43, 15);
+            this.dataLabel.Size = new System.Drawing.Size(0, 15);
             this.dataLabel.TabIndex = 4;
-            this.dataLabel.Text = "Mouse";
             // 
             // saveMapButton
             // 
