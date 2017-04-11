@@ -28,8 +28,6 @@ namespace Dungeons
             Keys.Down
         };
 
-        private static readonly Point NotFound = new Point(-1, -1);
-
         private Bitmap mapMarker = Properties.Resources.MapMarker;
         private Point mapLocation = new Point(2703, 370);
         private bool isPaused = false;
@@ -142,7 +140,7 @@ namespace Dungeons
         {
             var bmp = new Bitmap(MapWidth, MapHeight);
 
-            if (mapLocation != NotFound)
+            if (mapLocation != MapUtils.NotFound)
             {
                 using (var g = Graphics.FromImage(bmp))
                 {
@@ -161,6 +159,7 @@ namespace Dungeons
                     ResumeTimer();
                     mapPictureBox.Image = bmp;
                     saveMapButton.Enabled = true;
+                    mapPictureBox.BuildMap();
                     UpdateDataLabel();
                 }
                 else
@@ -172,27 +171,13 @@ namespace Dungeons
 
         private void UpdateDataLabel()
         {
-            dataLabel.Text = $"{CountOpenedRooms()} rooms opened | Computed room type: {mapPictureBox.GetRoomType(mapPictureBox.SelectedLocation)}";
+            dataLabel.Text = $"{mapPictureBox.OpenedRoomCount} rooms opened | {mapPictureBox.LeafCount} leaves | {mapPictureBox.CriticalRooms.Count} critical rooms";
         }
-
-        private int CountOpenedRooms()
-        {
-            int numOpened = 0;
-            for (int y = 1; y <= 8; y++)
-            {
-                for (int x = 1; x <= 8; x++)
-                {
-                    if (MapUtils.IsOpened(mapPictureBox.GetRoomType(new Point(x, y))))
-                        ++numOpened;
-                }
-            }
-            return numOpened;
-        }
-
+        
         private void findMapButton_Click(object sender, EventArgs e)
         {
             var mapLocation = FindMap();
-            if (mapLocation != NotFound)
+            if (mapLocation != MapUtils.NotFound)
             {
                 this.mapLocation = mapLocation;
                 UpdateMap();
