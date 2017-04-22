@@ -100,7 +100,8 @@ namespace Dungeons
 
         public static bool IsLeaf(RoomType roomType)
         {
-            return roomType == RoomType.W || roomType == RoomType.E || roomType == RoomType.S || roomType == RoomType.N;
+            var type = roomType & (RoomType.W | RoomType.E | RoomType.S | RoomType.N);
+            return type == RoomType.W || roomType == RoomType.E || roomType == RoomType.S || roomType == RoomType.N;
         }
 
         public static bool IsHome(RoomType roomType)

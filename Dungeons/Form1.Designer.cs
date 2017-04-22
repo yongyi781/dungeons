@@ -35,11 +35,12 @@
             this.statusLabel = new System.Windows.Forms.Label();
             this.dataLabel = new System.Windows.Forms.Label();
             this.saveMapButton = new System.Windows.Forms.Button();
-            this.mapPictureBox = new Dungeons.MapPictureBox();
             this.savedLabel = new System.Windows.Forms.Label();
             this.saveLabelHideTimer = new System.Windows.Forms.Timer(this.components);
             this.pauseButton = new System.Windows.Forms.Button();
             this.clearAnnotationsButton = new System.Windows.Forms.Button();
+            this.mapPictureBox = new Dungeons.MapPictureBox();
+            this.distancesCheckBox = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.mapPictureBox)).BeginInit();
             this.SuspendLayout();
             // 
@@ -95,17 +96,6 @@
             this.saveMapButton.UseVisualStyleBackColor = false;
             this.saveMapButton.Click += new System.EventHandler(this.saveMapButton_Click);
             // 
-            // mapPictureBox
-            // 
-            this.mapPictureBox.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this.mapPictureBox.Location = new System.Drawing.Point(12, 58);
-            this.mapPictureBox.Name = "mapPictureBox";
-            this.mapPictureBox.SelectedLocation = new System.Drawing.Point(0, 0);
-            this.mapPictureBox.Size = new System.Drawing.Size(318, 310);
-            this.mapPictureBox.TabIndex = 1;
-            this.mapPictureBox.TabStop = false;
-            this.mapPictureBox.MouseDown += new System.Windows.Forms.MouseEventHandler(this.mapPictureBox_MouseDown);
-            // 
             // savedLabel
             // 
             this.savedLabel.AutoSize = true;
@@ -151,11 +141,35 @@
             this.clearAnnotationsButton.UseVisualStyleBackColor = false;
             this.clearAnnotationsButton.Click += new System.EventHandler(this.clearAnnotationsButton_Click);
             // 
+            // mapPictureBox
+            // 
+            this.mapPictureBox.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.mapPictureBox.Location = new System.Drawing.Point(12, 58);
+            this.mapPictureBox.Name = "mapPictureBox";
+            this.mapPictureBox.SelectedLocation = new System.Drawing.Point(0, 0);
+            this.mapPictureBox.Size = new System.Drawing.Size(318, 310);
+            this.mapPictureBox.TabIndex = 1;
+            this.mapPictureBox.TabStop = false;
+            this.mapPictureBox.MouseDown += new System.Windows.Forms.MouseEventHandler(this.mapPictureBox_MouseDown);
+            // 
+            // distancesCheckBox
+            // 
+            this.distancesCheckBox.AutoSize = true;
+            this.distancesCheckBox.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.distancesCheckBox.Location = new System.Drawing.Point(140, 377);
+            this.distancesCheckBox.Name = "distancesCheckBox";
+            this.distancesCheckBox.Size = new System.Drawing.Size(82, 20);
+            this.distancesCheckBox.TabIndex = 6;
+            this.distancesCheckBox.Text = "Distances";
+            this.distancesCheckBox.UseVisualStyleBackColor = true;
+            this.distancesCheckBox.CheckedChanged += new System.EventHandler(this.distancesCheckBox_CheckedChanged);
+            // 
             // Form1
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(135)))), ((int)(((byte)(110)))), ((int)(((byte)(70)))));
             this.ClientSize = new System.Drawing.Size(342, 430);
+            this.Controls.Add(this.distancesCheckBox);
             this.Controls.Add(this.clearAnnotationsButton);
             this.Controls.Add(this.pauseButton);
             this.Controls.Add(this.savedLabel);
@@ -189,6 +203,7 @@
         private System.Windows.Forms.Timer saveLabelHideTimer;
         private System.Windows.Forms.Button pauseButton;
         private System.Windows.Forms.Button clearAnnotationsButton;
+        private System.Windows.Forms.CheckBox distancesCheckBox;
     }
 }
 

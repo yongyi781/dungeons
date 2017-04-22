@@ -19,12 +19,9 @@ namespace Dungeons
         static readonly Pen AnnotationPen = new Pen(AnnotationColor, 1);
         static readonly Pen SelectionPen = new Pen(Color.DarkGreen, 1);
         static readonly Brush AnnotationBrush = new SolidBrush(AnnotationColor);
-        static readonly Brush HomeBrush = Brushes.Lime;
-        static readonly Pen GridLinePen = new Pen(Brushes.Bisque)
-        {
-            DashCap = System.Drawing.Drawing2D.DashCap.Round,
-            DashPattern = new float[] { 1.0f, 1.0f }
-        };
+        static readonly Brush HomeBrush = Brushes.Yellow;
+        static readonly Brush DefaultRoomBrush = new SolidBrush(Color.FromArgb(64, 255, 255, 255));
+        static readonly Pen GridLinePen = new Pen(DefaultRoomBrush);
 
         private string[,] annotations = new string[8, 8];
 
@@ -49,6 +46,7 @@ namespace Dungeons
         public Point BossLocation { get; private set; }
         public HashSet<Point> MarkedCriticalRooms { get; private set; } = new HashSet<Point>();
         public HashSet<Point> CriticalRooms { get; private set; } = new HashSet<Point>();
+        public bool DrawDistancesEnabled { get; set; }
 
         public void ProcessKeyDown(Keys keyData)
         {
@@ -169,7 +167,7 @@ namespace Dungeons
                 marked = marked.Union(new Point[] { BossLocation });
             foreach (var room in marked)
             {
-                for (var p = room; p != HomeLocation; p = parents[p.X, p.Y])
+                for (var p = room; MapUtils.IsValidMapCoords(p) && p != HomeLocation; p = parents[p.X, p.Y])
                     CriticalRooms.Add(p);
             }
         }
@@ -180,22 +178,25 @@ namespace Dungeons
 
             e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
 
-            DrawGridLines(e);
+            e.Graphics.DrawImage(Properties.Resources.Grid, new Point(MapUtils.GridOffsetX, MapUtils.GridOffsetY));
 
             DrawSelectionRectangle(e);
             DrawPathLines(e);
             DrawAnnotations(e);
 
             // Draw distances
-            //for (int y = 0; y < MapSize; y++)
-            //{
-            //    for (int x = 0; x < MapSize; x++)
-            //    {
-            //        var p = MapUtils.MapToClientCoords(new Point(x, y));
-            //        if (distances[x, y] > 0 && (MapUtils.IsLeaf(roomTypes[x, y]) || !MapUtils.IsOpened(roomTypes[x, y])))
-            //            e.Graphics.DrawString(distances[x, y].ToString(), DistanceAnnotationFont, Brushes.Pink, p.X + 3, p.Y + 3);
-            //    }
-            //}
+            if (DrawDistancesEnabled)
+            {
+                for (int y = 0; y < MapSize; y++)
+                {
+                    for (int x = 0; x < MapSize; x++)
+                    {
+                        var p = MapUtils.MapToClientCoords(new Point(x, y));
+                        if (distances[x, y] > 0 && (MapUtils.IsLeaf(roomTypes[x, y]) || !MapUtils.IsOpened(roomTypes[x, y])))
+                            e.Graphics.DrawString(distances[x, y].ToString(), DistanceAnnotationFont, Brushes.Pink, p.X + 3, p.Y + 3);
+                    }
+                }
+            }
         }
 
         private void ToggleMarkedCritical(Point p)
@@ -236,9 +237,9 @@ namespace Dungeons
                     var center = MapUtils.MapToClientCoords(p);
                     center.Offset(16, 16);
                     var roomType = roomTypes[x, y];
+                    DrawRoom(e, p);
                     if (IsRoom(p))
                     {
-                        DrawRoom(e, p);
 
                         var pen = GridLinePen;
                         if ((roomType & RoomType.W) != 0)
@@ -259,30 +260,27 @@ namespace Dungeons
             var center = MapUtils.MapToClientCoords(p);
             center.Offset(16, 16);
 
+            int size = 2;
             if (p == HomeLocation)
             {
-                var size = 5;
                 e.Graphics.FillRectangle(HomeBrush, center.X - size, center.Y - size, 2 * size, 2 * size);
             }
             else if (p == BossLocation)
             {
-                var size = 3;
                 e.Graphics.FillRectangle(Brushes.Red, center.X - size, center.Y - size, 2 * size, 2 * size);
             }
             else if (MarkedCriticalRooms.Contains(p))
             {
-                var size = 3;
                 e.Graphics.FillRectangle(Brushes.Cyan, center.X - size, center.Y - size, 2 * size, 2 * size);
             }
             else if (CriticalRooms.Contains(p))
             {
-                var size = 3;
                 e.Graphics.FillRectangle(Brushes.Blue, center.X - size, center.Y - size, 2 * size, 2 * size);
             }
-            else
+            else if (IsRoom(p))
             {
-                var size = 1;
-                e.Graphics.FillRectangle(Brushes.White, center.X - size, center.Y - size, 2 * size, 2 * size);
+                size = 1;
+                e.Graphics.FillRectangle(DefaultRoomBrush, center.X - size, center.Y - size, 2 * size, 2 * size);
             }
         }
 

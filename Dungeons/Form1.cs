@@ -56,6 +56,14 @@ namespace Dungeons
             base.OnKeyPress(e);
         }
 
+        protected override void OnLoad(EventArgs e)
+        {
+            base.OnLoad(e);
+
+            // Start on top right, lol
+            Location = new Point(Screen.PrimaryScreen.WorkingArea.Width - Width + 5, 0);
+        }
+
         private unsafe bool IsMatch(BitmapData bmpData, BitmapData templateData, int offX, int offY)
         {
             var bmpScan0 = (byte*)bmpData.Scan0.ToPointer();
@@ -173,7 +181,7 @@ namespace Dungeons
         {
             dataLabel.Text = $"{mapPictureBox.OpenedRoomCount} rooms opened | {mapPictureBox.LeafCount} leaves | {mapPictureBox.CriticalRooms.Count} critical rooms";
         }
-        
+
         private void findMapButton_Click(object sender, EventArgs e)
         {
             var mapLocation = FindMap();
@@ -224,6 +232,12 @@ namespace Dungeons
         private void clearAnnotationsButton_Click(object sender, EventArgs e)
         {
             mapPictureBox.ClearAnnotations();
+        }
+
+        private void distancesCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            mapPictureBox.DrawDistancesEnabled = distancesCheckBox.Checked;
+            mapPictureBox.Invalidate();
         }
     }
 }

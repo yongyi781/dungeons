@@ -91,6 +91,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Resources\grid.png" />
     <Content Include="Resources\map-marker.png" />
     <None Include="Resources\e.png" />
     <None Include="Resources\es.png" />
