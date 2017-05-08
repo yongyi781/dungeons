@@ -41,6 +41,8 @@
             this.clearAnnotationsButton = new System.Windows.Forms.Button();
             this.mapPictureBox = new Dungeons.MapPictureBox();
             this.distancesCheckBox = new System.Windows.Forms.CheckBox();
+            this.timerLabel = new System.Windows.Forms.Label();
+            this.resetTimerButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.mapPictureBox)).BeginInit();
             this.SuspendLayout();
             // 
@@ -76,7 +78,7 @@
             // 
             this.dataLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.dataLabel.AutoSize = true;
-            this.dataLabel.Location = new System.Drawing.Point(12, 406);
+            this.dataLabel.Location = new System.Drawing.Point(12, 451);
             this.dataLabel.Name = "dataLabel";
             this.dataLabel.Size = new System.Drawing.Size(0, 15);
             this.dataLabel.TabIndex = 4;
@@ -144,7 +146,8 @@
             // mapPictureBox
             // 
             this.mapPictureBox.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this.mapPictureBox.Location = new System.Drawing.Point(12, 58);
+            this.mapPictureBox.DrawDistancesEnabled = false;
+            this.mapPictureBox.Location = new System.Drawing.Point(0, 61);
             this.mapPictureBox.Name = "mapPictureBox";
             this.mapPictureBox.SelectedLocation = new System.Drawing.Point(0, 0);
             this.mapPictureBox.Size = new System.Drawing.Size(318, 310);
@@ -164,11 +167,38 @@
             this.distancesCheckBox.UseVisualStyleBackColor = true;
             this.distancesCheckBox.CheckedChanged += new System.EventHandler(this.distancesCheckBox_CheckedChanged);
             // 
+            // timerLabel
+            // 
+            this.timerLabel.AutoSize = true;
+            this.timerLabel.Location = new System.Drawing.Point(12, 407);
+            this.timerLabel.Name = "timerLabel";
+            this.timerLabel.Size = new System.Drawing.Size(44, 15);
+            this.timerLabel.TabIndex = 7;
+            this.timerLabel.Text = "Timer: ";
+            // 
+            // resetTimerButton
+            // 
+            this.resetTimerButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.resetTimerButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(204)))), ((int)(((byte)(181)))), ((int)(((byte)(153)))));
+            this.resetTimerButton.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(119)))), ((int)(((byte)(106)))), ((int)(((byte)(89)))));
+            this.resetTimerButton.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(136)))), ((int)(((byte)(114)))));
+            this.resetTimerButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.resetTimerButton.Location = new System.Drawing.Point(215, 402);
+            this.resetTimerButton.Name = "resetTimerButton";
+            this.resetTimerButton.Size = new System.Drawing.Size(91, 25);
+            this.resetTimerButton.TabIndex = 8;
+            this.resetTimerButton.Text = "&Reset Timer";
+            this.resetTimerButton.UseVisualStyleBackColor = false;
+            this.resetTimerButton.Click += new System.EventHandler(this.resetTimerButton_Click);
+            // 
             // Form1
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(135)))), ((int)(((byte)(110)))), ((int)(((byte)(70)))));
-            this.ClientSize = new System.Drawing.Size(342, 430);
+            this.ClientSize = new System.Drawing.Size(318, 475);
+            this.Controls.Add(this.resetTimerButton);
+            this.Controls.Add(this.timerLabel);
             this.Controls.Add(this.distancesCheckBox);
             this.Controls.Add(this.clearAnnotationsButton);
             this.Controls.Add(this.pauseButton);
@@ -181,7 +211,7 @@
             this.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.KeyPreview = true;
-            this.MinimumSize = new System.Drawing.Size(358, 469);
+            this.MinimumSize = new System.Drawing.Size(334, 469);
             this.Name = "Form1";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Dungeons";
@@ -204,6 +234,8 @@
         private System.Windows.Forms.Button pauseButton;
         private System.Windows.Forms.Button clearAnnotationsButton;
         private System.Windows.Forms.CheckBox distancesCheckBox;
+        private System.Windows.Forms.Label timerLabel;
+        private System.Windows.Forms.Button resetTimerButton;
     }
 }
 

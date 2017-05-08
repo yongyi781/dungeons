@@ -22,6 +22,8 @@ namespace Dungeons
         static readonly Brush HomeBrush = Brushes.Yellow;
         static readonly Brush DefaultRoomBrush = new SolidBrush(Color.FromArgb(64, 255, 255, 255));
         static readonly Pen GridLinePen = new Pen(DefaultRoomBrush);
+        static readonly Font RoomCountFont = new Font("Consolas", 12);
+        static readonly Brush RoomCountBrush = new SolidBrush(Color.FromArgb(50, 30, 30));
 
         private string[,] annotations = new string[8, 8];
 
@@ -187,14 +189,29 @@ namespace Dungeons
             // Draw distances
             if (DrawDistancesEnabled)
             {
-                for (int y = 0; y < MapSize; y++)
+                DrawDistances(e);
+            }
+
+            DrawRoomCount(e);
+        }
+
+        private void DrawRoomCount(PaintEventArgs e)
+        {
+            // Center it
+            var str = OpenedRoomCount.ToString();
+            var strSize = e.Graphics.MeasureString(str, RoomCountFont);
+            e.Graphics.DrawString(OpenedRoomCount.ToString(), RoomCountFont, RoomCountBrush, (Width - strSize.Width) / 2, 9);
+        }
+
+        private void DrawDistances(PaintEventArgs e)
+        {
+            for (int y = 0; y < MapSize; y++)
+            {
+                for (int x = 0; x < MapSize; x++)
                 {
-                    for (int x = 0; x < MapSize; x++)
-                    {
-                        var p = MapUtils.MapToClientCoords(new Point(x, y));
-                        if (distances[x, y] > 0 && (MapUtils.IsLeaf(roomTypes[x, y]) || !MapUtils.IsOpened(roomTypes[x, y])))
-                            e.Graphics.DrawString(distances[x, y].ToString(), DistanceAnnotationFont, Brushes.Pink, p.X + 3, p.Y + 3);
-                    }
+                    var p = MapUtils.MapToClientCoords(new Point(x, y));
+                    if (distances[x, y] > 0 && (MapUtils.IsLeaf(roomTypes[x, y]) || !MapUtils.IsOpened(roomTypes[x, y])))
+                        e.Graphics.DrawString(distances[x, y].ToString(), DistanceAnnotationFont, Brushes.Pink, p.X + 3, p.Y + 3);
                 }
             }
         }

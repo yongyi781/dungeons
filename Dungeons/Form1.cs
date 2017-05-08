@@ -31,6 +31,7 @@ namespace Dungeons
         private Bitmap mapMarker = Properties.Resources.MapMarker;
         private Point mapLocation = new Point(2703, 370);
         private bool isPaused = false;
+        private DateTimeOffset timerCheckpoint = DateTimeOffset.Now;
 
         public Form1()
         {
@@ -167,8 +168,15 @@ namespace Dungeons
                     ResumeTimer();
                     mapPictureBox.Image = bmp;
                     saveMapButton.Enabled = true;
+                    var prevHomeLocation = mapPictureBox.HomeLocation;
                     mapPictureBox.BuildMap();
                     UpdateDataLabel();
+
+                    // Reset when home changes
+                    if (mapPictureBox.HomeLocation != MapUtils.NotFound && mapPictureBox.HomeLocation != prevHomeLocation)
+                    {
+                        timerCheckpoint = DateTimeOffset.Now.AddSeconds(-3);
+                    }
                 }
                 else
                 {
@@ -179,7 +187,13 @@ namespace Dungeons
 
         private void UpdateDataLabel()
         {
-            dataLabel.Text = $"{mapPictureBox.OpenedRoomCount} rooms opened | {mapPictureBox.LeafCount} leaves | {mapPictureBox.CriticalRooms.Count} critical rooms";
+            var roomsPerMinStr = ((mapPictureBox.OpenedRoomCount - 1) / GetElapsedTime().TotalMinutes).ToString("0.0");
+            dataLabel.Text = $"{mapPictureBox.OpenedRoomCount} rooms opened | {roomsPerMinStr} rooms/min | {mapPictureBox.CriticalRooms.Count} critical rooms";
+        }
+
+        private TimeSpan GetElapsedTime()
+        {
+            return DateTimeOffset.Now - timerCheckpoint;
         }
 
         private void findMapButton_Click(object sender, EventArgs e)
@@ -199,6 +213,8 @@ namespace Dungeons
         private void timer_Tick(object sender, EventArgs e)
         {
             UpdateMap();
+
+            timerLabel.Text = "Timer: " + (DateTimeOffset.Now - timerCheckpoint).ToString("m':'ss");
         }
 
         private void saveMapButton_Click(object sender, EventArgs e)
@@ -238,6 +254,11 @@ namespace Dungeons
         {
             mapPictureBox.DrawDistancesEnabled = distancesCheckBox.Checked;
             mapPictureBox.Invalidate();
+        }
+
+        private void resetTimerButton_Click(object sender, EventArgs e)
+        {
+            timerCheckpoint = DateTimeOffset.Now;
         }
     }
 }
