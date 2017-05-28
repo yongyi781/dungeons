@@ -18,6 +18,11 @@ namespace Dungeons
         const int MapGridOffsetX = 29;
         const int MapGridOffsetY = 27;
 
+        const int WM_NCLBUTTONDOWN = 0xA1;
+        const int WM_NCHITTEST = 0x84;
+        const int HT_CAPTION = 0x2;
+        private const int WM_LBUTTONDBLCLK = 0x00A3;
+
         private static readonly Keys[] KeysToEat =
         {
             Keys.Enter,
@@ -30,16 +35,18 @@ namespace Dungeons
 
         private Bitmap mapMarker = Properties.Resources.MapMarker;
         private Point mapLocation = new Point(2703, 370);
-        private bool isPaused = false;
-        private DateTimeOffset timerCheckpoint = DateTimeOffset.Now;
+        private MapForm mapForm;
 
         public Form1()
         {
             InitializeComponent();
 
             MapUtils.InitializeSignatures();
+            //mapForm = new MapForm(this);
         }
 
+        public DateTimeOffset TimerCheckpoint { get; private set; } = DateTimeOffset.MinValue;
+        
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
             if (KeysToEat.Contains(keyData))
@@ -49,6 +56,16 @@ namespace Dungeons
                 return true;
             }
             return base.ProcessCmdKey(ref msg, keyData);
+        }
+
+        protected override void OnMouseDown(MouseEventArgs e)
+        {
+            base.OnMouseDown(e);
+            if (e.Button == MouseButtons.Left)
+            {
+                NativeMethods.ReleaseCapture();
+                NativeMethods.SendMessage(Handle, WM_NCLBUTTONDOWN, HT_CAPTION, 0);
+            }
         }
 
         protected override void OnKeyPress(KeyPressEventArgs e)
@@ -62,58 +79,10 @@ namespace Dungeons
             base.OnLoad(e);
 
             // Start on top right, lol
-            Location = new Point(Screen.PrimaryScreen.WorkingArea.Width - Width + 5, 0);
+            Location = new Point(Screen.PrimaryScreen.WorkingArea.Width - Width, 0);
+            //mapForm.Show();
         }
-
-        private unsafe bool IsMatch(BitmapData bmpData, BitmapData templateData, int offX, int offY)
-        {
-            var bmpScan0 = (byte*)bmpData.Scan0.ToPointer();
-            var templateScan0 = (byte*)templateData.Scan0.ToPointer();
-
-            int index = offY * bmpData.Stride + offX * 3;
-            for (int i = 0; i < templateData.Width * 3; i++)
-            {
-                if (bmpScan0[index + i] != templateScan0[i])
-                    return false;
-            }
-            return true;
-        }
-
-        private unsafe bool HasMap(Bitmap bmp, int mapOffsetX = MapOffsetX, int mapOffsetY = MapOffsetY)
-        {
-            using (var unsafeBmp = new UnsafeBitmap(bmp, ImageLockMode.ReadOnly, PixelFormat.Format24bppRgb))
-            {
-                using (var unsafeMarker = new UnsafeBitmap(mapMarker, ImageLockMode.ReadOnly, PixelFormat.Format24bppRgb))
-                {
-                    return IsMatch(unsafeBmp.BitmapData, unsafeMarker.BitmapData, mapOffsetX, mapOffsetY);
-                }
-            }
-        }
-
-        // Assumes map marker has height of 1
-        private unsafe Point FindMapMarker(Bitmap bmp)
-        {
-            using (var unsafeBmp = new UnsafeBitmap(bmp, ImageLockMode.ReadOnly, PixelFormat.Format24bppRgb))
-            {
-                using (var unsafeMarker = new UnsafeBitmap(mapMarker, ImageLockMode.ReadOnly, PixelFormat.Format24bppRgb))
-                {
-                    var bmpScan0 = (byte*)unsafeBmp.BitmapData.Scan0.ToPointer();
-                    var mapMarkerScan0 = (byte*)unsafeMarker.BitmapData.Scan0.ToPointer();
-
-                    for (int offY = 0; offY < unsafeBmp.BitmapData.Height; offY++)
-                    {
-                        for (int offX = 0; offX < unsafeBmp.BitmapData.Width - unsafeMarker.BitmapData.Width + 1; offX++)
-                        {
-                            if (IsMatch(unsafeBmp.BitmapData, unsafeMarker.BitmapData, offX, offY) && !DesktopBounds.Contains(offX, offY))
-                                return new Point(offX, offY);
-                        }
-                    }
-                }
-            }
-
-            return new Point(-1, -1);
-        }
-
+        
         private Point FindMap()
         {
             var size = SystemInformation.VirtualScreen.Size;
@@ -124,25 +93,7 @@ namespace Dungeons
             }
 
             // Search for map marker
-            return FindMapMarker(bmp);
-        }
-
-        private void ResumeTimer()
-        {
-            pauseButton.Enabled = true;
-            pauseButton.Text = "Pause";
-            pauseButton.ForeColor = Color.Maroon;
-            isPaused = false;
-            timer.Start();
-        }
-
-        private void PauseTimer()
-        {
-            pauseButton.Text = "Resume";
-            pauseButton.ForeColor = Color.Green;
-            statusLabel.Text = "Paused.";
-            isPaused = true;
-            timer.Stop();
+            return UnsafeBitmap.FindMatch(bmp, mapMarker, p => !DesktopBounds.Contains(p));
         }
 
         private void UpdateMap()
@@ -162,25 +113,24 @@ namespace Dungeons
                         return;
                     }
                 }
-                if (HasMap(bmp))
+                if (UnsafeBitmap.IsMatch(bmp, mapMarker, MapOffsetX, MapOffsetY))
                 {
-                    statusLabel.Text = $"Updated map from {mapLocation}.";
-                    ResumeTimer();
+                    timer.Start();
                     mapPictureBox.Image = bmp;
                     saveMapButton.Enabled = true;
                     var prevHomeLocation = mapPictureBox.HomeLocation;
                     mapPictureBox.BuildMap();
+                    if (mapForm != null)
+                        mapForm.UpdateMapImage(bmp);
                     UpdateDataLabel();
 
-                    // Reset when home changes
-                    if (mapPictureBox.HomeLocation != MapUtils.NotFound && mapPictureBox.HomeLocation != prevHomeLocation)
+                    // Reset when home changes or on first map load
+                    if (TimerCheckpoint == DateTimeOffset.MinValue || (mapPictureBox.HomeLocation != MapUtils.NotFound
+                        && prevHomeLocation != MapUtils.NotFound
+                        && mapPictureBox.HomeLocation != prevHomeLocation))
                     {
-                        timerCheckpoint = DateTimeOffset.Now.AddSeconds(-3);
+                        TimerCheckpoint = DateTimeOffset.Now.AddSeconds(-3);
                     }
-                }
-                else
-                {
-                    statusLabel.Text = $"Waiting for map at {mapLocation}.";
                 }
             }
         }
@@ -193,10 +143,10 @@ namespace Dungeons
 
         private TimeSpan GetElapsedTime()
         {
-            return DateTimeOffset.Now - timerCheckpoint;
+            return DateTimeOffset.Now - TimerCheckpoint;
         }
 
-        private void findMapButton_Click(object sender, EventArgs e)
+        private void calibrateButton_Click(object sender, EventArgs e)
         {
             var mapLocation = FindMap();
             if (mapLocation != MapUtils.NotFound)
@@ -204,17 +154,18 @@ namespace Dungeons
                 this.mapLocation = mapLocation;
                 UpdateMap();
             }
-            else
-            {
-                statusLabel.Text = "No map found.";
-            }
         }
 
         private void timer_Tick(object sender, EventArgs e)
         {
             UpdateMap();
 
-            timerLabel.Text = "Timer: " + (DateTimeOffset.Now - timerCheckpoint).ToString("m':'ss");
+            if (TimerCheckpoint != DateTimeOffset.MinValue)
+            {
+                var elapsed = GetElapsedTime();
+                timerLabel.Text = elapsed.ToString(elapsed.Hours > 0 ? "h\\:mm\\:ss" : "m':'ss");
+                UpdateDataLabel();
+            }
         }
 
         private void saveMapButton_Click(object sender, EventArgs e)
@@ -230,14 +181,6 @@ namespace Dungeons
         {
             savedLabel.Visible = false;
             saveLabelHideTimer.Stop();
-        }
-
-        private void pauseButton_Click(object sender, EventArgs e)
-        {
-            if (isPaused)
-                ResumeTimer();
-            else
-                PauseTimer();
         }
 
         private void mapPictureBox_MouseDown(object sender, MouseEventArgs e)
@@ -258,7 +201,20 @@ namespace Dungeons
 
         private void resetTimerButton_Click(object sender, EventArgs e)
         {
-            timerCheckpoint = DateTimeOffset.Now;
+            TimerCheckpoint = DateTimeOffset.Now;
+        }
+
+        private void plusOneOrTenButton_Click(object sender, EventArgs e)
+        {
+            if (sender == plusOneButton)
+                TimerCheckpoint = TimerCheckpoint.AddSeconds(-1);
+            else
+                TimerCheckpoint = TimerCheckpoint.AddSeconds(-10);
+        }
+
+        private void closeButton_Click(object sender, EventArgs e)
+        {
+            Close();
         }
     }
 }

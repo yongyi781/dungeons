@@ -19,10 +19,10 @@ namespace Dungeons
         static readonly Pen AnnotationPen = new Pen(AnnotationColor, 1);
         static readonly Pen SelectionPen = new Pen(Color.DarkGreen, 1);
         static readonly Brush AnnotationBrush = new SolidBrush(AnnotationColor);
-        static readonly Brush HomeBrush = Brushes.Yellow;
+        static readonly Brush HomeBrush = Brushes.White;
         static readonly Brush DefaultRoomBrush = new SolidBrush(Color.FromArgb(64, 255, 255, 255));
         static readonly Pen GridLinePen = new Pen(DefaultRoomBrush);
-        static readonly Font RoomCountFont = new Font("Consolas", 12);
+        static readonly Font RoomCountFont = new Font("Georgia", 12);
         static readonly Brush RoomCountBrush = new SolidBrush(Color.FromArgb(50, 30, 30));
 
         private string[,] annotations = new string[8, 8];
@@ -280,6 +280,7 @@ namespace Dungeons
             int size = 2;
             if (p == HomeLocation)
             {
+                size = 3;
                 e.Graphics.FillRectangle(HomeBrush, center.X - size, center.Y - size, 2 * size, 2 * size);
             }
             else if (p == BossLocation)
