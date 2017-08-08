@@ -11,13 +11,6 @@ namespace Dungeons
 {
     public partial class Form1 : Form
     {
-        const int MapOffsetX = 2;
-        const int MapOffsetY = 2;
-        const int MapWidth = 318;
-        const int MapHeight = 310;
-        const int MapGridOffsetX = 29;
-        const int MapGridOffsetY = 27;
-
         const int WM_NCLBUTTONDOWN = 0xA1;
         const int WM_NCHITTEST = 0x84;
         const int HT_CAPTION = 0x2;
@@ -34,19 +27,24 @@ namespace Dungeons
         };
 
         private Bitmap mapMarker = Properties.Resources.MapMarker;
-        private Point mapLocation = new Point(2703, 370);
-        private MapForm mapForm;
 
         public Form1()
         {
             InitializeComponent();
 
             MapUtils.InitializeSignatures();
+            mapPictureBox.FloorSize = FloorSize;
             //mapForm = new MapForm(this);
         }
 
         public DateTimeOffset TimerCheckpoint { get; private set; } = DateTimeOffset.MinValue;
-        
+
+        public FloorSize FloorSize
+        {
+            get => mapPictureBox.FloorSize;
+            set => mapPictureBox.FloorSize = value;
+        }
+
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
             if (KeysToEat.Contains(keyData))
@@ -82,54 +80,67 @@ namespace Dungeons
             Location = new Point(Screen.PrimaryScreen.WorkingArea.Width - Width, 0);
             //mapForm.Show();
         }
-        
+
         private Point FindMap()
         {
             var size = SystemInformation.VirtualScreen.Size;
             var bmp = new Bitmap(size.Width, size.Height);
             using (var g = Graphics.FromImage(bmp))
             {
-                g.CopyFromScreen(0, 0, 0, 0, size);
+                g.CopyFromScreen(SystemInformation.VirtualScreen.X, SystemInformation.VirtualScreen.Y, 0, 0, size);
             }
 
             // Search for map marker
-            return UnsafeBitmap.FindMatch(bmp, mapMarker, p => !DesktopBounds.Contains(p));
+            var desktopBounds = DesktopBounds;
+            desktopBounds.Offset(-SystemInformation.VirtualScreen.X, -SystemInformation.VirtualScreen.Y);
+            var match = UnsafeBitmap.FindMatch(bmp, mapMarker, p => !desktopBounds.Contains(p));
+            match.Offset(SystemInformation.VirtualScreen.X, SystemInformation.VirtualScreen.Y);
+            return match;
         }
 
         private void UpdateMap()
         {
-            var bmp = new Bitmap(MapWidth, MapHeight);
-
-            if (mapLocation != MapUtils.NotFound)
+            foreach (var floorSize in new FloorSize[] { FloorSize, FloorSize.Large, FloorSize.Medium, FloorSize.Small })
             {
-                using (var g = Graphics.FromImage(bmp))
-                {
-                    try
-                    {
-                        g.CopyFromScreen(mapLocation.X - MapOffsetX, mapLocation.Y - MapOffsetY, 0, 0, bmp.Size);
-                    }
-                    catch (Win32Exception)
-                    {
-                        return;
-                    }
-                }
-                if (UnsafeBitmap.IsMatch(bmp, mapMarker, MapOffsetX, MapOffsetY))
-                {
-                    timer.Start();
-                    mapPictureBox.Image = bmp;
-                    saveMapButton.Enabled = true;
-                    var prevHomeLocation = mapPictureBox.HomeLocation;
-                    mapPictureBox.BuildMap();
-                    if (mapForm != null)
-                        mapForm.UpdateMapImage(bmp);
-                    UpdateDataLabel();
+                FloorSize = floorSize;
+                var bmp = new Bitmap(FloorSize.MapSize.Width, FloorSize.MapSize.Height);
 
-                    // Reset when home changes or on first map load
-                    if (TimerCheckpoint == DateTimeOffset.MinValue || (mapPictureBox.HomeLocation != MapUtils.NotFound
-                        && prevHomeLocation != MapUtils.NotFound
-                        && mapPictureBox.HomeLocation != prevHomeLocation))
+                if (Properties.Settings.Default.MapLocation != MapUtils.NotFound)
+                {
+                    using (var g = Graphics.FromImage(bmp))
                     {
-                        TimerCheckpoint = DateTimeOffset.Now.AddSeconds(-3);
+                        try
+                        {
+                            g.CopyFromScreen(Properties.Settings.Default.MapLocation.X - FloorSize.MarkerLocation.X, Properties.Settings.Default.MapLocation.Y - FloorSize.MarkerLocation.Y, 0, 0, bmp.Size);
+                        }
+                        catch (Win32Exception)
+                        {
+                            return;
+                        }
+                    }
+                    if (UnsafeBitmap.IsMatch(bmp, mapMarker, FloorSize.MarkerLocation.X, FloorSize.MarkerLocation.Y))
+                    {
+                        timer.Start();
+                        mapPictureBox.Image = bmp;
+                        saveMapButton.Enabled = true;
+                        var prevHomeLocation = mapPictureBox.HomeLocation;
+                        mapPictureBox.BuildMap();
+                        UpdateDataLabel();
+
+                        // Reset when home changes or on first map load
+                        if (TimerCheckpoint == DateTimeOffset.MinValue || (mapPictureBox.HomeLocation != MapUtils.NotFound
+                            && prevHomeLocation != MapUtils.NotFound
+                            && mapPictureBox.HomeLocation != prevHomeLocation))
+                        {
+                            TimerCheckpoint = DateTimeOffset.Now.AddSeconds(-3);
+                        }
+                        if (mapPictureBox.OpenedRoomCount > 0)
+                            break;  // Found a floor size that aligns correctly with the rooms, this must be the right one.
+                    }
+                    else
+                    {
+                        // No map marker was even found, skip trying other floor sizes.
+                        break;
                     }
                 }
             }
@@ -137,8 +148,8 @@ namespace Dungeons
 
         private void UpdateDataLabel()
         {
-            var roomsPerMinStr = ((mapPictureBox.OpenedRoomCount - 1) / GetElapsedTime().TotalMinutes).ToString("0.0");
-            dataLabel.Text = $"{mapPictureBox.OpenedRoomCount} rooms opened | {roomsPerMinStr} rooms/min | {mapPictureBox.CriticalRooms.Count} critical rooms";
+            var roomsPerMinStr = (mapPictureBox.OpenedRoomCount / GetElapsedTime().TotalMinutes).ToString("0.0");
+            dataLabel.Text = $"{mapPictureBox.OpenedRoomCount} rooms opened | {roomsPerMinStr} rooms/min | {mapPictureBox.CriticalRooms.Count} critical";
         }
 
         private TimeSpan GetElapsedTime()
@@ -151,7 +162,8 @@ namespace Dungeons
             var mapLocation = FindMap();
             if (mapLocation != MapUtils.NotFound)
             {
-                this.mapLocation = mapLocation;
+                Properties.Settings.Default.MapLocation = mapLocation;
+                Properties.Settings.Default.Save();
                 UpdateMap();
             }
         }
@@ -185,6 +197,8 @@ namespace Dungeons
 
         private void mapPictureBox_MouseDown(object sender, MouseEventArgs e)
         {
+            // Close if on close button
+
             UpdateDataLabel();
         }
 
@@ -193,10 +207,9 @@ namespace Dungeons
             mapPictureBox.ClearAnnotations();
         }
 
-        private void distancesCheckBox_CheckedChanged(object sender, EventArgs e)
+        private void topMostCheckBox_CheckedChanged(object sender, EventArgs e)
         {
-            mapPictureBox.DrawDistancesEnabled = distancesCheckBox.Checked;
-            mapPictureBox.Invalidate();
+            TopMost = topMostCheckBox.Checked;
         }
 
         private void resetTimerButton_Click(object sender, EventArgs e)
@@ -206,10 +219,13 @@ namespace Dungeons
 
         private void plusOneOrTenButton_Click(object sender, EventArgs e)
         {
-            if (sender == plusOneButton)
-                TimerCheckpoint = TimerCheckpoint.AddSeconds(-1);
-            else
-                TimerCheckpoint = TimerCheckpoint.AddSeconds(-10);
+            if (TimerCheckpoint != DateTimeOffset.MinValue)
+            {
+                if (sender == plusOneButton)
+                    TimerCheckpoint = TimerCheckpoint.AddSeconds(-1);
+                else
+                    TimerCheckpoint = TimerCheckpoint.AddSeconds(-10);
+            }
         }
 
         private void closeButton_Click(object sender, EventArgs e)

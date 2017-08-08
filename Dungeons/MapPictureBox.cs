@@ -21,9 +21,9 @@ namespace Dungeons
         static readonly Brush AnnotationBrush = new SolidBrush(AnnotationColor);
         static readonly Brush HomeBrush = Brushes.White;
         static readonly Brush DefaultRoomBrush = new SolidBrush(Color.FromArgb(64, 255, 255, 255));
-        static readonly Pen GridLinePen = new Pen(DefaultRoomBrush);
+        static readonly Pen GridLinePen = new Pen(Color.FromArgb(32, 255, 255, 255));
         static readonly Font RoomCountFont = new Font("Georgia", 12);
-        static readonly Brush RoomCountBrush = new SolidBrush(Color.FromArgb(50, 30, 30));
+        static readonly Brush RoomCountBrush = new SolidBrush(Color.FromArgb(200, 180, 180));
 
         private string[,] annotations = new string[8, 8];
 
@@ -41,6 +41,20 @@ namespace Dungeons
             BuildMap();
         }
 
+        private FloorSize floorSize = FloorSize.Large;
+        public FloorSize FloorSize
+        {
+            get => floorSize;
+            set
+            {
+                if (floorSize != value)
+                {
+                    floorSize = value;
+                    Invalidate();
+                    Size = value.MapSize;
+                }
+            }
+        }
         public Point SelectedLocation { get; set; }
         public int OpenedRoomCount { get; private set; }
         public int LeafCount { get; private set; }
@@ -70,7 +84,7 @@ namespace Dungeons
                 default:
                     break;
             }
-            if (!d.IsEmpty && MapUtils.IsValidMapCoords(Point.Add(SelectedLocation, d)))
+            if (!d.IsEmpty && FloorSize.IsValidMapCoords(Point.Add(SelectedLocation, d)))
             {
                 SelectedLocation = Point.Add(SelectedLocation, d);
                 Invalidate();
@@ -117,9 +131,9 @@ namespace Dungeons
             BossLocation = MapUtils.NotFound;
             OpenedRoomCount = 0;
             LeafCount = 0;
-            for (int y = 0; y < 8; y++)
+            for (int y = 0; y < FloorSize.NumRows; y++)
             {
-                for (int x = 0; x < 8; x++)
+                for (int x = 0; x < FloorSize.NumColumns; x++)
                 {
                     var roomType = GetRoomType(new Point(x, y));
                     roomTypes[x, y] = roomType;
@@ -142,14 +156,14 @@ namespace Dungeons
 
         public RoomType GetRoomType(Point p)
         {
-            var pc = MapUtils.MapToClientCoords(p);
+            var pc = FloorSize.MapToClientCoords(p);
             return MapUtils.GetRoomType(Image as Bitmap, pc.X, pc.Y);
         }
 
         protected override void OnMouseDown(MouseEventArgs e)
         {
-            var s = MapUtils.ClientToMapCoords(e.Location);
-            if (MapUtils.IsValidMapCoords(s))
+            var s = FloorSize.ClientToMapCoords(e.Location);
+            if (FloorSize.IsValidMapCoords(s))
             {
                 if (e.Button == MouseButtons.Left)
                     SelectedLocation = s;
@@ -164,12 +178,12 @@ namespace Dungeons
         {
             CriticalRooms.Clear();
             CriticalRooms.Add(HomeLocation);
-            var marked = MarkedCriticalRooms.Where(p => MapUtils.IsValidMapCoords(p) && IsRoom(p));
-            if (MapUtils.IsValidMapCoords(BossLocation))
+            var marked = MarkedCriticalRooms.Where(p => FloorSize.IsValidMapCoords(p) && IsRoom(p));
+            if (FloorSize.IsValidMapCoords(BossLocation))
                 marked = marked.Union(new Point[] { BossLocation });
             foreach (var room in marked)
             {
-                for (var p = room; MapUtils.IsValidMapCoords(p) && p != HomeLocation; p = parents[p.X, p.Y])
+                for (var p = room; FloorSize.IsValidMapCoords(p) && p != HomeLocation; p = parents[p.X, p.Y])
                     CriticalRooms.Add(p);
             }
         }
@@ -180,9 +194,10 @@ namespace Dungeons
 
             e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
 
-            e.Graphics.DrawImage(Properties.Resources.Grid, new Point(MapUtils.GridOffsetX, MapUtils.GridOffsetY));
+            e.Graphics.DrawImage(Properties.Resources.Grid, new Point(FloorSize.MapSize.Width, FloorSize.MapSize.Height));
 
             DrawSelectionRectangle(e);
+            DrawGridLines(e);
             DrawPathLines(e);
             DrawAnnotations(e);
 
@@ -205,11 +220,11 @@ namespace Dungeons
 
         private void DrawDistances(PaintEventArgs e)
         {
-            for (int y = 0; y < MapSize; y++)
+            for (int y = 0; y < FloorSize.NumRows; y++)
             {
-                for (int x = 0; x < MapSize; x++)
+                for (int x = 0; x < FloorSize.NumColumns; x++)
                 {
-                    var p = MapUtils.MapToClientCoords(new Point(x, y));
+                    var p = FloorSize.MapToClientCoords(new Point(x, y));
                     if (distances[x, y] > 0 && (MapUtils.IsLeaf(roomTypes[x, y]) || !MapUtils.IsOpened(roomTypes[x, y])))
                         e.Graphics.DrawString(distances[x, y].ToString(), DistanceAnnotationFont, Brushes.Pink, p.X + 3, p.Y + 3);
                 }
@@ -227,9 +242,9 @@ namespace Dungeons
 
         private void DrawAnnotations(PaintEventArgs e)
         {
-            for (int y = 0; y < MapSize; y++)
+            for (int y = 0; y < FloorSize.NumRows; y++)
             {
-                for (int x = 0; x < MapSize; x++)
+                for (int x = 0; x < FloorSize.NumColumns; x++)
                 {
                     var ann = annotations[y, x];
                     var colorIndex = colors.Select((c, i) => new { c, i }).FirstOrDefault(c => ann.StartsWith(c.c))?.i;
@@ -237,7 +252,7 @@ namespace Dungeons
                         colorIndex = null;
                     if (!string.IsNullOrWhiteSpace(ann))
                     {
-                        var p = MapUtils.MapToClientCoords(new Point(x, y));
+                        var p = FloorSize.MapToClientCoords(new Point(x, y));
                         e.Graphics.DrawString(ann, AnnotationFont, colorIndex == null ? AnnotationBrush : new SolidBrush(colorValues[colorIndex.Value]), p.X + 3, p.Y + 9);
                     }
                 }
@@ -246,12 +261,12 @@ namespace Dungeons
 
         private void DrawPathLines(PaintEventArgs e)
         {
-            for (int y = 0; y < 8; y++)
+            for (int y = 0; y < FloorSize.NumRows; y++)
             {
-                for (int x = 0; x < 8; x++)
+                for (int x = 0; x < FloorSize.NumColumns; x++)
                 {
                     var p = new Point(x, y);
-                    var center = MapUtils.MapToClientCoords(p);
+                    var center = FloorSize.MapToClientCoords(p);
                     center.Offset(16, 16);
                     var roomType = roomTypes[x, y];
                     DrawRoom(e, p);
@@ -274,7 +289,7 @@ namespace Dungeons
 
         private void DrawRoom(PaintEventArgs e, Point p)
         {
-            var center = MapUtils.MapToClientCoords(p);
+            var center = FloorSize.MapToClientCoords(p);
             center.Offset(16, 16);
 
             int size = 2;
@@ -304,32 +319,32 @@ namespace Dungeons
 
         private void DrawSelectionRectangle(PaintEventArgs e)
         {
-            if (MapUtils.IsValidMapCoords(SelectedLocation))
+            if (FloorSize.IsValidMapCoords(SelectedLocation))
             {
-                var p = MapUtils.MapToClientCoords(SelectedLocation);
+                var p = FloorSize.MapToClientCoords(SelectedLocation);
                 e.Graphics.DrawRectangle(SelectionPen, p.X, p.Y, 32, 32);
             }
         }
 
         private void DrawGridLines(PaintEventArgs e)
         {
-            for (int y = -1; y <= 7; y++)
+            for (int y = -1; y <= FloorSize.NumRows - 1; y++)
             {
-                var start = MapUtils.MapToClientCoords(new Point(0, y));
-                var end = MapUtils.MapToClientCoords(new Point(8, y));
+                var start = FloorSize.MapToClientCoords(new Point(0, y));
+                var end = FloorSize.MapToClientCoords(new Point(FloorSize.NumColumns, y));
                 e.Graphics.DrawLine(GridLinePen, start, end);
             }
-            for (int x = 0; x <= 8; x++)
+            for (int x = 0; x <= FloorSize.NumColumns; x++)
             {
-                var start = MapUtils.MapToClientCoords(new Point(x, -1));
-                var end = MapUtils.MapToClientCoords(new Point(x, 7));
+                var start = FloorSize.MapToClientCoords(new Point(x, -1));
+                var end = FloorSize.MapToClientCoords(new Point(x, FloorSize.NumRows - 1));
                 e.Graphics.DrawLine(GridLinePen, start, end);
             }
         }
 
         private bool IsRoom(Point p)
         {
-            return MapUtils.IsValidMapCoords(p) && parents[p.X, p.Y] != MapUtils.NotFound;
+            return FloorSize.IsValidMapCoords(p) && parents[p.X, p.Y] != MapUtils.NotFound;
         }
 
         private void ComputeMapGraph()
@@ -348,7 +363,7 @@ namespace Dungeons
 
             void Visit(Point p, Point parent, int dist)
             {
-                if (!MapUtils.IsValidMapCoords(p) || visited.Contains(p))
+                if (!FloorSize.IsValidMapCoords(p) || visited.Contains(p))
                     return;
 
                 visited.Add(p);

@@ -1,21 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Dungeons
 {
     public static class MapUtils
     {
-        public const int MapOffsetX = 2;
-        public const int MapOffsetY = 2;
-        public const int MapWidth = 318;
-        public const int MapHeight = 310;
-        public const int GridOffsetX = 29;
-        public const int GridOffsetY = 27;
-        public const int RoomWidth = 32;
+        // Size of each room on map, in pixels.
+        public const int RoomSize = 32;
 
         public static readonly Point NotFound = new Point(-1, -1);
 
@@ -46,22 +38,6 @@ namespace Dungeons
             {
                 signatures.Add(ComputeSignature(room));
             }
-        }
-
-        public static Point ClientToMapCoords(Point p)
-        {
-            return new Point((p.X - GridOffsetX) / RoomWidth, 7 - (p.Y - GridOffsetY) / RoomWidth);
-        }
-
-        // Returns the upper-left corner of the square at p.
-        public static Point MapToClientCoords(Point p)
-        {
-            return new Point(p.X * RoomWidth + GridOffsetX, (7 - p.Y) * RoomWidth + GridOffsetY);
-        }
-
-        public static bool IsValidMapCoords(Point p)
-        {
-            return p.X >= 0 && p.X < 8 && p.Y >= 0 && p.Y < 8;
         }
 
         public static bool IsOpened(RoomType t)

@@ -5,5 +5,8 @@
     <Setting Name="MapSaveLocation" Type="System.String" Scope="User">
       <Value Profile="(Default)">C:\Users\yongy\OneDrive\Pictures\RS Screenshots\Dungeoneering\Maps</Value>
     </Setting>
+    <Setting Name="MapLocation" Type="System.Drawing.Point" Scope="User">
+      <Value Profile="(Default)">2703, 370</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

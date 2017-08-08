@@ -32,6 +32,7 @@ namespace Dungeons
             }
         }
 
+        public FloorSize FloorSize { get; set; }
         public string[,] Annotations = new string[8, 8];
         public int OpenedRoomCount { get; private set; }
         public Point HomeLocation { get; private set; }
@@ -41,7 +42,7 @@ namespace Dungeons
 
         public RoomType GetRoomType(Point p)
         {
-            var pc = MapUtils.MapToClientCoords(p);
+            var pc = FloorSize.MapToClientCoords(p);
             return MapUtils.GetRoomType(Image as Bitmap, pc.X, pc.Y);
         }
 
@@ -52,7 +53,7 @@ namespace Dungeons
 
         private bool IsRoom(Point p)
         {
-            return MapUtils.IsValidMapCoords(p) && parents[p.X, p.Y] != MapUtils.NotFound;
+            return FloorSize.IsValidMapCoords(p) && parents[p.X, p.Y] != MapUtils.NotFound;
         }
 
         private void AnalyzeMap()
@@ -97,7 +98,7 @@ namespace Dungeons
 
             void Visit(Point p, Point parent, int dist)
             {
-                if (!MapUtils.IsValidMapCoords(p) || visited.Contains(p))
+                if (!FloorSize.IsValidMapCoords(p) || visited.Contains(p))
                     return;
 
                 visited.Add(p);
@@ -120,12 +121,12 @@ namespace Dungeons
         {
             CriticalRooms.Clear();
             CriticalRooms.Add(HomeLocation);
-            var marked = MarkedCriticalRooms.Where(p => MapUtils.IsValidMapCoords(p) && IsRoom(p));
-            if (MapUtils.IsValidMapCoords(BossLocation))
+            var marked = MarkedCriticalRooms.Where(p => FloorSize.IsValidMapCoords(p) && IsRoom(p));
+            if (FloorSize.IsValidMapCoords(BossLocation))
                 marked = marked.Union(new Point[] { BossLocation });
             foreach (var room in marked)
             {
-                for (var p = room; MapUtils.IsValidMapCoords(p) && p != HomeLocation; p = parents[p.X, p.Y])
+                for (var p = room; FloorSize.IsValidMapCoords(p) && p != HomeLocation; p = parents[p.X, p.Y])
                     CriticalRooms.Add(p);
             }
         }
