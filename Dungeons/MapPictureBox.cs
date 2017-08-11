@@ -20,8 +20,9 @@ namespace Dungeons
         static readonly Pen SelectionPen = new Pen(Color.DarkGreen, 1);
         static readonly Brush AnnotationBrush = new SolidBrush(AnnotationColor);
         static readonly Brush HomeBrush = Brushes.White;
-        static readonly Brush DefaultRoomBrush = new SolidBrush(Color.FromArgb(64, 255, 255, 255));
+        static readonly Brush DefaultRoomBrush = new SolidBrush(Color.FromArgb(128, 255, 255, 255));
         static readonly Pen GridLinePen = new Pen(Color.FromArgb(32, 255, 255, 255));
+        static readonly Pen PathLinePen = new Pen(Color.FromArgb(80, 255, 255, 255));
         static readonly Font RoomCountFont = new Font("Georgia", 12);
         static readonly Brush RoomCountBrush = new SolidBrush(Color.FromArgb(200, 180, 180));
 
@@ -93,24 +94,26 @@ namespace Dungeons
 
         public void ProcessKeyPress(KeyPressEventArgs e)
         {
-            var i = SelectedLocation.Y;
-            var j = SelectedLocation.X;
+            if (FloorSize.IsValidMapCoords(SelectedLocation))
+            {
+                var i = SelectedLocation.Y;
+                var j = SelectedLocation.X;
 
-
-            if (e.KeyChar == 27)    // Esc
-            {
-                annotations[i, j] = string.Empty;
+                if (e.KeyChar == 27)    // Esc
+                {
+                    annotations[i, j] = string.Empty;
+                }
+                else if (e.KeyChar == '\b')
+                {
+                    if (!string.IsNullOrEmpty(annotations[i, j]))
+                        annotations[i, j] = annotations[i, j].Substring(0, annotations[i, j].Length - 1);
+                }
+                else if (!char.IsControl(e.KeyChar) && (annotations[i, j] == null || annotations[i, j].Length < MaxAnnotationLength))
+                {
+                    annotations[i, j] += e.KeyChar;
+                }
+                Invalidate();
             }
-            else if (e.KeyChar == '\b')
-            {
-                if (!string.IsNullOrEmpty(annotations[i, j]))
-                    annotations[i, j] = annotations[i, j].Substring(0, annotations[i, j].Length - 1);
-            }
-            else if (!char.IsControl(e.KeyChar) && (annotations[i, j] == null || annotations[i, j].Length < MaxAnnotationLength))
-            {
-                annotations[i, j] += e.KeyChar;
-            }
-            Invalidate();
 
             base.OnKeyPress(e);
         }
@@ -194,8 +197,6 @@ namespace Dungeons
 
             e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
 
-            e.Graphics.DrawImage(Properties.Resources.Grid, new Point(FloorSize.MapSize.Width, FloorSize.MapSize.Height));
-
             DrawSelectionRectangle(e);
             DrawGridLines(e);
             DrawPathLines(e);
@@ -273,7 +274,7 @@ namespace Dungeons
                     if (IsRoom(p))
                     {
 
-                        var pen = GridLinePen;
+                        var pen = PathLinePen;
                         if ((roomType & RoomType.W) != 0)
                             e.Graphics.DrawLine(pen, center, new Point(center.X - 32, center.Y));
                         if ((roomType & RoomType.E) != 0 && !MapUtils.IsOpened(roomTypes[x + 1, y]))    // Don't double-draw lines

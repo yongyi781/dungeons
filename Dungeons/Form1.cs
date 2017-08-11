@@ -34,7 +34,6 @@ namespace Dungeons
 
             MapUtils.InitializeSignatures();
             mapPictureBox.FloorSize = FloorSize;
-            //mapForm = new MapForm(this);
         }
 
         public DateTimeOffset TimerCheckpoint { get; private set; } = DateTimeOffset.MinValue;
@@ -78,7 +77,6 @@ namespace Dungeons
 
             // Start on top right, lol
             Location = new Point(Screen.PrimaryScreen.WorkingArea.Width - Width, 0);
-            //mapForm.Show();
         }
 
         private Point FindMap()
@@ -174,10 +172,15 @@ namespace Dungeons
 
             if (TimerCheckpoint != DateTimeOffset.MinValue)
             {
-                var elapsed = GetElapsedTime();
-                timerLabel.Text = elapsed.ToString(elapsed.Hours > 0 ? "h\\:mm\\:ss" : "m':'ss");
+                UpdateTimerLabel();
                 UpdateDataLabel();
             }
+        }
+
+        private void UpdateTimerLabel()
+        {
+            var elapsed = GetElapsedTime();
+            timerLabel.Text = elapsed.ToString(elapsed.Hours > 0 ? "h\\:mm\\:ss" : "m':'ss");
         }
 
         private void saveMapButton_Click(object sender, EventArgs e)
@@ -226,6 +229,7 @@ namespace Dungeons
                 else
                     TimerCheckpoint = TimerCheckpoint.AddSeconds(-10);
             }
+            UpdateTimerLabel();
         }
 
         private void closeButton_Click(object sender, EventArgs e)

@@ -42,17 +42,18 @@
             this.resetTimerButton = new System.Windows.Forms.Button();
             this.plusTenButton = new System.Windows.Forms.Button();
             this.plusOneButton = new System.Windows.Forms.Button();
-            this.button1 = new System.Windows.Forms.Button();
             this.mapPictureBox = new Dungeons.MapPictureBox();
+            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             ((System.ComponentModel.ISupportInitialize)(this.mapPictureBox)).BeginInit();
+            this.tableLayoutPanel1.SuspendLayout();
             this.SuspendLayout();
             // 
             // calibrateButton
             // 
             this.calibrateButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.calibrateButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(204)))), ((int)(((byte)(181)))), ((int)(((byte)(153)))));
-            this.calibrateButton.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(119)))), ((int)(((byte)(106)))), ((int)(((byte)(89)))));
-            this.calibrateButton.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(136)))), ((int)(((byte)(114)))));
+            this.calibrateButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(51)))), ((int)(((byte)(51)))), ((int)(((byte)(51)))));
+            this.calibrateButton.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(80)))), ((int)(((byte)(80)))), ((int)(((byte)(80)))));
+            this.calibrateButton.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(102)))), ((int)(((byte)(102)))), ((int)(((byte)(102)))));
             this.calibrateButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.calibrateButton.Location = new System.Drawing.Point(12, 354);
             this.calibrateButton.Name = "calibrateButton";
@@ -80,10 +81,10 @@
             // saveMapButton
             // 
             this.saveMapButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.saveMapButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(204)))), ((int)(((byte)(181)))), ((int)(((byte)(153)))));
+            this.saveMapButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(51)))), ((int)(((byte)(51)))), ((int)(((byte)(51)))));
             this.saveMapButton.Enabled = false;
-            this.saveMapButton.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(119)))), ((int)(((byte)(106)))), ((int)(((byte)(89)))));
-            this.saveMapButton.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(136)))), ((int)(((byte)(114)))));
+            this.saveMapButton.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(80)))), ((int)(((byte)(80)))), ((int)(((byte)(80)))));
+            this.saveMapButton.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(102)))), ((int)(((byte)(102)))), ((int)(((byte)(102)))));
             this.saveMapButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.saveMapButton.Location = new System.Drawing.Point(93, 354);
             this.saveMapButton.Name = "saveMapButton";
@@ -113,9 +114,9 @@
             // clearAnnotationsButton
             // 
             this.clearAnnotationsButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.clearAnnotationsButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(204)))), ((int)(((byte)(153)))), ((int)(((byte)(153)))));
-            this.clearAnnotationsButton.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(119)))), ((int)(((byte)(106)))), ((int)(((byte)(89)))));
-            this.clearAnnotationsButton.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(114)))), ((int)(((byte)(114)))));
+            this.clearAnnotationsButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(80)))), ((int)(((byte)(51)))), ((int)(((byte)(51)))));
+            this.clearAnnotationsButton.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(32)))), ((int)(((byte)(32)))), ((int)(((byte)(32)))));
+            this.clearAnnotationsButton.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(102)))), ((int)(((byte)(102)))));
             this.clearAnnotationsButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.clearAnnotationsButton.Location = new System.Drawing.Point(12, 385);
             this.clearAnnotationsButton.Name = "clearAnnotationsButton";
@@ -153,9 +154,9 @@
             // resetTimerButton
             // 
             this.resetTimerButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.resetTimerButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(204)))), ((int)(((byte)(181)))), ((int)(((byte)(153)))));
-            this.resetTimerButton.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(119)))), ((int)(((byte)(106)))), ((int)(((byte)(89)))));
-            this.resetTimerButton.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(136)))), ((int)(((byte)(114)))));
+            this.resetTimerButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(51)))), ((int)(((byte)(51)))), ((int)(((byte)(51)))));
+            this.resetTimerButton.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(80)))), ((int)(((byte)(80)))), ((int)(((byte)(80)))));
+            this.resetTimerButton.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(102)))), ((int)(((byte)(102)))), ((int)(((byte)(102)))));
             this.resetTimerButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.resetTimerButton.Location = new System.Drawing.Point(220, 298);
             this.resetTimerButton.Name = "resetTimerButton";
@@ -168,9 +169,9 @@
             // plusTenButton
             // 
             this.plusTenButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.plusTenButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(204)))), ((int)(((byte)(181)))), ((int)(((byte)(153)))));
-            this.plusTenButton.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(119)))), ((int)(((byte)(106)))), ((int)(((byte)(89)))));
-            this.plusTenButton.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(136)))), ((int)(((byte)(114)))));
+            this.plusTenButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(51)))), ((int)(((byte)(51)))), ((int)(((byte)(51)))));
+            this.plusTenButton.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(80)))), ((int)(((byte)(80)))), ((int)(((byte)(80)))));
+            this.plusTenButton.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(102)))), ((int)(((byte)(102)))), ((int)(((byte)(102)))));
             this.plusTenButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.plusTenButton.Location = new System.Drawing.Point(180, 298);
             this.plusTenButton.Name = "plusTenButton";
@@ -183,9 +184,9 @@
             // plusOneButton
             // 
             this.plusOneButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.plusOneButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(204)))), ((int)(((byte)(181)))), ((int)(((byte)(153)))));
-            this.plusOneButton.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(119)))), ((int)(((byte)(106)))), ((int)(((byte)(89)))));
-            this.plusOneButton.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(136)))), ((int)(((byte)(114)))));
+            this.plusOneButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(51)))), ((int)(((byte)(51)))), ((int)(((byte)(51)))));
+            this.plusOneButton.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(80)))), ((int)(((byte)(80)))), ((int)(((byte)(80)))));
+            this.plusOneButton.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(102)))), ((int)(((byte)(102)))), ((int)(((byte)(102)))));
             this.plusOneButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.plusOneButton.Location = new System.Drawing.Point(140, 298);
             this.plusOneButton.Name = "plusOneButton";
@@ -195,39 +196,41 @@
             this.plusOneButton.UseVisualStyleBackColor = false;
             this.plusOneButton.Click += new System.EventHandler(this.plusOneOrTenButton_Click);
             // 
-            // button1
-            // 
-            this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.button1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(204)))), ((int)(((byte)(153)))), ((int)(((byte)(153)))));
-            this.button1.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(119)))), ((int)(((byte)(106)))), ((int)(((byte)(89)))));
-            this.button1.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(114)))), ((int)(((byte)(114)))));
-            this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.button1.Location = new System.Drawing.Point(257, 398);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(23, 23);
-            this.button1.TabIndex = 14;
-            this.button1.Text = "×";
-            this.button1.UseVisualStyleBackColor = false;
-            this.button1.Click += new System.EventHandler(this.closeButton_Click);
-            // 
             // mapPictureBox
             // 
-            this.mapPictureBox.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this.mapPictureBox.BackColor = System.Drawing.Color.Black;
+            this.mapPictureBox.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.mapPictureBox.DrawDistancesEnabled = false;
             this.mapPictureBox.Location = new System.Drawing.Point(0, 0);
+            this.mapPictureBox.Margin = new System.Windows.Forms.Padding(0);
             this.mapPictureBox.Name = "mapPictureBox";
-            this.mapPictureBox.SelectedLocation = new System.Drawing.Point(0, 0);
+            this.mapPictureBox.SelectedLocation = new System.Drawing.Point(-1, -1);
             this.mapPictureBox.Size = new System.Drawing.Size(280, 280);
             this.mapPictureBox.TabIndex = 1;
             this.mapPictureBox.TabStop = false;
             this.mapPictureBox.MouseDown += new System.Windows.Forms.MouseEventHandler(this.mapPictureBox_MouseDown);
             // 
+            // tableLayoutPanel1
+            // 
+            this.tableLayoutPanel1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tableLayoutPanel1.BackColor = System.Drawing.Color.Black;
+            this.tableLayoutPanel1.ColumnCount = 1;
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel1.Controls.Add(this.mapPictureBox, 0, 0);
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
+            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
+            this.tableLayoutPanel1.RowCount = 1;
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(280, 280);
+            this.tableLayoutPanel1.TabIndex = 15;
+            // 
             // Form1
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
+            this.BackColor = System.Drawing.Color.Black;
             this.ClientSize = new System.Drawing.Size(280, 422);
-            this.Controls.Add(this.button1);
+            this.Controls.Add(this.tableLayoutPanel1);
             this.Controls.Add(this.plusOneButton);
             this.Controls.Add(this.plusTenButton);
             this.Controls.Add(this.resetTimerButton);
@@ -238,18 +241,18 @@
             this.Controls.Add(this.saveMapButton);
             this.Controls.Add(this.dataLabel);
             this.Controls.Add(this.calibrateButton);
-            this.Controls.Add(this.mapPictureBox);
             this.DoubleBuffered = true;
             this.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+            this.ForeColor = System.Drawing.Color.White;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.KeyPreview = true;
-            this.MinimumSize = new System.Drawing.Size(280, 422);
+            this.MinimumSize = new System.Drawing.Size(296, 461);
             this.Name = "Form1";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Dungeons";
             this.TopMost = true;
             ((System.ComponentModel.ISupportInitialize)(this.mapPictureBox)).EndInit();
+            this.tableLayoutPanel1.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -269,7 +272,7 @@
         private System.Windows.Forms.Button plusTenButton;
         private System.Windows.Forms.Button plusOneButton;
         private MapPictureBox mapPictureBox;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
     }
 }
 
