@@ -5,6 +5,8 @@ VisualStudioVersion = 15.0.26206.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dungeons", "Dungeons\Dungeons.csproj", "{8C8F7365-C66A-4B1F-A5B6-40512FCCE94D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MapGenerator", "MapGenerator\MapGenerator.csproj", "{C10D5CEF-EC68-4338-B003-063D1BB46091}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,8 +17,15 @@ Global
 		{8C8F7365-C66A-4B1F-A5B6-40512FCCE94D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8C8F7365-C66A-4B1F-A5B6-40512FCCE94D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8C8F7365-C66A-4B1F-A5B6-40512FCCE94D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C10D5CEF-EC68-4338-B003-063D1BB46091}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C10D5CEF-EC68-4338-B003-063D1BB46091}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C10D5CEF-EC68-4338-B003-063D1BB46091}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C10D5CEF-EC68-4338-B003-063D1BB46091}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {382CF188-D077-4B3E-AF4F-0FD9DF17CA9A}
 	EndGlobalSection
 EndGlobal

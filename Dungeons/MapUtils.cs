@@ -10,30 +10,29 @@ namespace Dungeons
         public const int RoomSize = 32;
 
         public static readonly Point NotFound = new Point(-1, -1);
-
-        private static readonly Bitmap[] Rooms =
-        {
-            Properties.Resources.RoomN,
-            Properties.Resources.RoomS,
-            Properties.Resources.RoomSN,
-            Properties.Resources.RoomE,
-            Properties.Resources.RoomEN,
-            Properties.Resources.RoomES,
-            Properties.Resources.RoomESN,
-            Properties.Resources.RoomW,
-            Properties.Resources.RoomWN,
-            Properties.Resources.RoomWS,
-            Properties.Resources.RoomWSN,
-            Properties.Resources.RoomWE,
-            Properties.Resources.RoomWEN,
-            Properties.Resources.RoomWES,
-            Properties.Resources.RoomWESN
-        };
-
+        private static Bitmap[] Rooms;
         private static List<Color[]> signatures = new List<Color[]>();
-        
-        public static void InitializeSignatures()
+
+        public static void InitializeRoomsAndSignatures()
         {
+            Rooms = new[] {
+                Properties.Resources.RoomN,
+                Properties.Resources.RoomS,
+                Properties.Resources.RoomSN,
+                Properties.Resources.RoomE,
+                Properties.Resources.RoomEN,
+                Properties.Resources.RoomES,
+                Properties.Resources.RoomESN,
+                Properties.Resources.RoomW,
+                Properties.Resources.RoomWN,
+                Properties.Resources.RoomWS,
+                Properties.Resources.RoomWSN,
+                Properties.Resources.RoomWE,
+                Properties.Resources.RoomWEN,
+                Properties.Resources.RoomWES,
+                Properties.Resources.RoomWESN
+            };
+
             foreach (var room in Rooms)
             {
                 signatures.Add(ComputeSignature(room));
@@ -42,7 +41,7 @@ namespace Dungeons
 
         public static bool IsOpened(RoomType t)
         {
-            return t > RoomType.NotOpened;
+            return t > RoomType.None;
         }
 
         public static Color[] ComputeSignature(Bitmap bmp, int offX = 0, int offY = 0)
@@ -59,11 +58,11 @@ namespace Dungeons
         public static RoomType GetRoomType(Bitmap bmp, int offX = 0, int offY = 0)
         {
             if (bmp == null)
-                return RoomType.NotOpened;
+                return RoomType.None;
             var sig = ComputeSignature(bmp, offX, offY);
             var index = signatures.FindIndex(arr => Enumerable.SequenceEqual(sig, arr));
             if (index == -1)
-                return RoomType.NotOpened;
+                return RoomType.None;
 
             var result = (RoomType)(index + 1);
             if (bmp.GetPixel(offX + 19, offY + 18) == Color.FromArgb(150, 145, 105))

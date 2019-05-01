@@ -148,7 +148,7 @@ namespace Dungeons
                         else if (MapUtils.IsBoss(roomType))
                             BossLocation = new Point(x, y);
                     }
-                    if (MapUtils.IsLeaf(roomType))
+                    if (MapUtils.IsLeaf(roomType) && !MapUtils.IsBoss(roomType) && !MapUtils.IsHome(roomType))
                         ++LeafCount;
                 }
             }
@@ -197,7 +197,7 @@ namespace Dungeons
 
             e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
 
-            DrawSelectionRectangle(e);
+            //DrawSelectionRectangle(e);
             DrawGridLines(e);
             DrawPathLines(e);
             DrawAnnotations(e);
@@ -208,7 +208,7 @@ namespace Dungeons
                 DrawDistances(e);
             }
 
-            DrawRoomCount(e);
+            //DrawRoomCount(e);
         }
 
         private void DrawRoomCount(PaintEventArgs e)

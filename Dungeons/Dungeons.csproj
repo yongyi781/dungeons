@@ -8,10 +8,25 @@
     <OutputType>WinExe</OutputType>
     <RootNamespace>Dungeons</RootNamespace>
     <AssemblyName>Dungeons</AssemblyName>
-    <TargetFrameworkVersion>v4.7</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <TargetFrameworkProfile />
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -26,7 +41,7 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugType>pdbonly</DebugType>
+    <DebugType>none</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
@@ -36,6 +51,10 @@
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>ring-of-kinship.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup />
+  <PropertyGroup>
+    <ApplicationManifest>Properties\app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -51,7 +70,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Field.cs" />
     <Compile Include="FloorSize.cs" />
+    <Compile Include="FontType.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -77,6 +98,13 @@
     </Compile>
     <Compile Include="RoomType.cs" />
     <Compile Include="UnsafeBitmap.cs" />
+    <Compile Include="Winterface.cs" />
+    <Compile Include="WinterfaceWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="WinterfaceWindow.Designer.cs">
+      <DependentUpon>WinterfaceWindow.cs</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>
@@ -84,16 +112,40 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <EmbeddedResource Include="WinterfaceWindow.resx">
+      <DependentUpon>WinterfaceWindow.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="Properties\app.manifest" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\Base0.png" />
+    <None Include="Resources\Base1.png" />
+    <None Include="Resources\base2.png" />
+    <None Include="Resources\Base3.png" />
+    <None Include="Resources\Base4.png" />
+    <None Include="Resources\Base5.png" />
+    <None Include="Resources\Base6.png" />
+    <None Include="Resources\Base7.png" />
+    <None Include="Resources\Base8.png" />
+    <None Include="Resources\Base9.png" />
     <Content Include="Resources\grid.png" />
+    <None Include="Resources\Large0.png" />
+    <None Include="Resources\Large1.png" />
+    <None Include="Resources\Large2.png" />
+    <None Include="Resources\Large3.png" />
+    <None Include="Resources\Large4.png" />
+    <None Include="Resources\Large5.png" />
+    <None Include="Resources\Large6.png" />
+    <None Include="Resources\Large7.png" />
+    <None Include="Resources\Large8.png" />
+    <None Include="Resources\Large9.png" />
     <Content Include="Resources\map-marker.png" />
     <None Include="Resources\e.png" />
     <None Include="Resources\es.png" />
@@ -111,9 +163,35 @@
     <None Include="Resources\wesn.png" />
     <None Include="Resources\ws.png" />
     <None Include="Resources\wsn.png" />
+    <None Include="Resources\Small0.png" />
+    <None Include="Resources\Small1.png" />
+    <None Include="Resources\Small2.png" />
+    <None Include="Resources\Small3.png" />
+    <None Include="Resources\Small4.png" />
+    <None Include="Resources\Small5.png" />
+    <None Include="Resources\Small6.png" />
+    <None Include="Resources\Small7.png" />
+    <None Include="Resources\Small8.png" />
+    <None Include="Resources\Small9.png" />
+    <None Include="Resources\SmallColon.png" />
+    <None Include="Resources\SmallMinus.png" />
+    <None Include="Resources\SmallPlus.png" />
+    <None Include="Resources\winterfacemarker.png" />
     <Content Include="ring-of-kinship-32x32.ico" />
     <Content Include="ring-of-kinship.ico" />
     <Content Include="ring-of-kinship.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.7.2">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4.7.2 %28x86 and x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -5,7 +5,7 @@ namespace Dungeons
     [Flags]
     public enum RoomType
     {
-        NotOpened,
+        None,
         N = 1,
         S = 2,
         E = 4,

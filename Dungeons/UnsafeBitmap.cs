@@ -7,7 +7,7 @@ namespace Dungeons
     /// <summary>
     /// A wrapper around bitmap for pixel-based access. The corresponding bitmap cannot be modified while an instance of this class has not been disposed.
     /// </summary>
-    public class UnsafeBitmap : IDisposable
+    public sealed class UnsafeBitmap : IDisposable
     {
         public UnsafeBitmap(Bitmap bitmap, ImageLockMode flags)
         {
@@ -22,11 +22,14 @@ namespace Dungeons
         public int Width { get; }
         public int Height { get; }
 
-        public unsafe Color this[int x, int y] => Color.FromArgb(((int*)BitmapData.Scan0)[BitmapData.Width * y + x]);
+        public unsafe int this[int x, int y] => ((int*)BitmapData.Scan0)[BitmapData.Width * y + x];
+
+        public unsafe Color GetPixel(int x, int y) => Color.FromArgb(((int*)BitmapData.Scan0)[BitmapData.Width * y + x]);
 
         public void Dispose()
         {
             Bitmap.UnlockBits(BitmapData);
+            GC.SuppressFinalize(this);
         }
 
         public static Point FindMatch(Bitmap bitmap, Bitmap template)
@@ -90,6 +93,25 @@ namespace Dungeons
                     if (this[x + offX, y + offY] != template[x, y])
                         return false;
             return true;
+        }
+
+        public unsafe bool IsMatchAlphaColor(UnsafeBitmap template, int offX, int offY, Color color)
+        {
+            for (int y = 0; y < template.Height; y++)
+                for (int x = 0; x < template.Width; x++)
+                    if ((template.GetPixel(x, y).A == 255 && GetPixel(x + offX, y + offY) != color) ||
+                        (template.GetPixel(x, y).A != 255) && GetPixel(x + offX, y + offY) == color)
+                        return false;
+            return true;
+        }
+
+        public unsafe bool IsMatchAlphaColor(Bitmap template, int offX, int offY, Color color)
+        {
+            if (template == null)
+                return false;
+
+            using (var u = new UnsafeBitmap(template, ImageLockMode.ReadOnly))
+                return IsMatchAlphaColor(u, offX, offY, color);
         }
     }
 }
