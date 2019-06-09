@@ -68,7 +68,7 @@
             // timer
             // 
             this.timer.Enabled = true;
-            this.timer.Interval = 200;
+            this.timer.Interval = 600;
             this.timer.Tick += new System.EventHandler(this.timer_Tick);
             // 
             // dataLabel
@@ -134,7 +134,7 @@
             this.topMostCheckBox.AutoSize = true;
             this.topMostCheckBox.Location = new System.Drawing.Point(140, 389);
             this.topMostCheckBox.Name = "topMostCheckBox";
-            this.topMostCheckBox.Size = new System.Drawing.Size(78, 19);
+            this.topMostCheckBox.Size = new System.Drawing.Size(77, 19);
             this.topMostCheckBox.TabIndex = 11;
             this.topMostCheckBox.Text = "Top-most";
             this.topMostCheckBox.UseVisualStyleBackColor = true;

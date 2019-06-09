@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -11,6 +12,9 @@ namespace Dungeons
     {
         const int WM_NCLBUTTONDOWN = 0xA1;
         const int HT_CAPTION = 0x2;
+
+        const int SmallMedMapLocationOffsetX = -140;
+
         private Point lastHomeLocation = MapUtils.NotFound;
         private int lastRoomCount = 0;
         private readonly WinterfaceWindow winterfaceWindow;
@@ -25,8 +29,6 @@ namespace Dungeons
             Keys.Down
         };
 
-        private Bitmap mapMarker;
-
         public Form1()
         {
             InitializeComponent();
@@ -35,7 +37,6 @@ namespace Dungeons
             FontType.InitializeFonts();
             mapPictureBox.FloorSize = FloorSize;
             winterfaceWindow = new WinterfaceWindow(this);
-            mapMarker = Properties.Resources.MapMarker;
         }
 
         public DateTimeOffset FloorStartTime { get; private set; } = DateTimeOffset.MinValue;
@@ -96,7 +97,7 @@ namespace Dungeons
             winterfaceWindow.Show();
         }
 
-        private Point FindMap()
+        private (Point, FloorSize) FindMap()
         {
             var size = SystemInformation.VirtualScreen.Size;
             using (var bmp = new Bitmap(size.Width, size.Height))
@@ -109,15 +110,23 @@ namespace Dungeons
                 // Search for map marker
                 var desktopBounds = DesktopBounds;
                 desktopBounds.Offset(-SystemInformation.VirtualScreen.X, -SystemInformation.VirtualScreen.Y);
-                var match = UnsafeBitmap.FindMatch(bmp, mapMarker, p => !desktopBounds.Contains(p));
-                match.Offset(SystemInformation.VirtualScreen.X, SystemInformation.VirtualScreen.Y);
-                return match;
+                foreach (var floorSize in FloorSize.Sizes)
+                {
+                    var match = UnsafeBitmap.FindMatch(bmp, floorSize.MapMarker, p => !desktopBounds.Contains(p));
+                    if (match != MapUtils.NotFound)
+                    {
+                        match.Offset(SystemInformation.VirtualScreen.X, SystemInformation.VirtualScreen.Y);
+                        return (match, floorSize);
+                    }
+                }
             }
+
+            return (MapUtils.NotFound, FloorSize.Small);
         }
 
         private void UpdateMap()
         {
-            foreach (var floorSize in new FloorSize[] { FloorSize, FloorSize.Large, FloorSize.Medium, FloorSize.Small })
+            foreach (var floorSize in FloorSize.Sizes)
             {
                 if (Properties.Settings.Default.MapLocation != MapUtils.NotFound)
                 {
@@ -126,14 +135,14 @@ namespace Dungeons
                     {
                         try
                         {
-                            g.CopyFromScreen(Properties.Settings.Default.MapLocation.X - floorSize.MarkerLocation.X, Properties.Settings.Default.MapLocation.Y - floorSize.MarkerLocation.Y, 0, 0, bmp.Size);
+                            g.CopyFromScreen(Properties.Settings.Default.MapLocation.X, Properties.Settings.Default.MapLocation.Y, 0, 0, bmp.Size);
                         }
                         catch (Win32Exception)
                         {
                             return;
                         }
                     }
-                    if (UnsafeBitmap.IsMatch(bmp, mapMarker, floorSize.MarkerLocation.X, floorSize.MarkerLocation.Y))
+                    if (UnsafeBitmap.IsMatch(bmp, floorSize.MapMarker, 0, 0))
                     {
                         FloorSize = floorSize;
                         timer.Start();
@@ -152,20 +161,15 @@ namespace Dungeons
                         {
                             FloorStartTime = DateTimeOffset.Now.AddSeconds(-1);
                         }
-                        if (mapPictureBox.OpenedRoomCount > 0)
-                        {
-                            // Found a floor size that aligns correctly with the rooms, this must be the right one.
-                            lastRoomCount = mapPictureBox.OpenedRoomCount;
-                            if (mapPictureBox.HomeLocation != MapUtils.NotFound)
-                                lastHomeLocation = mapPictureBox.HomeLocation;
-                            break;
-                        }
+                        // Found a floor size that aligns correctly with the rooms, this must be the right one.
+                        lastRoomCount = mapPictureBox.OpenedRoomCount;
+                        if (mapPictureBox.HomeLocation != MapUtils.NotFound)
+                            lastHomeLocation = mapPictureBox.HomeLocation;
+                        break;
                     }
                     else
                     {
-                        // No map marker was even found, skip trying other floor sizes.
                         bmp.Dispose();
-                        break;
                     }
                 }
             }
@@ -186,9 +190,10 @@ namespace Dungeons
 
         private void calibrateButton_Click(object sender, EventArgs e)
         {
-            var mapLocation = FindMap();
+            var (mapLocation, _) = FindMap();
             if (mapLocation != MapUtils.NotFound)
             {
+                Debug.WriteLine(mapLocation);
                 Properties.Settings.Default.MapLocation = mapLocation;
                 Properties.Settings.Default.Save();
                 UpdateMap();

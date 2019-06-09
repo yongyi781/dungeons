@@ -216,11 +216,11 @@
             this.saveImagesCheckBox.Checked = true;
             this.saveImagesCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
             this.saveImagesCheckBox.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.saveImagesCheckBox.Location = new System.Drawing.Point(336, 3);
+            this.saveImagesCheckBox.Location = new System.Drawing.Point(352, 3);
             this.saveImagesCheckBox.Name = "saveImagesCheckBox";
-            this.saveImagesCheckBox.Size = new System.Drawing.Size(205, 20);
+            this.saveImagesCheckBox.Size = new System.Drawing.Size(147, 20);
             this.saveImagesCheckBox.TabIndex = 3;
-            this.saveImagesCheckBox.Text = "Save &winterface and map images";
+            this.saveImagesCheckBox.Text = "Save captured images";
             this.saveImagesCheckBox.UseVisualStyleBackColor = true;
             // 
             // captureButton
@@ -228,9 +228,9 @@
             this.captureButton.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.captureButton.Location = new System.Drawing.Point(254, 1);
             this.captureButton.Name = "captureButton";
-            this.captureButton.Size = new System.Drawing.Size(75, 22);
+            this.captureButton.Size = new System.Drawing.Size(92, 22);
             this.captureButton.TabIndex = 2;
-            this.captureButton.Text = "&Capture";
+            this.captureButton.Text = "&Capture (F11)";
             this.captureButton.UseVisualStyleBackColor = true;
             this.captureButton.Click += new System.EventHandler(this.CaptureButton_Click);
             // 
@@ -272,7 +272,7 @@
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "WinterfaceWindow";
-            this.ShowInTaskbar = false;
+            this.ShowIcon = false;
             this.Text = "Winterface Reader";
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.panel1.ResumeLayout(false);

@@ -146,7 +146,7 @@
     <None Include="Resources\Large7.png" />
     <None Include="Resources\Large8.png" />
     <None Include="Resources\Large9.png" />
-    <Content Include="Resources\map-marker.png" />
+    <Content Include="Resources\outline-large.png" />
     <None Include="Resources\e.png" />
     <None Include="Resources\es.png" />
     <None Include="Resources\esn.png" />
@@ -177,6 +177,8 @@
     <None Include="Resources\SmallMinus.png" />
     <None Include="Resources\SmallPlus.png" />
     <None Include="Resources\winterfacemarker.png" />
+    <Content Include="Resources\outline-medium.png" />
+    <Content Include="Resources\outline-small.png" />
     <Content Include="ring-of-kinship-32x32.ico" />
     <Content Include="ring-of-kinship.ico" />
     <Content Include="ring-of-kinship.png" />

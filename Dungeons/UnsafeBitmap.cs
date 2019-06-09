@@ -90,7 +90,7 @@ namespace Dungeons
         {
             for (int y = 0; y < template.Height; y++)
                 for (int x = 0; x < template.Width; x++)
-                    if (this[x + offX, y + offY] != template[x, y])
+                    if (this[x + offX, y + offY] != template[x, y] && (template[x, y] & 0xFF000000) != 0)
                         return false;
             return true;
         }

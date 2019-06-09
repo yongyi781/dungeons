@@ -199,7 +199,7 @@ namespace Dungeons
 
             //DrawSelectionRectangle(e);
             DrawGridLines(e);
-            DrawPathLines(e);
+            //DrawPathLines(e);
             DrawAnnotations(e);
 
             // Draw distances
