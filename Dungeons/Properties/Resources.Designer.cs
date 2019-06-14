@@ -273,16 +273,6 @@ namespace Dungeons.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap MapMarker {
-            get {
-                object obj = ResourceManager.GetObject("MapMarker", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
         internal static System.Drawing.Bitmap OutlineLarge {
             get {
                 object obj = ResourceManager.GetObject("OutlineLarge", resourceCulture);

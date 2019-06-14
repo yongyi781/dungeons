@@ -97,6 +97,14 @@ namespace Dungeons
 
                 dict = ParseBitmap(bmp, saveImagesCheckBox.Checked);
             }
+            if (dict == null)
+                return null;
+
+            if (dict["DifficultyMod"] == "+0")
+            {
+                // Change to solo if it's a 1:1
+                soloColumnsRadioButton.Checked = true;
+            }
             return AddRow(dict);
         }
 
