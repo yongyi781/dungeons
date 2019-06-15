@@ -104,6 +104,7 @@ namespace Dungeons
             {
                 // Change to solo if it's a 1:1
                 soloColumnsRadioButton.Checked = true;
+                dict["FloorSize"] = "Large2";
             }
             return AddRow(dict);
         }

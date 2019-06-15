@@ -10,6 +10,8 @@ namespace Dungeons
         public const int RoomSize = 32;
 
         public static readonly Point NotFound = new Point(-1, -1);
+        public static readonly Color MapEdgeColor = Color.FromArgb(153, 133, 99);
+
         private static Bitmap[] Rooms;
         private static List<Color[]> signatures = new List<Color[]>();
 
@@ -73,6 +75,25 @@ namespace Dungeons
             return result;
         }
 
+        public static bool IsValidMap(Bitmap bmp)
+        {
+            // Test if edges are at most 2 away from the map edge color
+            using (var u = new UnsafeBitmap(bmp))
+            {
+                for (int x = 0; x < bmp.Width; x++)
+                {
+                    if (ColorDistance(u.GetPixel(x, 0), MapEdgeColor) > 3 || ColorDistance(u.GetPixel(x, u.Height - 1), MapEdgeColor) > 3)
+                        return false;
+                }
+                for (int y = 0; y < bmp.Height; y++)
+                {
+                    if (ColorDistance(u.GetPixel(0, y), MapEdgeColor) > 3 || ColorDistance(u.GetPixel(u.Width - 1, y), MapEdgeColor) > 3)
+                        return false;
+                }
+            }
+            return true;
+        }
+
         public static bool IsLeaf(RoomType roomType)
         {
             var type = roomType & (RoomType.W | RoomType.E | RoomType.S | RoomType.N);
@@ -87,6 +108,14 @@ namespace Dungeons
         public static bool IsBoss(RoomType roomType)
         {
             return (roomType & RoomType.Boss) != 0;
+        }
+
+        private static int ColorDistance(Color c1, Color c2)
+        {
+            int r = c1.R - c2.R,
+                g = c1.G - c2.G,
+                b = c1.B - c2.B;
+            return r * r + g * g + b * b;
         }
     }
 }

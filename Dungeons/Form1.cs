@@ -142,7 +142,7 @@ namespace Dungeons
                             return;
                         }
                     }
-                    if (UnsafeBitmap.IsMatch(bmp, floorSize.MapMarker, 0, 0))
+                    if (MapUtils.IsValidMap(bmp))
                     {
                         FloorSize = floorSize;
                         timer.Start();

@@ -9,7 +9,7 @@ namespace Dungeons
     /// </summary>
     public sealed class UnsafeBitmap : IDisposable
     {
-        public UnsafeBitmap(Bitmap bitmap, ImageLockMode flags)
+        public UnsafeBitmap(Bitmap bitmap, ImageLockMode flags = ImageLockMode.ReadOnly)
         {
             Bitmap = bitmap;
             BitmapData = Bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), flags, PixelFormat.Format32bppArgb);
@@ -34,31 +34,31 @@ namespace Dungeons
 
         public static Point FindMatch(Bitmap bitmap, Bitmap template)
         {
-            using (var u = new UnsafeBitmap(bitmap, ImageLockMode.ReadOnly))
+            using (var u = new UnsafeBitmap(bitmap))
                 return u.FindMatch(template);
         }
 
         public static Point FindMatch(Bitmap bitmap, Bitmap template, Predicate<Point> condition)
         {
-            using (var u = new UnsafeBitmap(bitmap, ImageLockMode.ReadOnly))
+            using (var u = new UnsafeBitmap(bitmap))
                 return u.FindMatch(template, condition);
         }
 
         public static bool IsMatch(Bitmap bitmap, Bitmap template, int offX, int offY)
         {
-            using (var u = new UnsafeBitmap(bitmap, ImageLockMode.ReadOnly))
+            using (var u = new UnsafeBitmap(bitmap))
                 return u.IsMatch(template, offX, offY);
         }
 
         public Point FindMatch(Bitmap template)
         {
-            using (var u = new UnsafeBitmap(template, ImageLockMode.ReadOnly))
+            using (var u = new UnsafeBitmap(template))
                 return FindMatch(u);
         }
 
         public Point FindMatch(Bitmap template, Predicate<Point> condition)
         {
-            using (var u = new UnsafeBitmap(template, ImageLockMode.ReadOnly))
+            using (var u = new UnsafeBitmap(template))
                 return FindMatch(u, condition);
         }
 
@@ -95,6 +95,10 @@ namespace Dungeons
             return true;
         }
 
+        /// <summary>
+        /// Returns true if the template matches the image at the corresponding offset; otherwise false.
+        /// Transparent pixels in the template (alpha < 255) are required to be a different color in order for it to match. 
+        /// </summary>
         public unsafe bool IsMatchAlphaColor(UnsafeBitmap template, int offX, int offY, Color color)
         {
             for (int y = 0; y < template.Height; y++)
@@ -110,7 +114,7 @@ namespace Dungeons
             if (template == null)
                 return false;
 
-            using (var u = new UnsafeBitmap(template, ImageLockMode.ReadOnly))
+            using (var u = new UnsafeBitmap(template))
                 return IsMatchAlphaColor(u, offX, offY, color);
         }
     }
