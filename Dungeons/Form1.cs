@@ -13,8 +13,6 @@ namespace Dungeons
         const int WM_NCLBUTTONDOWN = 0xA1;
         const int HT_CAPTION = 0x2;
 
-        const int SmallMedMapLocationOffsetX = -140;
-
         private Point lastHomeLocation = MapUtils.NotFound;
         private int lastRoomCount = 0;
         private readonly WinterfaceWindow winterfaceWindow;
@@ -112,7 +110,7 @@ namespace Dungeons
                 desktopBounds.Offset(-SystemInformation.VirtualScreen.X, -SystemInformation.VirtualScreen.Y);
                 foreach (var floorSize in FloorSize.Sizes)
                 {
-                    var match = UnsafeBitmap.FindMatch(bmp, floorSize.MapMarker, p => !desktopBounds.Contains(p));
+                    var match = UnsafeBitmap.FindMatch(bmp, floorSize.MapMarker, p => !desktopBounds.Contains(p), MapUtils.MapEdgeColorTolerance);
                     if (match != MapUtils.NotFound)
                     {
                         match.Offset(SystemInformation.VirtualScreen.X, SystemInformation.VirtualScreen.Y);

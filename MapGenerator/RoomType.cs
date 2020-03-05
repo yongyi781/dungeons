@@ -1,10 +1,11 @@
 ﻿using System;
 
-namespace Dungeons
+namespace MapGenerator
 {
     [Flags]
     public enum RoomType
     {
+        Gap = -1,
         NotOpened,
         N = 1,
         S = 2,

@@ -75,7 +75,7 @@
             // 
             this.dataLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.dataLabel.AutoSize = true;
-            this.dataLabel.Location = new System.Drawing.Point(9, 329);
+            this.dataLabel.Location = new System.Drawing.Point(9, 283);
             this.dataLabel.Name = "dataLabel";
             this.dataLabel.Size = new System.Drawing.Size(0, 15);
             this.dataLabel.TabIndex = 6;
@@ -144,7 +144,7 @@
             // 
             this.timerLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.timerLabel.Font = new System.Drawing.Font("Georgia", 12F);
-            this.timerLabel.Location = new System.Drawing.Point(76, 300);
+            this.timerLabel.Location = new System.Drawing.Point(76, 325);
             this.timerLabel.Name = "timerLabel";
             this.timerLabel.Size = new System.Drawing.Size(58, 18);
             this.timerLabel.TabIndex = 2;
@@ -158,7 +158,7 @@
             this.resetTimerButton.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(80)))), ((int)(((byte)(80)))), ((int)(((byte)(80)))));
             this.resetTimerButton.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(102)))), ((int)(((byte)(102)))), ((int)(((byte)(102)))));
             this.resetTimerButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.resetTimerButton.Location = new System.Drawing.Point(220, 298);
+            this.resetTimerButton.Location = new System.Drawing.Point(220, 323);
             this.resetTimerButton.Name = "resetTimerButton";
             this.resetTimerButton.Size = new System.Drawing.Size(48, 25);
             this.resetTimerButton.TabIndex = 5;
@@ -173,7 +173,7 @@
             this.plusTenButton.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(80)))), ((int)(((byte)(80)))), ((int)(((byte)(80)))));
             this.plusTenButton.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(102)))), ((int)(((byte)(102)))), ((int)(((byte)(102)))));
             this.plusTenButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.plusTenButton.Location = new System.Drawing.Point(180, 298);
+            this.plusTenButton.Location = new System.Drawing.Point(180, 323);
             this.plusTenButton.Name = "plusTenButton";
             this.plusTenButton.Size = new System.Drawing.Size(37, 25);
             this.plusTenButton.TabIndex = 4;
@@ -188,7 +188,7 @@
             this.plusOneButton.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(80)))), ((int)(((byte)(80)))), ((int)(((byte)(80)))));
             this.plusOneButton.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(102)))), ((int)(((byte)(102)))), ((int)(((byte)(102)))));
             this.plusOneButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.plusOneButton.Location = new System.Drawing.Point(140, 298);
+            this.plusOneButton.Location = new System.Drawing.Point(140, 323);
             this.plusOneButton.Name = "plusOneButton";
             this.plusOneButton.Size = new System.Drawing.Size(37, 25);
             this.plusOneButton.TabIndex = 3;
@@ -232,7 +232,7 @@
             this.minusTenButton.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(80)))), ((int)(((byte)(80)))), ((int)(((byte)(80)))));
             this.minusTenButton.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(102)))), ((int)(((byte)(102)))), ((int)(((byte)(102)))));
             this.minusTenButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.minusTenButton.Location = new System.Drawing.Point(33, 298);
+            this.minusTenButton.Location = new System.Drawing.Point(33, 323);
             this.minusTenButton.Name = "minusTenButton";
             this.minusTenButton.Size = new System.Drawing.Size(37, 25);
             this.minusTenButton.TabIndex = 1;

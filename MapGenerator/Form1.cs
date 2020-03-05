@@ -1,10 +1,12 @@
-﻿using Dungeons;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -13,83 +15,24 @@ namespace MapGenerator
 {
     public partial class Form1 : Form
     {
-        private static readonly Point Invalid = new Point(-1, -1);
-        private static readonly Size[] offsets = { new Size(0, 1), new Size(0, -1), new Size(1, 0), new Size(-1, 0) };
-        private static readonly Dictionary<Size, RoomType> offsetRoomTypeDict = new Dictionary<Size, RoomType>
-        {
-            [new Size(0, 1)] = RoomType.N,
-            [new Size(0, -1)] = RoomType.S,
-            [new Size(1, 0)] = RoomType.E,
-            [new Size(-1, 0)] = RoomType.W,
-        };
+        private const int WIDTH = 8;
+        private const int HEIGHT = 8;
 
-        private Brush HomeBrush;
+        private Map map;
 
         public Form1()
         {
             InitializeComponent();
-
-            HomeBrush = Brushes.White;
         }
 
-        private bool IsInRange(Point p) => p.X >= 0 && p.X < 8 && p.Y >= 0 && p.Y < 8;
-
-        private string GetRoomTypeResourceString(RoomType type)
-        {
-            if (type == RoomType.NotOpened)
-                return "NotOpened";
-
-            var str = "Room";
-            if ((type & RoomType.E) != 0)
-                str += "E";
-            if ((type & RoomType.N) != 0)
-                str += "N";
-            if ((type & RoomType.S) != 0)
-                str += "S";
-            if ((type & RoomType.W) != 0)
-                str += "W";
-            return str;
-        }
-
-        private Bitmap BuildMap(Point[,] parents, Point home)
-        {
-            var bmp = new Bitmap(32 * 8, 32 * 8);
-            var roomTypes = new RoomType[8, 8];
-            RoomType[] dirs = { RoomType.N, RoomType.S, RoomType.E, RoomType.W };
-            using (var g = Graphics.FromImage(bmp))
-            {
-                for (int y = 0; y < 8; y++)
-                {
-                    for (int x = 0; x < 8; x++)
-                    {
-                        var offset = new Size(parents[x, y].X - x, parents[x, y].Y - y);
-                        var roomType = RoomType.NotOpened;
-                        if (offsetRoomTypeDict.ContainsKey(offset))
-                            roomType |= offsetRoomTypeDict[offset];
-                        var p = new Point(x, y);
-                        for (int i = 0; i < 4; i++)
-                        {
-                            var p2 = p + offsets[i];
-                            if (IsInRange(p2) && parents[p2.X, p2.Y] == p)
-                                roomType |= dirs[i];
-                        }
-                        var roomBmp = (Bitmap)Properties.Resources.ResourceManager.GetObject(GetRoomTypeResourceString(roomType));
-                        g.DrawImage(roomBmp, x * 32, (7 - y) * 32, 32, 32);
-                    }
-                }
-                g.FillRectangle(HomeBrush, 32 * home.X + 13, 32 * (7 - home.Y) + 13, 6, 6);
-            }
-            return bmp;
-        }
-
-        private void generateButton_Click(object sender, EventArgs e)
+        private void Generate1()
         {
             var parents = new Point[8, 8];
             for (int y = 0; y < 8; y++)
             {
                 for (int x = 0; x < 8; x++)
                 {
-                    parents[x, y] = Invalid;
+                    parents[x, y] = MapUtils.Invalid;
                 }
             }
             var random = new Random();
@@ -99,28 +42,210 @@ namespace MapGenerator
             while (agenda.Count > 0)
             {
                 var curr = agenda.Dequeue();
-                var neighbors = (from d in offsets
+                var neighbors = (from d in MapUtils.Offsets
                                  let p = Point.Add(curr, d)
-                                 where IsInRange(p)
+                                 where MapUtils.IsInRange(p)
                                  select p).ToArray();
                 neighbors.Shuffle();
                 foreach (var n in neighbors)
                 {
-                    if (parents[n.X, n.Y] == Invalid && random.NextDouble() < (double)probabilityUpDown.Value)
+                    if (parents[n.X, n.Y] == MapUtils.Invalid && random.NextDouble() < (double)rcUpDown.Value)
                     {
                         parents[n.X, n.Y] = curr;
                         agenda.Enqueue(n);
                     }
                 }
             }
+        }
 
-            var bmp = BuildMap(parents, home);
+        private void Generate2(Direction[,] parents, Point baseLocation)
+        {
+            var random = new Random();
+            for (int y = 0; y < HEIGHT; y++)
+            {
+                for (int x = 0; x < WIDTH; x++)
+                {
+                    Direction dir = Direction.None;
+                    Point p2;
+                    int i = 0;
+                    do
+                    {
+                        dir = MapUtils.Directions[random.Next(MapUtils.Directions.Length)];
+                        p2 = MapUtils.Add(new Point(x, y), dir);
+                        ++i;
+                    } while (i < 100 && (!MapUtils.IsInRange(p2) || parents[p2.X, p2.Y] == MapUtils.Flip(dir)));
+                    parents[x, y] = dir;
+                }
+            }
+        }
+
+        // Busted: a path could trap itself.
+        private void Generate3(Direction[,] parents, Point baseLocation, Point bossLocation)
+        {
+            var r = new Random();
+            var pathIndex = new int[WIDTH, HEIGHT]; // 0: not visited, >0: visited
+            pathIndex[baseLocation.X, baseLocation.Y] = 1;
+            var agenda = (from y in Enumerable.Range(0, Height)
+                          from x in Enumerable.Range(0, Width)
+                          let p = new Point(x, y)
+                          where p != baseLocation && p != bossLocation
+                          select p).ToList();
+
+            ProcessPoint(1, bossLocation);
+            for (int i = 2; agenda.Count > 0; i++)
+            {
+                // Pick a random point and remove it
+                var p = agenda[r.Next(agenda.Count)];
+                ProcessPoint(i, p);
+            }
+
+            void ProcessPoint(int i, Point point)
+            {
+                for (var p = point; p != baseLocation; p = MapUtils.Add(p, parents[p.X, p.Y]))
+                {
+                    // Random walk until you hit base or a previous path.
+                    pathIndex[p.X, p.Y] = i;
+                    var validDirs = (from d in MapUtils.Directions
+                                     let p2 = MapUtils.Add(p, d)
+                                     where MapUtils.IsInRange(p2)
+                                     where pathIndex[p2.X, p2.Y] != i
+                                     select d).ToArray();
+                    if (validDirs.Length > 0)
+                        parents[p.X, p.Y] = validDirs[r.Next(validDirs.Length)];
+                    else
+                        break;
+                    agenda.Remove(p);
+                }
+            }
+        }
+
+        private void Generate4(Direction[,] parents, Point baseLocation)
+        {
+            var r = new Random();
+            var frontier = new List<Point>();
+            AddNeighbors(baseLocation);
+            while (frontier.Count > 0)
+            {
+                // Select random point in frontier and remove it
+                var p = frontier[r.Next(frontier.Count)];
+                frontier.Remove(p);
+                var validDirs = (from d in MapUtils.Directions
+                                 let p2 = p.Add(d)
+                                 where p2 == baseLocation || (MapUtils.IsInRange(p2) && !frontier.Contains(p2) && parents[p2.X, p2.Y] != Direction.None)
+                                 select d).ToArray();
+                parents[p.X, p.Y] = validDirs[r.Next(validDirs.Length)];
+                AddNeighbors(p);
+            }
+
+            void AddNeighbors(Point p)
+            {
+                foreach (var dir in MapUtils.Directions)
+                {
+                    var p2 = p.Add(dir);
+                    if (MapUtils.IsInRange(p2) && p2 != baseLocation && !frontier.Contains(p2) && parents[p2.X, p2.Y] == Direction.None)
+                        frontier.Add(p2);
+                }
+            }
+        }
+
+        // Sort by neighboring gaps
+        private void RemoveDeadEnds1()
+        {
+            var r = new Random();
+            List<Point> deadEnds = map.GetDeadEnds();
+
+            for (int i = 0; i < 64 - (int)rcUpDown.Value; i++)
+            {
+                deadEnds = map.GetDeadEnds();
+                deadEnds.Sort((a, b) => map.CountGapNeighbors(b) - map.CountGapNeighbors(a));
+                var minGapNeighbors = map.CountGapNeighbors(deadEnds[0]);
+                var myDeadEnds = (from d in deadEnds where map.CountGapNeighbors(d) == minGapNeighbors select d).ToList();
+                var index = r.Next(myDeadEnds.Count);
+                map.RemoveDeadEnd(myDeadEnds[index]);
+            }
+        }
+
+        // Select dead ends at random
+        private void RemoveDeadEnds2()
+        {
+            for (int i = 0; i < 64 - (int)rcUpDown.Value; i++)
+            {
+                RemoveDeadEnd();
+            }
+        }
+
+        // Select current dead ends, only recompute if dead ends reaches 0
+        private void RemoveDeadEnds3()
+        {
+            var r = new Random();
+            var deadEnds = map.GetDeadEnds();
+
+            for (int i = 0; i < 64 - (int)rcUpDown.Value; i++)
+            {
+                var index = r.Next(deadEnds.Count);
+                map.RemoveDeadEnd(deadEnds[index]);
+                deadEnds.RemoveAt(index);
+                if (deadEnds.Count == 0)
+                    deadEnds = map.GetDeadEnds();
+            }
+        }
+
+        private void RemoveDeadEnd()
+        {
+            var r = new Random();
+            var deadEnds = map.GetDeadEnds();
+            if (deadEnds.Count > 0)
+            {
+                var index = r.Next(deadEnds.Count);
+                map.RemoveDeadEnd(deadEnds[index]);
+            }
+        }
+
+        private void generateButton_Click(object sender, EventArgs e)
+        {
+            var r = new Random();
+            var parents = new Direction[WIDTH, HEIGHT];
+            for (int y = 0; y < HEIGHT; y++)
+            {
+                for (int x = 0; x < WIDTH; x++)
+                {
+                    parents[x, y] = Direction.None;
+                }
+            }
+            var baseLocation = new Point(r.Next(WIDTH), r.Next(HEIGHT));
+
+            Generate4(parents, baseLocation);
+            map = new Map(parents) { Base = baseLocation };
+
+            RemoveDeadEnds3();
+
+            var deadEnds = map.GetDeadEnds();
+            map.Boss = deadEnds[r.Next(deadEnds.Count)];
+
+            RenderMap();
+        }
+
+        private void RenderMap()
+        {
+            textBox1.Text = map.ToString();
+            var bmp = map.ToImage();
             if (pictureBox1.Image != null)
                 pictureBox1.Image.Dispose();
             pictureBox1.Image = bmp;
         }
-    }
 
-    [Flags]
-    enum Direction { None, N = 1, S = 2, E = 4, W = 8 }
+        private void copyButton_Click(object sender, EventArgs e)
+        {
+            Clipboard.SetImage(pictureBox1.Image);
+        }
+
+        private void deleteDeadEndButton_Click(object sender, EventArgs e)
+        {
+            if (map != null)
+            {
+                RemoveDeadEnd();
+                RenderMap();
+            }
+        }
+    }
 }

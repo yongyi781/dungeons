@@ -24,7 +24,7 @@ namespace Dungeons
 
         public unsafe int this[int x, int y] => ((int*)BitmapData.Scan0)[BitmapData.Width * y + x];
 
-        public unsafe Color GetPixel(int x, int y) => Color.FromArgb(((int*)BitmapData.Scan0)[BitmapData.Width * y + x]);
+        public unsafe Color GetPixel(int x, int y) => Color.FromArgb(this[x, y]);
 
         public void Dispose()
         {
@@ -32,65 +32,65 @@ namespace Dungeons
             GC.SuppressFinalize(this);
         }
 
-        public static Point FindMatch(Bitmap bitmap, Bitmap template)
+        public static Point FindMatch(Bitmap bitmap, Bitmap template, int tolerance)
         {
             using (var u = new UnsafeBitmap(bitmap))
-                return u.FindMatch(template);
+                return u.FindMatch(template, tolerance);
         }
 
-        public static Point FindMatch(Bitmap bitmap, Bitmap template, Predicate<Point> condition)
+        public static Point FindMatch(Bitmap bitmap, Bitmap template, Predicate<Point> condition, int tolerance)
         {
             using (var u = new UnsafeBitmap(bitmap))
-                return u.FindMatch(template, condition);
+                return u.FindMatch(template, condition, tolerance);
         }
 
-        public static bool IsMatch(Bitmap bitmap, Bitmap template, int offX, int offY)
+        public static bool IsMatch(Bitmap bitmap, Bitmap template, int offX, int offY, int tolerance)
         {
             using (var u = new UnsafeBitmap(bitmap))
-                return u.IsMatch(template, offX, offY);
+                return u.IsMatch(template, offX, offY, tolerance);
         }
 
-        public Point FindMatch(Bitmap template)
+        public Point FindMatch(Bitmap template, int tolerance)
         {
             using (var u = new UnsafeBitmap(template))
-                return FindMatch(u);
+                return FindMatch(u, tolerance);
         }
 
-        public Point FindMatch(Bitmap template, Predicate<Point> condition)
+        public Point FindMatch(Bitmap template, Predicate<Point> condition, int tolerance)
         {
             using (var u = new UnsafeBitmap(template))
-                return FindMatch(u, condition);
+                return FindMatch(u, condition, tolerance);
         }
 
-        public Point FindMatch(UnsafeBitmap template)
+        public Point FindMatch(UnsafeBitmap template, int tolerance)
         {
             for (int offY = 0; offY < Height - template.Height + 1; offY++)
                 for (int offX = 0; offX < Width - template.Width + 1; offX++)
-                    if (IsMatch(template, offX, offY))
+                    if (IsMatch(template, offX, offY, tolerance))
                         return new Point(offX, offY);
             return new Point(-1, -1);
         }
 
-        public Point FindMatch(UnsafeBitmap template, Predicate<Point> condition)
+        public Point FindMatch(UnsafeBitmap template, Predicate<Point> condition, int tolerance)
         {
             for (int offY = 0; offY < Height - template.Height + 1; offY++)
                 for (int offX = 0; offX < Width - template.Width + 1; offX++)
-                    if (IsMatch(template, offX, offY) && condition(new Point(offX, offY)))
+                    if (IsMatch(template, offX, offY, tolerance) && condition(new Point(offX, offY)))
                         return new Point(offX, offY);
             return new Point(-1, -1);
         }
 
-        public unsafe bool IsMatch(Bitmap template, int offX, int offY)
+        public unsafe bool IsMatch(Bitmap template, int offX, int offY, int tolerance)
         {
             using (var u = new UnsafeBitmap(template, ImageLockMode.ReadOnly))
-                return IsMatch(u, offX, offY);
+                return IsMatch(u, offX, offY, tolerance);
         }
 
-        public unsafe bool IsMatch(UnsafeBitmap template, int offX, int offY)
+        public unsafe bool IsMatch(UnsafeBitmap template, int offX, int offY, int tolerance)
         {
             for (int y = 0; y < template.Height; y++)
                 for (int x = 0; x < template.Width; x++)
-                    if (this[x + offX, y + offY] != template[x, y] && (template[x, y] & 0xFF000000) != 0)
+                    if ((template[x, y] & 0xFF000000) != 0 && ColorDistance(GetPixel(x + offX, y + offY), template.GetPixel(x, y)) > tolerance)
                         return false;
             return true;
         }
@@ -116,6 +116,14 @@ namespace Dungeons
 
             using (var u = new UnsafeBitmap(template))
                 return IsMatchAlphaColor(u, offX, offY, color);
+        }
+
+        public static int ColorDistance(Color a, Color b)
+        {
+            var dr = a.R - b.R;
+            var dg = a.G - b.G;
+            var db = a.B - b.B;
+            return dr * dr + dg * dg + db * db;
         }
     }
 }

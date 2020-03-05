@@ -104,7 +104,8 @@ namespace Dungeons
             {
                 // Change to solo if it's a 1:1
                 soloColumnsRadioButton.Checked = true;
-                dict["FloorSize"] = "Large2";
+                if (dict["FloorSize"] == "Large")
+                    dict["FloorSize"] = "Large2";
             }
             return AddRow(dict);
         }
@@ -115,10 +116,10 @@ namespace Dungeons
             {
                 Point p;
                 var firstPointToTry = new Point(710, 330);
-                if (b.IsMatch(Properties.Resources.WinterfaceMarker, DefaultOffset.X, DefaultOffset.Y))
+                if (b.IsMatch(Properties.Resources.WinterfaceMarker, DefaultOffset.X, DefaultOffset.Y, 0))
                     p = DefaultOffset;
                 else
-                    p = b.FindMatch(Properties.Resources.WinterfaceMarker);
+                    p = b.FindMatch(Properties.Resources.WinterfaceMarker, 0);
 
                 if (p == NotFound)
                 {
