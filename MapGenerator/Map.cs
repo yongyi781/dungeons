@@ -103,8 +103,8 @@ namespace MapGenerator
                     }
                 }
 
-                g.DrawImage(Properties.Resources.BaseOverlay, 32 * Base.X, 32 * (7 - Base.Y));
-                g.DrawImage(Properties.Resources.BossOverlay, 32 * Boss.X, 32 * (7 - Boss.Y));
+                g.DrawImage(Resources.BaseOverlay, 32 * Base.X, 32 * (7 - Base.Y));
+                g.DrawImage(Resources.BossOverlay, 32 * Boss.X, 32 * (7 - Boss.Y));
             }
             return bmp;
         }

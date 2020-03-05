@@ -96,7 +96,7 @@ namespace MapGenerator
 
         public static Bitmap GetRoomTypeBitmap(RoomType type)
         {
-            return (Bitmap)Properties.Resources.ResourceManager.GetObject(MapUtils.GetRoomTypeResourceString(type));
+            return (Bitmap)Resources.ResourceManager.GetObject(MapUtils.GetRoomTypeResourceString(type));
         }
     }
 }
