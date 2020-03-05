@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MapGenerator", "MapGenerato
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "S", "S", "{684914BD-FA72-47A7-A329-0318FD9FE5AA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MapGeneratorNetCore", "MapGeneratorNetCore\MapGeneratorNetCore.csproj", "{86A66AE5-5E48-40BB-8445-262463BE4BB3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,6 +25,10 @@ Global
 		{C10D5CEF-EC68-4338-B003-063D1BB46091}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C10D5CEF-EC68-4338-B003-063D1BB46091}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C10D5CEF-EC68-4338-B003-063D1BB46091}.Release|Any CPU.Build.0 = Release|Any CPU
+		{86A66AE5-5E48-40BB-8445-262463BE4BB3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{86A66AE5-5E48-40BB-8445-262463BE4BB3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{86A66AE5-5E48-40BB-8445-262463BE4BB3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{86A66AE5-5E48-40BB-8445-262463BE4BB3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
