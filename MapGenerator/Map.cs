@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 
@@ -16,18 +17,35 @@ namespace MapGenerator
         public int Height => Parents.GetLength(0);
         public Point Base { get; set; } = MapUtils.Invalid;
         public Point Boss { get; set; } = MapUtils.Invalid;
+        public HashSet<Point> CritRooms { get; set; } = new HashSet<Point>();
 
-        public bool IsDeadEnd(Point p)
+        private Brush critBrush = new SolidBrush(Color.FromArgb(128, 128, 255, 255));
+
+        public bool IsDeadEnd(Point p, bool turningRequired = false)
         {
+            // Base, boss, and gaps are not dead ends
             if (p == Base || p == Boss || Parents[p.X, p.Y] == Direction.None)
                 return false;
+            // Check if anything has it as a parent.
             for (int i = 0; i < 4; i++)
             {
                 var p2 = p + MapUtils.Offsets[i];
                 if (MapUtils.IsInRange(p2) && Parents[p2.X, p2.Y] == MapUtils.Flip(MapUtils.Directions[i]))
                     return false;
             }
+            if (turningRequired)
+            {
+                var d = Parents[p.X, p.Y];
+                var p2 = p.Add(d);
+                if (Parents[p2.X, p2.Y] == d)
+                    return false;
+            }
             return true;
+        }
+
+        public bool IsBonusDeadEnd(Point p)
+        {
+            return IsDeadEnd(p) && !CritRooms.Contains(p);
         }
 
         // aka non-gap
@@ -36,35 +54,62 @@ namespace MapGenerator
             return Parents[p.X, p.Y] != Direction.None;
         }
 
-        public List<Point> GetDeadEnds()
+        public void AddCritRoom(Point p)
         {
-            return (from y in Enumerable.Range(0, Height) from x in Enumerable.Range(0, Width)
-                    let p = new Point(x, y)
-                    where IsDeadEnd(p)
+            while (p != Base)
+            {
+                CritRooms.Add(p);
+                p = p.Add(Parents[p.X, p.Y]);
+            }
+        }
+
+        // Returns the neighbors of a point.
+        public List<Point> GetNeighbors(Point p)
+        {
+            var neighbors = new List<Point>();
+            // Check if anything has it as a parent.
+            for (int i = 0; i < 4; i++)
+            {
+                var p2 = p + MapUtils.Offsets[i];
+                if (MapUtils.IsInRange(p2) && Parents[p2.X, p2.Y] == MapUtils.Flip(MapUtils.Directions[i]))
+                    neighbors.Add(p2);
+            }
+            return neighbors;
+        }
+
+        public List<Point> GetDeadEnds(bool turningOnly = false)
+        {
+            return (from p in MapUtils.GridPoints(Width, Height)
+                    where IsDeadEnd(p, turningOnly)
+                    select p).ToList();
+        }
+
+        public List<Point> GetBonusDeadEnds()
+        {
+            return (from p in MapUtils.GridPoints(Width, Height)
+                    where IsBonusDeadEnd(p)
                     select p).ToList();
         }
 
         // Gets the number of neighboring gaps
-        public int CountGapNeighbors(Point p)
+        public int GetDensity(Point p)
         {
-            return (from y in Enumerable.Range(-1, 1)
-                    from x in Enumerable.Range(-1, 1)
-                    where (x != 0 || y != 0)
-                    let p2 = new Point(p.X + x, p.Y + y)
-                    where MapUtils.IsInRange(p2) && !IsRoom(p2)
+            return (from d in MapUtils.Directions
+                    let p2 = p.Add(d)
+                    where MapUtils.IsInRange(p2) && IsRoom(p2)
                     select p2).Count();
         }
 
+        // Returns a list of non-gap rooms.
         public List<Point> GetRooms()
         {
-            return (from y in Enumerable.Range(0, Height)
-                    from x in Enumerable.Range(0, Width)
-                    let p = new Point(x, y)
+            return (from p in MapUtils.GridPoints(Width, Height)
                     where IsRoom(p)
                     select p).ToList();
         }
 
-        public void RemoveDeadEnd(Point p)
+        // Only properly removes dead ends.
+        public void RemoveRoom(Point p)
         {
             Parents[p.X, p.Y] = Direction.None;
         }
@@ -83,7 +128,7 @@ namespace MapGenerator
             return roomType == RoomType.NotOpened ? RoomType.Gap : roomType;
         }
 
-        public Bitmap ToImage(bool drawDeadEnds = false)
+        public Bitmap ToImage(bool drawDeadEnds = true, bool drawCritRooms = false)
         {
             var bmp = new Bitmap(32 * 8, 32 * 8);
             using (var g = Graphics.FromImage(bmp))
@@ -94,11 +139,16 @@ namespace MapGenerator
                 {
                     for (int x = 0; x < 8; x++)
                     {
-                        var roomBmp = MapUtils.GetRoomTypeBitmap(GetRoomType(new Point(x, y)));
+                        var p = new Point(x, y);
+                        var roomBmp = MapUtils.GetRoomTypeBitmap(GetRoomType(p));
                         g.DrawImage(roomBmp, x * 32, (7 - y) * 32, 32, 32);
-                        if (drawDeadEnds && IsDeadEnd(new Point(x, y)))
+                        if (drawDeadEnds && IsDeadEnd(p))
                         {
                             g.FillRectangle(Brushes.Red, x * 32 + 14, (7 - y) * 32 + 14, 4, 4);
+                        }
+                        if (drawCritRooms && CritRooms.Contains(p))
+                        {
+                            g.FillRectangle(critBrush, x * 32 + 14, (7 - y) * 32 + 14, 4, 4);
                         }
                     }
                 }

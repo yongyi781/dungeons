@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Text;
 
 namespace MapGenerator
@@ -29,41 +30,31 @@ namespace MapGenerator
 
         public static Direction Flip(Direction dir)
         {
-            switch (dir)
+            return dir switch
             {
-                case Direction.W:
-                    return Direction.E;
-                case Direction.E:
-                    return Direction.W;
-                case Direction.S:
-                    return Direction.N;
-                case Direction.N:
-                    return Direction.S;
-                default:
-                    return Direction.None;
-            }
+                Direction.W => Direction.E,
+                Direction.E => Direction.W,
+                Direction.S => Direction.N,
+                Direction.N => Direction.S,
+                _ => Direction.None,
+            };
         }
 
         public static RoomType ToRoomType(Direction dir)
         {
-            switch (dir)
+            return dir switch
             {
-                case Direction.W:
-                    return RoomType.W;
-                case Direction.E:
-                    return RoomType.E;
-                case Direction.S:
-                    return RoomType.S;
-                case Direction.N:
-                    return RoomType.N;
-                default:
-                    return RoomType.NotOpened;
-            }
+                Direction.W => RoomType.W,
+                Direction.E => RoomType.E,
+                Direction.S => RoomType.S,
+                Direction.N => RoomType.N,
+                _ => RoomType.NotOpened,
+            };
         }
 
         public static string GetRoomTypeResourceString(RoomType type)
         {
-            if ((int)type <= 0)
+            if (type <= 0)
                 return "NotOpened";
 
             var str = "Room";
@@ -97,6 +88,12 @@ namespace MapGenerator
         public static Bitmap GetRoomTypeBitmap(RoomType type)
         {
             return (Bitmap)Resources.ResourceManager.GetObject(MapUtils.GetRoomTypeResourceString(type));
+        }
+
+        // [0..8) x [0..8)
+        public static IEnumerable<Point> GridPoints(int width = 8, int height = 8)
+        {
+            return from y in Enumerable.Range(0, height) from x in Enumerable.Range(0, width) select new Point(x, y);
         }
     }
 }
