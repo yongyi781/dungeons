@@ -1,0 +1,74 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>76dd5b07-d6a6-458b-a0ef-8cbcea0279cb</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>Common</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Direction.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MapUtils.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)RoomType.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="$(MSBuildThisFileDirectory)Resources\Base0.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Resources\Base1.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Resources\Base2.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Resources\Base3.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Resources\Base4.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Resources\Base5.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Resources\Base6.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Resources\Base7.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Resources\Base8.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Resources\Base9.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Resources\BaseOverlay.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Resources\BossOverlay.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Resources\Grid.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Resources\Large0.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Resources\Large1.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Resources\Large2.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Resources\Large3.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Resources\Large4.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Resources\Large5.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Resources\Large6.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Resources\Large7.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Resources\Large8.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Resources\Large9.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Resources\NotOpened.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Resources\OutlineLarge.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Resources\OutlineMedium.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Resources\OutlineSmall.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Resources\RoomE.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Resources\RoomEN.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Resources\RoomENS.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Resources\RoomENSW.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Resources\RoomENW.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Resources\RoomES.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Resources\RoomESW.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Resources\RoomEW.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Resources\RoomN.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Resources\RoomNS.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Resources\RoomNSW.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Resources\RoomNW.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Resources\RoomS.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Resources\RoomSW.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Resources\RoomW.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Resources\Small0.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Resources\Small1.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Resources\Small2.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Resources\Small3.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Resources\Small4.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Resources\Small5.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Resources\Small6.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Resources\Small7.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Resources\Small8.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Resources\Small9.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Resources\SmallColon.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Resources\SmallMinus.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Resources\SmallPlus.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Resources\WinterfaceMarker.png" />
+  </ItemGroup>
+</Project>

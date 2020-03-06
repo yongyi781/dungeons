@@ -1,193 +1,180 @@
-﻿using System;
+﻿using Dungeons.Common;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace MapGenerator
 {
-    public static class MapGenerator
+    public class MapGenerator
     {
-        private static Random random = new Random();
+        private Random random;
 
-        public static void SetSeed(int seed)
+        public MapGenerator(int seed, int minCrit, int maxCrit)
         {
             random = new Random(seed);
+            MinCrit = minCrit;
+            MaxCrit = maxCrit;
         }
 
-        public static void Generate2(Direction[,] parents, Point baseLocation)
+        public int MinCrit { get; set; }
+        public int MaxCrit { get; set; }
+
+        public void GenerateBaseLocation(Map map)
         {
-            for (int y = 0; y < parents.GetLength(1); y++)
+            map.Base = random.NextPoint(map.Width, map.Width);
+        }
+
+        // Generates a completely random map with possible loops.
+        public async Task GenerateWithPossibleLoops(Map map, Func<Task> callback)
+        {
+            foreach (var p in MapUtils.GridPoints(map.Width, map.Height))
             {
-                for (int x = 0; x < parents.GetLength(0); x++)
+                if (p != map.Base)
                 {
-                    Direction dir = Direction.None;
-                    Point p2;
-                    int i = 0;
-                    do
-                    {
-                        dir = MapUtils.Directions[random.Next(MapUtils.Directions.Length)];
-                        p2 = MapUtils.Add(new Point(x, y), dir);
-                        ++i;
-                    } while (i < 100 && (!MapUtils.IsInRange(p2) || parents[p2.X, p2.Y] == MapUtils.Flip(dir)));
-                    parents[x, y] = dir;
+                    map[p] = random.Choice(p.ValidDirections(map.Width, map.Height));
+
+                    if (callback != null)
+                        await callback.Invoke();
                 }
             }
         }
 
-        // Wilson's loop-erasing path algorithm
-        public static void Generate3(Direction[,] parents, Point baseLocation, Point bossLocation)
+        public async Task GeneratePrim(Map map, Func<Task> callback = null)
         {
-            var pathIndex = new int[parents.GetLength(0), parents.GetLength(1)]; // 0: not visited, >0: visited
-            pathIndex[baseLocation.X, baseLocation.Y] = 1;
-            var agenda = (from y in Enumerable.Range(0, parents.GetLength(0))
-                          from x in Enumerable.Range(0, parents.GetLength(1))
-                          let p = new Point(x, y)
-                          where p != baseLocation && p != bossLocation
-                          select p).ToList();
-
-            ProcessPoint(1, bossLocation);
-            for (int i = 2; agenda.Count > 0; i++)
-            {
-                // Pick a random point and remove it
-                var p = agenda[random.Next(agenda.Count)];
-                ProcessPoint(i, p);
-            }
-
-            void ProcessPoint(int i, Point point)
-            {
-                for (var p = point; p != baseLocation; p = MapUtils.Add(p, parents[p.X, p.Y]))
-                {
-                    // Random walk until you hit base or a previous path.
-                    pathIndex[p.X, p.Y] = i;
-                    var validDirs = (from d in MapUtils.Directions
-                                     let p2 = MapUtils.Add(p, d)
-                                     where MapUtils.IsInRange(p2)
-                                     where pathIndex[p2.X, p2.Y] != i
-                                     select d).ToArray();
-                    if (validDirs.Length > 0)
-                        parents[p.X, p.Y] = validDirs[random.Next(validDirs.Length)];
-                    else
-                        break;
-                    agenda.Remove(p);
-                }
-            }
-        }
-
-        public static Map Generate4(int roomcount)
-        {
-            const int WIDTH = 8, HEIGHT = 8;
-
-            var parents = new Direction[WIDTH, HEIGHT];
-            for (int y = 0; y < HEIGHT; y++)
-            {
-                for (int x = 0; x < WIDTH; x++)
-                {
-                    parents[x, y] = Direction.None;
-                }
-            }
-
-            var baseLocation = new Point(random.Next(WIDTH), random.Next(HEIGHT));
-
             var frontier = new List<Point>();
-            AddNeighborsToFrontier(baseLocation);
+            foreach (var room in map.GetRooms())
+            {
+                AddNeighborsToFrontier(room);
+            }
             while (frontier.Count > 0)
             {
                 // Select random point in frontier and remove it
-                var p = frontier[random.Next(frontier.Count)];
+                var p = random.Choice(frontier);
                 frontier.Remove(p);
                 var validDirs = (from d in MapUtils.Directions
                                  let p2 = p.Add(d)
-                                 where p2 == baseLocation || (MapUtils.IsInRange(p2) && parents[p2.X, p2.Y] != Direction.None)
+                                 where map.IsRoom(p2)
                                  select d).ToArray();
-                parents[p.X, p.Y] = validDirs[random.Next(validDirs.Length)];
+                map[p] = random.Choice(validDirs);
                 AddNeighborsToFrontier(p);
+
+                if (callback != null)
+                {
+                    await callback.Invoke();
+                    Logger.Log(string.Join('|', from f in frontier select f.ToShortString()));
+                }
             }
-
-            var map = new Map(parents) { Base = baseLocation };
-            var deadEnds = map.GetDeadEnds();
-            deadEnds.Shuffle(random);
-            for (int i = 0; map.CritRooms.Count < 18 && i < deadEnds.Count; i++)
-            {
-                map.AddCritRoom(deadEnds[i]);
-            }
-
-            map.Boss = deadEnds[0];
-
-            MakeGaps2(map, roomcount);
-            return map;
 
             void AddNeighborsToFrontier(Point p)
             {
                 foreach (var dir in MapUtils.Directions)
                 {
                     var p2 = p.Add(dir);
-                    if (MapUtils.IsInRange(p2) && p2 != baseLocation && !frontier.Contains(p2) && parents[p2.X, p2.Y] == Direction.None)
+                    if (p2.IsInRange(map.Width, map.Height) && !map.IsRoom(p2) && !frontier.Contains(p2))
                         frontier.Add(p2);
                 }
             }
         }
 
+        // Choose from open edges rather than rooms.
+        public async Task GeneratePrimVariant(Map map, Func<Task> callback)
+        {
+            var openEnds = new List<(Point, Direction)>();
+            foreach (var room in map.GetRooms())
+            {
+                AddNeighborsToFrontier(room);
+            }
+
+            while (openEnds.Count > 0)
+            {
+                // Select random element in openEnds and remove every other entry with the same point.
+                var (p, dir) = random.Choice(openEnds);
+                openEnds.RemoveAll(a => a.Item1 == p);
+                map[p] = dir;
+                AddNeighborsToFrontier(p);
+
+                if (callback != null)
+                    await callback();
+            }
+
+            void AddNeighborsToFrontier(Point p)
+            {
+                foreach (var dir in MapUtils.Directions)
+                {
+                    var p2 = p.Add(dir);
+                    if (p2.IsInRange(map.Width, map.Height) && !map.IsRoom(p2))
+                        openEnds.Add((p2, dir.Flip()));
+                }
+            }
+        }
+
+        // This makes a uniform distribution of spanning trees.
+        public async Task GenerateAldousBroder(Map map, Func<Task> callback = null)
+        {
+            // Random walk until map is full
+            var visited = new HashSet<Point>(map.GetRooms());
+            var p = map.Base;
+            while (visited.Count < map.Width * map.Height)
+            {
+                var validDirs = p.ValidDirections(map.Width, map.Height);
+                var dir = random.Choice(validDirs);
+                p = p.Add(dir);
+                if (!visited.Contains(p))
+                {
+                    visited.Add(p);
+                    map[p] = dir.Flip();
+                    if (callback != null)
+                        await callback();
+                }
+            }
+        }
+
+        public void AssignBossAndCritRooms(Map map)
+        {
+            var deadEnds = map.GetDeadEnds();
+            random.Shuffle(deadEnds);
+            for (int i = 0; map.CritRooms.Count < MinCrit - 1 && i < deadEnds.Count; i++)
+            {
+                map.AddCritRoom(deadEnds[i]);
+            }
+
+            map.Boss = deadEnds[0];
+        }
+
         // Select dead ends at random
-        public static void MakeGaps2(Map map, int roomcount)
+        public async Task MakeGaps(Map map, int roomcount, Func<Task> callback = null)
         {
-            for (int i = 0; i < 64 - roomcount; i++)
+            for (int i = 0; i < map.MaxRooms - roomcount; i++)
             {
-                RemoveDeadEnd(map);
+                RemoveBonusDeadEnd(map);
+                if (callback != null)
+                    await callback();
             }
         }
 
-        // Select current dead ends, only recompute if dead ends reaches 0
-        public static void MakeGaps3(Map map, int roomcount)
-        {
-            var deadEnds = map.GetBonusDeadEnds();
-
-            for (int i = 0; i < 64 - roomcount; i++)
-            {
-                var index = random.Next(deadEnds.Count);
-                map.RemoveRoom(deadEnds[index]);
-                deadEnds.RemoveAt(index);
-                if (deadEnds.Count == 0)
-                    deadEnds = map.GetBonusDeadEnds();
-            }
-        }
-
-        // Select current dead ends, only recompute if dead ends reaches 0
-        public static void MakeGaps4(Map map, int roomcount)
-        {
-
-            for (int i = 0; i < 64 - roomcount; i++)
-            {
-                var deadEnds = map.GetDeadEnds();
-                deadEnds.Shuffle(random);
-                var max = deadEnds.Max(a => map.GetDensity(a));
-                var first = deadEnds.First(a => map.GetDensity(a) == max);
-                map.RemoveRoom(first);
-            }
-        }
-
-        public static void RemoveDeadEnd(Map map)
+        public void RemoveBonusDeadEnd(Map map)
         {
             // Remove a random turning dead end if possible, otherwise remove any dead end.
             var deadEnds = map.GetBonusDeadEnds();
             //if (deadEnds.Count == 0)
             //    deadEnds = map.GetDeadEnds(false);
             if (deadEnds.Count > 0)
-            {
-                var index = random.Next(deadEnds.Count);
-                map.RemoveRoom(deadEnds[index]);
-            }
+                map.RemoveDeadEnd(random.Choice(deadEnds));
             //map.RemoveRoom(map.FindDeadEndByRandomWalk());
         }
 
-        public static Point FindDeadEndByRandomWalk(Map map)
+        public Point FindDeadEndByRandomWalk(Map map)
         {
             var p = map.Base;
             while (!map.IsDeadEnd(p))
             {
                 Logger.Log("Random walk yields " + p);
-                var n = map.GetNeighbors(p);
-                p = n[random.Next(n.Count)];
+                var n = map.ChildrenDirs(p).ToList();
+                p = p.Add(random.Choice(n));
             }
             return p;
         }

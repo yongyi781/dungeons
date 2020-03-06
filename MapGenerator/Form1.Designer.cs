@@ -40,6 +40,9 @@
             this.seedUpDown = new System.Windows.Forms.NumericUpDown();
             this.randomSeedCheckbox = new System.Windows.Forms.CheckBox();
             this.randomRcCheckbox = new System.Windows.Forms.CheckBox();
+            this.drawCritCheckBox = new System.Windows.Forms.CheckBox();
+            this.drawDeadEndsCheckBox = new System.Windows.Forms.CheckBox();
+            this.slowCheckBox = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.rcUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.seedUpDown)).BeginInit();
@@ -47,7 +50,6 @@
             // 
             // pictureBox1
             // 
-            this.pictureBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.pictureBox1.BackColor = System.Drawing.Color.Black;
             this.pictureBox1.Location = new System.Drawing.Point(10, 60);
             this.pictureBox1.Margin = new System.Windows.Forms.Padding(2);
@@ -104,14 +106,14 @@
             // 
             // textBox1
             // 
-            this.textBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            this.textBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.textBox1.Font = new System.Drawing.Font("Consolas", 21F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.textBox1.Location = new System.Drawing.Point(295, 60);
             this.textBox1.Multiline = true;
             this.textBox1.Name = "textBox1";
             this.textBox1.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.textBox1.Size = new System.Drawing.Size(250, 279);
+            this.textBox1.Size = new System.Drawing.Size(390, 279);
             this.textBox1.TabIndex = 4;
             // 
             // copyButton
@@ -140,14 +142,15 @@
             // 
             // logTextBox
             // 
-            this.logTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            this.logTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.logTextBox.Font = new System.Drawing.Font("Consolas", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.logTextBox.Location = new System.Drawing.Point(10, 345);
             this.logTextBox.Multiline = true;
             this.logTextBox.Name = "logTextBox";
             this.logTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.logTextBox.Size = new System.Drawing.Size(535, 222);
+            this.logTextBox.Size = new System.Drawing.Size(675, 222);
             this.logTextBox.TabIndex = 4;
             // 
             // label2
@@ -178,9 +181,10 @@
             this.randomSeedCheckbox.AutoSize = true;
             this.randomSeedCheckbox.Checked = true;
             this.randomSeedCheckbox.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.randomSeedCheckbox.Location = new System.Drawing.Point(12, 37);
+            this.randomSeedCheckbox.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.randomSeedCheckbox.Location = new System.Drawing.Point(172, 37);
             this.randomSeedCheckbox.Name = "randomSeedCheckbox";
-            this.randomSeedCheckbox.Size = new System.Drawing.Size(112, 19);
+            this.randomSeedCheckbox.Size = new System.Drawing.Size(118, 20);
             this.randomSeedCheckbox.TabIndex = 7;
             this.randomSeedCheckbox.Text = "&Randomize seed";
             this.randomSeedCheckbox.UseVisualStyleBackColor = true;
@@ -188,21 +192,61 @@
             // randomRcCheckbox
             // 
             this.randomRcCheckbox.AutoSize = true;
-            this.randomRcCheckbox.Location = new System.Drawing.Point(130, 37);
+            this.randomRcCheckbox.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.randomRcCheckbox.Location = new System.Drawing.Point(12, 37);
             this.randomRcCheckbox.Name = "randomRcCheckbox";
-            this.randomRcCheckbox.Size = new System.Drawing.Size(148, 19);
+            this.randomRcCheckbox.Size = new System.Drawing.Size(154, 20);
             this.randomRcCheckbox.TabIndex = 7;
             this.randomRcCheckbox.Text = "Randomize roomcount";
             this.randomRcCheckbox.UseVisualStyleBackColor = true;
+            // 
+            // drawCritCheckBox
+            // 
+            this.drawCritCheckBox.AutoSize = true;
+            this.drawCritCheckBox.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.drawCritCheckBox.Location = new System.Drawing.Point(296, 37);
+            this.drawCritCheckBox.Name = "drawCritCheckBox";
+            this.drawCritCheckBox.Size = new System.Drawing.Size(79, 20);
+            this.drawCritCheckBox.TabIndex = 7;
+            this.drawCritCheckBox.Text = "Draw &crit";
+            this.drawCritCheckBox.UseVisualStyleBackColor = true;
+            this.drawCritCheckBox.CheckedChanged += new System.EventHandler(this.drawBox_CheckedChanged);
+            // 
+            // drawDeadEndsCheckBox
+            // 
+            this.drawDeadEndsCheckBox.AutoSize = true;
+            this.drawDeadEndsCheckBox.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.drawDeadEndsCheckBox.Location = new System.Drawing.Point(381, 37);
+            this.drawDeadEndsCheckBox.Name = "drawDeadEndsCheckBox";
+            this.drawDeadEndsCheckBox.Size = new System.Drawing.Size(116, 20);
+            this.drawDeadEndsCheckBox.TabIndex = 7;
+            this.drawDeadEndsCheckBox.Text = "Draw dead ends";
+            this.drawDeadEndsCheckBox.UseVisualStyleBackColor = true;
+            this.drawDeadEndsCheckBox.CheckedChanged += new System.EventHandler(this.drawBox_CheckedChanged);
+            // 
+            // slowCheckBox
+            // 
+            this.slowCheckBox.AutoSize = true;
+            this.slowCheckBox.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.slowCheckBox.Location = new System.Drawing.Point(503, 37);
+            this.slowCheckBox.Name = "slowCheckBox";
+            this.slowCheckBox.Size = new System.Drawing.Size(57, 20);
+            this.slowCheckBox.TabIndex = 7;
+            this.slowCheckBox.Text = "Slow";
+            this.slowCheckBox.UseVisualStyleBackColor = true;
+            this.slowCheckBox.CheckedChanged += new System.EventHandler(this.drawBox_CheckedChanged);
             // 
             // Form1
             // 
             this.AcceptButton = this.generateButton;
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
-            this.ClientSize = new System.Drawing.Size(557, 579);
-            this.Controls.Add(this.randomRcCheckbox);
+            this.ClientSize = new System.Drawing.Size(697, 579);
+            this.Controls.Add(this.slowCheckBox);
+            this.Controls.Add(this.drawDeadEndsCheckBox);
+            this.Controls.Add(this.drawCritCheckBox);
             this.Controls.Add(this.randomSeedCheckbox);
+            this.Controls.Add(this.randomRcCheckbox);
             this.Controls.Add(this.generateButton);
             this.Controls.Add(this.deleteDeadEndButton);
             this.Controls.Add(this.copyButton);
@@ -240,6 +284,9 @@
         private System.Windows.Forms.NumericUpDown seedUpDown;
         private System.Windows.Forms.CheckBox randomSeedCheckbox;
         private System.Windows.Forms.CheckBox randomRcCheckbox;
+        private System.Windows.Forms.CheckBox drawCritCheckBox;
+        private System.Windows.Forms.CheckBox drawDeadEndsCheckBox;
+        private System.Windows.Forms.CheckBox slowCheckBox;
     }
 }
 

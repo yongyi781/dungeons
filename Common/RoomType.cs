@@ -1,17 +1,17 @@
 ﻿using System;
 
-namespace MapGenerator
+namespace Dungeons.Common
 {
     [Flags]
     public enum RoomType
     {
         Gap = -1,
-        NotOpened,
+        Mystery,
         N = 1,
         S = 2,
         E = 4,
         W = 8,
-        Home = 16,
+        Base = 16,
         Boss = 32
     }
 }

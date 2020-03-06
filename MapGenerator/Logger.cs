@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Windows.Forms;
 
 namespace MapGenerator
@@ -13,6 +14,7 @@ namespace MapGenerator
             {
                 TextBox.AppendText(text + Environment.NewLine);
             }
+            Debug.WriteLine(text);
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Dungeons.Common;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -26,15 +27,15 @@ namespace Dungeons
         static readonly Font RoomCountFont = new Font("Georgia", 12);
         static readonly Brush RoomCountBrush = new SolidBrush(Color.FromArgb(200, 180, 180));
 
-        private string[,] annotations = new string[8, 8];
+        private readonly string[,] annotations = new string[8, 8];
 
         // For key annotations
-        private string[] colors = { "c", "o", "y", "go", "gr", "b", "p", "s" };
-        private Color[] colorValues = { Color.FromArgb(255, 178, 206), Color.Orange, Color.Yellow, Color.Gold, Color.Lime, Color.SkyBlue, Color.FromArgb(214, 178, 255), Color.Silver };
+        private readonly string[] colors = { "c", "o", "y", "go", "gr", "b", "p", "s" };
+        private readonly Color[] colorValues = { Color.FromArgb(255, 178, 206), Color.Orange, Color.Yellow, Color.Gold, Color.Lime, Color.SkyBlue, Color.FromArgb(214, 178, 255), Color.Silver };
 
-        private RoomType[,] roomTypes = new RoomType[MapSize, MapSize];
-        private int[,] distances = new int[MapSize, MapSize];
-        private Point[,] parents = new Point[MapSize, MapSize];
+        private readonly RoomType[,] roomTypes = new RoomType[MapSize, MapSize];
+        private readonly int[,] distances = new int[MapSize, MapSize];
+        private readonly Point[,] parents = new Point[MapSize, MapSize];
 
         public MapPictureBox()
         {
@@ -138,17 +139,17 @@ namespace Dungeons
             {
                 for (int x = 0; x < FloorSize.NumColumns; x++)
                 {
-                    var roomType = GetRoomType(new Point(x, y));
+                    var roomType = ParseRoomType(new Point(x, y));
                     roomTypes[x, y] = roomType;
-                    if (MapUtils.IsOpened(roomType))
+                    if (roomType.IsOpened())
                     {
                         ++OpenedRoomCount;
-                        if (MapUtils.IsHome(roomType))
+                        if (roomType.IsBase())
                             HomeLocation = new Point(x, y);
-                        else if (MapUtils.IsBoss(roomType))
+                        else if (roomType.IsBoss())
                             BossLocation = new Point(x, y);
                     }
-                    if (MapUtils.IsLeaf(roomType) && !MapUtils.IsBoss(roomType) && !MapUtils.IsHome(roomType))
+                    if (roomType.IsLeaf() && !roomType.IsBoss() && roomType.IsBase())
                         ++LeafCount;
                 }
             }
@@ -157,7 +158,7 @@ namespace Dungeons
             ComputeCriticalRooms();
         }
 
-        public RoomType GetRoomType(Point p)
+        public RoomType ParseRoomType(Point p)
         {
             var pc = FloorSize.MapToClientCoords(p);
             return MapUtils.GetRoomType(Image as Bitmap, pc.X, pc.Y);
@@ -226,7 +227,7 @@ namespace Dungeons
                 for (int x = 0; x < FloorSize.NumColumns; x++)
                 {
                     var p = FloorSize.MapToClientCoords(new Point(x, y));
-                    if (distances[x, y] > 0 && (MapUtils.IsLeaf(roomTypes[x, y]) || !MapUtils.IsOpened(roomTypes[x, y])))
+                    if (distances[x, y] > 0 && (roomTypes[x,y].IsLeaf() || !roomTypes[x, y].IsOpened()))
                         e.Graphics.DrawString(distances[x, y].ToString(), DistanceAnnotationFont, Brushes.Pink, p.X + 3, p.Y + 3);
                 }
             }
@@ -277,11 +278,11 @@ namespace Dungeons
                         var pen = PathLinePen;
                         if ((roomType & RoomType.W) != 0)
                             e.Graphics.DrawLine(pen, center, new Point(center.X - 32, center.Y));
-                        if ((roomType & RoomType.E) != 0 && !MapUtils.IsOpened(roomTypes[x + 1, y]))    // Don't double-draw lines
+                        if ((roomType & RoomType.E) != 0 && !roomTypes[x + 1, y].IsOpened())    // Don't double-draw lines
                             e.Graphics.DrawLine(pen, center, new Point(center.X + 32, center.Y));
                         if ((roomType & RoomType.S) != 0)
                             e.Graphics.DrawLine(pen, center, new Point(center.X, center.Y + 32));
-                        if ((roomType & RoomType.N) != 0 && !MapUtils.IsOpened(roomTypes[x, y + 1]))
+                        if ((roomType & RoomType.N) != 0 && !roomTypes[x, y + 1].IsOpened())
                             e.Graphics.DrawLine(pen, center, new Point(center.X, center.Y - 32));
                     }
                 }

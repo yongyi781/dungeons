@@ -1,43 +1,82 @@
-﻿using System;
+﻿using Dungeons.Common;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Text;
 
 namespace MapGenerator
 {
+    /// <summary>
+    /// Represents a (completed) dungeoneering map.
+    /// </summary>
     public class Map
     {
-        public Map(Direction[,] parents)
+        // ParentDirs[x,y] points to the parent square of (x,y).
+        private Direction[,] parentDirs;
+
+        public Map(Direction[,] parentDirs)
         {
-            Parents = parents;
+            this.parentDirs = parentDirs;
         }
 
-        public Direction[,] Parents { get; set; }
-        public int Width => Parents.GetLength(1);
-        public int Height => Parents.GetLength(0);
+        public Map(int width, int height)
+        {
+            parentDirs = new Direction[width, height];
+        }
+
+        public Direction this[Point p]
+        {
+            get => parentDirs.At(p);
+            set { parentDirs[p.X, p.Y] = value; }
+        }
+
+        public int Width => parentDirs.GetLength(0);
+        public int Height => parentDirs.GetLength(1);
+        public int MaxRooms => Width * Height;
         public Point Base { get; set; } = MapUtils.Invalid;
         public Point Boss { get; set; } = MapUtils.Invalid;
         public HashSet<Point> CritRooms { get; set; } = new HashSet<Point>();
 
-        private Brush critBrush = new SolidBrush(Color.FromArgb(128, 128, 255, 255));
+        private readonly Brush critBrush = new SolidBrush(Color.FromArgb(128, 128, 255, 255));
+
+        public Point Parent(Point p) => p.Add(this[p]);
+
+        // Return the directions of the children.
+        public IEnumerable<Direction> ChildrenDirs(Point p)
+        {
+            return from dir in MapUtils.Directions
+                   let p2 = p.Add(dir)
+                   where p2.IsInRange(Width, Height) && this[p2] == dir.Flip()
+                   select dir;
+        }
+
+        // If no neighbors, gap.
+        public RoomType GetRoomType(Point p)
+        {
+            var roomType = this[p].ToRoomType();
+            if (p != Base && roomType <= 0)
+                return roomType;
+
+            foreach (var dir in ChildrenDirs(p))
+                roomType |= dir.ToRoomType();
+
+            return roomType == 0 ? RoomType.Gap : roomType;
+        }
 
         public bool IsDeadEnd(Point p, bool turningRequired = false)
         {
             // Base, boss, and gaps are not dead ends
-            if (p == Base || p == Boss || Parents[p.X, p.Y] == Direction.None)
+            if (p == Base || p == Boss || !IsRoom(p))
                 return false;
             // Check if anything has it as a parent.
-            for (int i = 0; i < 4; i++)
-            {
-                var p2 = p + MapUtils.Offsets[i];
-                if (MapUtils.IsInRange(p2) && Parents[p2.X, p2.Y] == MapUtils.Flip(MapUtils.Directions[i]))
-                    return false;
-            }
+            if (ChildrenDirs(p).Count() > 0)
+                return false;
             if (turningRequired)
             {
-                var d = Parents[p.X, p.Y];
+                var d = this[p];
                 var p2 = p.Add(d);
-                if (Parents[p2.X, p2.Y] == d)
+                if (this[p2] == d)
                     return false;
             }
             return true;
@@ -51,7 +90,7 @@ namespace MapGenerator
         // aka non-gap
         public bool IsRoom(Point p)
         {
-            return Parents[p.X, p.Y] != Direction.None;
+            return p == Base || (p.IsInRange(Width, Height) && this[p] != Direction.None);
         }
 
         public void AddCritRoom(Point p)
@@ -59,22 +98,8 @@ namespace MapGenerator
             while (p != Base)
             {
                 CritRooms.Add(p);
-                p = p.Add(Parents[p.X, p.Y]);
+                p = Parent(p);
             }
-        }
-
-        // Returns the neighbors of a point.
-        public List<Point> GetNeighbors(Point p)
-        {
-            var neighbors = new List<Point>();
-            // Check if anything has it as a parent.
-            for (int i = 0; i < 4; i++)
-            {
-                var p2 = p + MapUtils.Offsets[i];
-                if (MapUtils.IsInRange(p2) && Parents[p2.X, p2.Y] == MapUtils.Flip(MapUtils.Directions[i]))
-                    neighbors.Add(p2);
-            }
-            return neighbors;
         }
 
         public List<Point> GetDeadEnds(bool turningOnly = false)
@@ -91,12 +116,28 @@ namespace MapGenerator
                     select p).ToList();
         }
 
+        public int SubtreeSize(Point p)
+        {
+            int count = 0;
+
+            void Visit(Point p2)
+            {
+                ++count;
+
+                foreach (var d in ChildrenDirs(p2))
+                    Visit(p2.Add(d));
+            }
+
+            Visit(p);
+            return count;
+        }
+
         // Gets the number of neighboring gaps
         public int GetDensity(Point p)
         {
             return (from d in MapUtils.Directions
                     let p2 = p.Add(d)
-                    where MapUtils.IsInRange(p2) && IsRoom(p2)
+                    where p2.IsInRange(Width, Height) && IsRoom(p2)
                     select p2).Count();
         }
 
@@ -108,39 +149,40 @@ namespace MapGenerator
                     select p).ToList();
         }
 
-        // Only properly removes dead ends.
-        public void RemoveRoom(Point p)
+        public void Clear()
         {
-            Parents[p.X, p.Y] = Direction.None;
-        }
-
-        // If no neighbors, gap.
-        public RoomType GetRoomType(Point p)
-        {
-            RoomType[] types = { RoomType.W, RoomType.E, RoomType.S, RoomType.N };
-            var roomType = MapUtils.ToRoomType(Parents[p.X, p.Y]);
-            for (int i = 0; i < MapUtils.Offsets.Length; i++)
+            for (int y = 0; y < Height; y++)
             {
-                var p2 = p + MapUtils.Offsets[i];
-                if (MapUtils.IsInRange(p2) && Parents[p2.X, p2.Y] == MapUtils.Flip(MapUtils.Directions[i]))
-                    roomType |= types[i];
+                for (int x = 0; x < Width; x++)
+                {
+                    parentDirs[x, y] = Direction.None;
+                }
             }
-            return roomType == RoomType.NotOpened ? RoomType.Gap : roomType;
+
+            Base = MapUtils.Invalid;
+            Boss = MapUtils.Invalid;
+            CritRooms.Clear();
         }
 
-        public Bitmap ToImage(bool drawDeadEnds = true, bool drawCritRooms = false)
+        // Precondition: p must be a dead end.
+        public void RemoveDeadEnd(Point p)
         {
-            var bmp = new Bitmap(32 * 8, 32 * 8);
+            parentDirs[p.X, p.Y] = Direction.None;
+        }
+
+        public Bitmap ToImage(bool drawCritRooms = false, bool drawDeadEnds = true)
+        {
+            var bmp = new Bitmap(32 * Width, 32 * Height);
             using (var g = Graphics.FromImage(bmp))
             {
                 g.Clear(Color.Black);
 
-                for (int y = 0; y < 8; y++)
+                for (int y = 0; y < Height; y++)
                 {
-                    for (int x = 0; x < 8; x++)
+                    for (int x = 0; x < Width; x++)
                     {
                         var p = new Point(x, y);
-                        var roomBmp = MapUtils.GetRoomTypeBitmap(GetRoomType(p));
+                        var roomBmp = RoomTypeToBitmap(GetRoomType(p));
                         g.DrawImage(roomBmp, x * 32, (7 - y) * 32, 32, 32);
                         if (drawDeadEnds && IsDeadEnd(p))
                         {
@@ -161,7 +203,20 @@ namespace MapGenerator
 
         public override string ToString()
         {
-            return Parents.ToPrettyString();
+            var sb = new StringBuilder();
+            for (int y = Height - 1; y >= 0; y--)
+            {
+                for (int x = 0; x < Width; x++)
+                {
+                    var a = parentDirs[x, y];
+                    sb.Append(a == Direction.None ? "-" : a.ToString());
+                }
+                if (y > 0)
+                    sb.AppendLine();
+            }
+            return sb.ToString();
         }
+
+        static Bitmap RoomTypeToBitmap(RoomType type) => (Bitmap)Resources.ResourceManager.GetObject(type.ToResourceString());
     }
 }

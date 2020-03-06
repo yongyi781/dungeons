@@ -96,7 +96,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
-    <Compile Include="RoomType.cs" />
     <Compile Include="UnsafeBitmap.cs" />
     <Compile Include="Winterface.cs" />
     <Compile Include="WinterfaceWindow.cs">
@@ -111,6 +110,7 @@
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="WinterfaceWindow.resx">
       <DependentUpon>WinterfaceWindow.cs</DependentUpon>
@@ -144,5 +144,6 @@
   <ItemGroup>
     <Folder Include="Resources\" />
   </ItemGroup>
+  <Import Project="..\Common\Common.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

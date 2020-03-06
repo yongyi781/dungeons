@@ -163,6 +163,26 @@ namespace Dungeons.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap BaseOverlay {
+            get {
+                object obj = ResourceManager.GetObject("BaseOverlay", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap BossOverlay {
+            get {
+                object obj = ResourceManager.GetObject("BossOverlay", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap Grid {
             get {
                 object obj = ResourceManager.GetObject("Grid", resourceCulture);
@@ -273,6 +293,16 @@ namespace Dungeons.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap NotOpened {
+            get {
+                object obj = ResourceManager.GetObject("NotOpened", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap OutlineLarge {
             get {
                 object obj = ResourceManager.GetObject("OutlineLarge", resourceCulture);
@@ -323,6 +353,36 @@ namespace Dungeons.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap RoomENS {
+            get {
+                object obj = ResourceManager.GetObject("RoomENS", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap RoomENSW {
+            get {
+                object obj = ResourceManager.GetObject("RoomENSW", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap RoomENW {
+            get {
+                object obj = ResourceManager.GetObject("RoomENW", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap RoomES {
             get {
                 object obj = ResourceManager.GetObject("RoomES", resourceCulture);
@@ -333,9 +393,19 @@ namespace Dungeons.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap RoomESN {
+        internal static System.Drawing.Bitmap RoomESW {
             get {
-                object obj = ResourceManager.GetObject("RoomESN", resourceCulture);
+                object obj = ResourceManager.GetObject("RoomESW", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap RoomEW {
+            get {
+                object obj = ResourceManager.GetObject("RoomEW", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -353,6 +423,36 @@ namespace Dungeons.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap RoomNS {
+            get {
+                object obj = ResourceManager.GetObject("RoomNS", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap RoomNSW {
+            get {
+                object obj = ResourceManager.GetObject("RoomNSW", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap RoomNW {
+            get {
+                object obj = ResourceManager.GetObject("RoomNW", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap RoomS {
             get {
                 object obj = ResourceManager.GetObject("RoomS", resourceCulture);
@@ -363,9 +463,9 @@ namespace Dungeons.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap RoomSN {
+        internal static System.Drawing.Bitmap RoomSW {
             get {
-                object obj = ResourceManager.GetObject("RoomSN", resourceCulture);
+                object obj = ResourceManager.GetObject("RoomSW", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -376,76 +476,6 @@ namespace Dungeons.Properties {
         internal static System.Drawing.Bitmap RoomW {
             get {
                 object obj = ResourceManager.GetObject("RoomW", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap RoomWE {
-            get {
-                object obj = ResourceManager.GetObject("RoomWE", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap RoomWEN {
-            get {
-                object obj = ResourceManager.GetObject("RoomWEN", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap RoomWES {
-            get {
-                object obj = ResourceManager.GetObject("RoomWES", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap RoomWESN {
-            get {
-                object obj = ResourceManager.GetObject("RoomWESN", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap RoomWN {
-            get {
-                object obj = ResourceManager.GetObject("RoomWN", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap RoomWS {
-            get {
-                object obj = ResourceManager.GetObject("RoomWS", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap RoomWSN {
-            get {
-                object obj = ResourceManager.GetObject("RoomWSN", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

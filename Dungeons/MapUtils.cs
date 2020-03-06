@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Dungeons.Common;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 
@@ -14,37 +15,32 @@ namespace Dungeons
         public static readonly Color MapCornerColor = Color.FromArgb(105, 92, 70);
 
         private static Bitmap[] Rooms;
-        private static List<Color[]> signatures = new List<Color[]>();
+        private static readonly List<Color[]> signatures = new List<Color[]>();
 
         public static void InitializeRoomsAndSignatures()
         {
             Rooms = new[] {
                 Properties.Resources.RoomN,
                 Properties.Resources.RoomS,
-                Properties.Resources.RoomSN,
+                Properties.Resources.RoomNS,
                 Properties.Resources.RoomE,
                 Properties.Resources.RoomEN,
                 Properties.Resources.RoomES,
-                Properties.Resources.RoomESN,
+                Properties.Resources.RoomENS,
                 Properties.Resources.RoomW,
-                Properties.Resources.RoomWN,
-                Properties.Resources.RoomWS,
-                Properties.Resources.RoomWSN,
-                Properties.Resources.RoomWE,
-                Properties.Resources.RoomWEN,
-                Properties.Resources.RoomWES,
-                Properties.Resources.RoomWESN
+                Properties.Resources.RoomNW,
+                Properties.Resources.RoomSW,
+                Properties.Resources.RoomNSW,
+                Properties.Resources.RoomEW,
+                Properties.Resources.RoomENW,
+                Properties.Resources.RoomESW,
+                Properties.Resources.RoomENSW
             };
 
             foreach (var room in Rooms)
             {
                 signatures.Add(ComputeSignature(room));
             }
-        }
-
-        public static bool IsOpened(RoomType t)
-        {
-            return t > RoomType.None;
         }
 
         public static Color[] ComputeSignature(Bitmap bmp, int offX = 0, int offY = 0)
@@ -61,15 +57,15 @@ namespace Dungeons
         public static RoomType GetRoomType(Bitmap bmp, int offX = 0, int offY = 0)
         {
             if (bmp == null)
-                return RoomType.None;
+                return RoomType.Mystery;
             var sig = ComputeSignature(bmp, offX, offY);
             var index = signatures.FindIndex(arr => Enumerable.SequenceEqual(sig, arr));
             if (index == -1)
-                return RoomType.None;
+                return RoomType.Mystery;
 
             var result = (RoomType)(index + 1);
             if (bmp.GetPixel(offX + 19, offY + 18) == Color.FromArgb(150, 145, 105))
-                result |= RoomType.Home;
+                result |= RoomType.Base;
             else if (bmp.GetPixel(offX + 8, offY + 11) == Color.FromArgb(63, 20, 13))
                 result |= RoomType.Boss;
 
@@ -88,22 +84,6 @@ namespace Dungeons
                 }
             }
             return true;
-        }
-
-        public static bool IsLeaf(RoomType roomType)
-        {
-            var type = roomType & (RoomType.W | RoomType.E | RoomType.S | RoomType.N);
-            return type == RoomType.W || roomType == RoomType.E || roomType == RoomType.S || roomType == RoomType.N;
-        }
-
-        public static bool IsHome(RoomType roomType)
-        {
-            return (roomType & RoomType.Home) != 0;
-        }
-
-        public static bool IsBoss(RoomType roomType)
-        {
-            return (roomType & RoomType.Boss) != 0;
         }
     }
 }
