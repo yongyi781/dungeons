@@ -42,7 +42,6 @@
             this.randomRcCheckbox = new System.Windows.Forms.CheckBox();
             this.drawCritCheckBox = new System.Windows.Forms.CheckBox();
             this.drawDeadEndsCheckBox = new System.Windows.Forms.CheckBox();
-            this.slowCheckBox = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.rcUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.seedUpDown)).BeginInit();
@@ -224,25 +223,12 @@
             this.drawDeadEndsCheckBox.UseVisualStyleBackColor = true;
             this.drawDeadEndsCheckBox.CheckedChanged += new System.EventHandler(this.drawBox_CheckedChanged);
             // 
-            // slowCheckBox
-            // 
-            this.slowCheckBox.AutoSize = true;
-            this.slowCheckBox.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.slowCheckBox.Location = new System.Drawing.Point(503, 37);
-            this.slowCheckBox.Name = "slowCheckBox";
-            this.slowCheckBox.Size = new System.Drawing.Size(57, 20);
-            this.slowCheckBox.TabIndex = 7;
-            this.slowCheckBox.Text = "Slow";
-            this.slowCheckBox.UseVisualStyleBackColor = true;
-            this.slowCheckBox.CheckedChanged += new System.EventHandler(this.drawBox_CheckedChanged);
-            // 
             // Form1
             // 
             this.AcceptButton = this.generateButton;
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.ClientSize = new System.Drawing.Size(697, 579);
-            this.Controls.Add(this.slowCheckBox);
             this.Controls.Add(this.drawDeadEndsCheckBox);
             this.Controls.Add(this.drawCritCheckBox);
             this.Controls.Add(this.randomSeedCheckbox);
@@ -286,7 +272,6 @@
         private System.Windows.Forms.CheckBox randomRcCheckbox;
         private System.Windows.Forms.CheckBox drawCritCheckBox;
         private System.Windows.Forms.CheckBox drawDeadEndsCheckBox;
-        private System.Windows.Forms.CheckBox slowCheckBox;
     }
 }
 

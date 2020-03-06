@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Dungeons.Common;
+using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
@@ -13,7 +14,7 @@ namespace Dungeons
         const int WM_NCLBUTTONDOWN = 0xA1;
         const int HT_CAPTION = 0x2;
 
-        private Point lastHomeLocation = MapUtils.NotFound;
+        private Point lastHomeLocation = MapUtils.Invalid;
         private int lastRoomCount = 0;
         private readonly WinterfaceWindow winterfaceWindow;
 
@@ -31,15 +32,14 @@ namespace Dungeons
         {
             InitializeComponent();
 
-            MapUtils.InitializeRoomsAndSignatures();
             FontType.InitializeFonts();
             mapPictureBox.FloorSize = FloorSize;
             winterfaceWindow = new WinterfaceWindow(this);
         }
 
         public DateTimeOffset FloorStartTime { get; private set; } = DateTimeOffset.MinValue;
-        public int Roomcount => mapPictureBox.OpenedRoomCount;
-        public int LeafCount => mapPictureBox.LeafCount;
+        public int Roomcount => mapPictureBox.GameMap.OpenedRoomCount;
+        public int LeafCount => mapPictureBox.GameMap.DeadEndCount;
 
         public FloorSize FloorSize
         {
@@ -110,8 +110,8 @@ namespace Dungeons
                 desktopBounds.Offset(-SystemInformation.VirtualScreen.X, -SystemInformation.VirtualScreen.Y);
                 foreach (var floorSize in FloorSize.Sizes)
                 {
-                    var match = UnsafeBitmap.FindMatch(bmp, floorSize.MapMarker, p => !desktopBounds.Contains(p), MapUtils.MapEdgeColorTolerance);
-                    if (match != MapUtils.NotFound)
+                    var match = UnsafeBitmap.FindMatch(bmp, floorSize.GetMapMarker(), p => !desktopBounds.Contains(p), MapReader.MapEdgeColorTolerance);
+                    if (match != MapUtils.Invalid)
                     {
                         match.Offset(SystemInformation.VirtualScreen.X, SystemInformation.VirtualScreen.Y);
                         return (match, floorSize);
@@ -119,14 +119,14 @@ namespace Dungeons
                 }
             }
 
-            return (MapUtils.NotFound, FloorSize.Small);
+            return (MapUtils.Invalid, FloorSize.Small);
         }
 
         private void UpdateMap()
         {
             foreach (var floorSize in FloorSize.Sizes)
             {
-                if (Properties.Settings.Default.MapLocation != MapUtils.NotFound)
+                if (Properties.Settings.Default.MapLocation != MapUtils.Invalid)
                 {
                     var bmp = new Bitmap(floorSize.MapSize.Width, floorSize.MapSize.Height);
                     using (var g = Graphics.FromImage(bmp))
@@ -140,7 +140,7 @@ namespace Dungeons
                             return;
                         }
                     }
-                    if (MapUtils.IsValidMap(bmp))
+                    if (MapReader.IsValidInGameMap(bmp))
                     {
                         FloorSize = floorSize;
                         timer.Start();
@@ -148,21 +148,21 @@ namespace Dungeons
                             mapPictureBox.Image.Dispose();
                         mapPictureBox.Image = bmp;
                         saveMapButton.Enabled = true;
-                        mapPictureBox.BuildMap();
+                        mapPictureBox.ReadMap();
                         UpdateDataLabel();
 
                         // Reset when home changes or on first map load
-                        if (FloorStartTime == DateTimeOffset.MinValue || (mapPictureBox.HomeLocation != MapUtils.NotFound
-                            && lastHomeLocation != MapUtils.NotFound
-                            && mapPictureBox.HomeLocation != lastHomeLocation)
-                            || (lastRoomCount > 1 && mapPictureBox.OpenedRoomCount == 1))
+                        if (FloorStartTime == DateTimeOffset.MinValue || (mapPictureBox.GameMap.Base != MapUtils.Invalid
+                            && lastHomeLocation != MapUtils.Invalid
+                            && mapPictureBox.GameMap.Base != lastHomeLocation)
+                            || (lastRoomCount > 1 && mapPictureBox.GameMap.OpenedRoomCount == 1))
                         {
                             FloorStartTime = DateTimeOffset.Now.AddSeconds(-1);
                         }
                         // Found a floor size that aligns correctly with the rooms, this must be the right one.
-                        lastRoomCount = mapPictureBox.OpenedRoomCount;
-                        if (mapPictureBox.HomeLocation != MapUtils.NotFound)
-                            lastHomeLocation = mapPictureBox.HomeLocation;
+                        lastRoomCount = mapPictureBox.GameMap.OpenedRoomCount;
+                        if (mapPictureBox.GameMap.Base != MapUtils.Invalid)
+                            lastHomeLocation = mapPictureBox.GameMap.Base;
                         break;
                     }
                     else
@@ -176,9 +176,9 @@ namespace Dungeons
         private void UpdateDataLabel()
         {
             var minutes = GetElapsedTime().TotalMinutes;
-            var roomsPerMinStr = ((mapPictureBox.OpenedRoomCount - 0.8) / minutes).ToString("0.0");
-            var rrpmStr = ((mapPictureBox.OpenedRoomCount - 0.8 * (1 + mapPictureBox.LeafCount)) / minutes).ToString("0.0");
-            dataLabel.Text = $"{mapPictureBox.OpenedRoomCount} rooms | {roomsPerMinStr} rpm | {mapPictureBox.LeafCount} dead ends | {rrpmStr} rrpm";
+            var roomsPerMinStr = ((mapPictureBox.GameMap.OpenedRoomCount - 0.8) / minutes).ToString("0.0");
+            var rrpmStr = ((mapPictureBox.GameMap.OpenedRoomCount - 0.8 * (1 + mapPictureBox.GameMap.DeadEndCount)) / minutes).ToString("0.0");
+            dataLabel.Text = $"{mapPictureBox.GameMap.OpenedRoomCount} rooms | {roomsPerMinStr} rpm | {mapPictureBox.GameMap.DeadEndCount} dead ends | {rrpmStr} rrpm";
         }
 
         private TimeSpan GetElapsedTime()
@@ -189,7 +189,7 @@ namespace Dungeons
         private void calibrateButton_Click(object sender, EventArgs e)
         {
             var (mapLocation, _) = FindMap();
-            if (mapLocation != MapUtils.NotFound)
+            if (mapLocation != MapUtils.Invalid)
             {
                 Debug.WriteLine(mapLocation);
                 Properties.Settings.Default.MapLocation = mapLocation;

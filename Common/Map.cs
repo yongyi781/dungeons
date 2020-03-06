@@ -1,11 +1,10 @@
-﻿using Dungeons.Common;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Text;
 
-namespace MapGenerator
+namespace Dungeons.Common
 {
     /// <summary>
     /// Represents a (completed) dungeoneering map.
@@ -13,7 +12,7 @@ namespace MapGenerator
     public class Map
     {
         // ParentDirs[x,y] points to the parent square of (x,y).
-        private Direction[,] parentDirs;
+        private readonly Direction[,] parentDirs;
 
         public Map(Direction[,] parentDirs)
         {
@@ -36,9 +35,7 @@ namespace MapGenerator
         public int MaxRooms => Width * Height;
         public Point Base { get; set; } = MapUtils.Invalid;
         public Point Boss { get; set; } = MapUtils.Invalid;
-        public HashSet<Point> CritRooms { get; set; } = new HashSet<Point>();
-
-        private readonly Brush critBrush = new SolidBrush(Color.FromArgb(128, 128, 255, 255));
+        public SortedSet<Point> CritEndpoints { get; } = new SortedSet<Point>(new PointComparer());
 
         public Point Parent(Point p) => p.Add(this[p]);
 
@@ -61,7 +58,7 @@ namespace MapGenerator
             foreach (var dir in ChildrenDirs(p))
                 roomType |= dir.ToRoomType();
 
-            return roomType == 0 ? RoomType.Gap : roomType;
+            return roomType == 0 ? RoomType.None : roomType;
         }
 
         public bool IsDeadEnd(Point p, bool turningRequired = false)
@@ -84,7 +81,7 @@ namespace MapGenerator
 
         public bool IsBonusDeadEnd(Point p)
         {
-            return IsDeadEnd(p) && !CritRooms.Contains(p);
+            return IsDeadEnd(p) && !CritEndpoints.Contains(p);
         }
 
         // aka non-gap
@@ -93,12 +90,18 @@ namespace MapGenerator
             return p == Base || (p.IsInRange(Width, Height) && this[p] != Direction.None);
         }
 
-        public void AddCritRoom(Point p)
+        public void AddCritEndpoint(Point p)
         {
-            while (p != Base)
+            if (p != Base)
+                CritEndpoints.Add(p);
+        }
+
+        // Precondition: p is in CritEndpoints.
+        public void BacktrackCritEndpoint(Point p)
+        {
+            if (CritEndpoints.Remove(p))
             {
-                CritRooms.Add(p);
-                p = Parent(p);
+                AddCritEndpoint(Parent(p));
             }
         }
 
@@ -116,19 +119,41 @@ namespace MapGenerator
                     select p).ToList();
         }
 
-        public int SubtreeSize(Point p)
+        public int DistanceToBase(Point p)
         {
-            int count = 0;
+            int dist = 0;
+            TraverseToBase(p, _ => ++dist);
+            return dist;
+        }
 
+        public void TraverseToBase(Point p, Action<Point> callback)
+        {
+            // Prevent infinite loops
+            for (int i = 0; p != Base && i < Width * Height; i++, p = Parent(p))
+            {
+                callback(p);
+            }
+        }
+
+        public void TraverseSubtree(Point p, Action<Point> callback)
+        {
             void Visit(Point p2)
             {
-                ++count;
-
+                callback(p2);
                 foreach (var d in ChildrenDirs(p2))
                     Visit(p2.Add(d));
             }
 
             Visit(p);
+        }
+
+        public int SubtreeSize(Point p)
+        {
+            if (!p.IsInRange(Width, Height))
+                return 0;
+
+            int count = 0;
+            TraverseSubtree(p, _ => ++count);
             return count;
         }
 
@@ -161,7 +186,18 @@ namespace MapGenerator
 
             Base = MapUtils.Invalid;
             Boss = MapUtils.Invalid;
-            CritRooms.Clear();
+            CritEndpoints.Clear();
+        }
+
+        public SortedSet<Point> GetCritRooms()
+        {
+            var set = new SortedSet<Point>(new PointComparer());
+            set.Add(Base);
+            foreach (var e in CritEndpoints)
+            {
+                TraverseToBase(e, p => set.Add(p));
+            }
+            return set;
         }
 
         // Precondition: p must be a dead end.
@@ -170,38 +206,7 @@ namespace MapGenerator
             parentDirs[p.X, p.Y] = Direction.None;
         }
 
-        public Bitmap ToImage(bool drawCritRooms = false, bool drawDeadEnds = true)
-        {
-            var bmp = new Bitmap(32 * Width, 32 * Height);
-            using (var g = Graphics.FromImage(bmp))
-            {
-                g.Clear(Color.Black);
-
-                for (int y = 0; y < Height; y++)
-                {
-                    for (int x = 0; x < Width; x++)
-                    {
-                        var p = new Point(x, y);
-                        var roomBmp = RoomTypeToBitmap(GetRoomType(p));
-                        g.DrawImage(roomBmp, x * 32, (7 - y) * 32, 32, 32);
-                        if (drawDeadEnds && IsDeadEnd(p))
-                        {
-                            g.FillRectangle(Brushes.Red, x * 32 + 14, (7 - y) * 32 + 14, 4, 4);
-                        }
-                        if (drawCritRooms && CritRooms.Contains(p))
-                        {
-                            g.FillRectangle(critBrush, x * 32 + 14, (7 - y) * 32 + 14, 4, 4);
-                        }
-                    }
-                }
-
-                g.DrawImage(Resources.BaseOverlay, 32 * Base.X, 32 * (7 - Base.Y));
-                g.DrawImage(Resources.BossOverlay, 32 * Boss.X, 32 * (7 - Boss.Y));
-            }
-            return bmp;
-        }
-
-        public override string ToString()
+        public string ToPrettyString()
         {
             var sb = new StringBuilder();
             for (int y = Height - 1; y >= 0; y--)
@@ -217,6 +222,19 @@ namespace MapGenerator
             return sb.ToString();
         }
 
-        static Bitmap RoomTypeToBitmap(RoomType type) => (Bitmap)Resources.ResourceManager.GetObject(type.ToResourceString());
+        public override string ToString()
+        {
+            var sb = new StringBuilder();
+            for (int y = Height - 1; y >= 0; y--)
+            {
+                for (int x = 0; x < Width; x++)
+                {
+                    var a = parentDirs[x, y];
+                    sb.Append(a == Direction.None ? "-" : a.ToString());
+                }
+            }
+            var critStr = string.Join(",", from x in CritEndpoints where x != Boss select x.ToChessString());
+            return $"{Width},{Height},{sb},{Base.ToChessString()},{Boss.ToChessString()},{critStr}";
+        }
     }
 }

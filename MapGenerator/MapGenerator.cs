@@ -1,11 +1,10 @@
 ﻿using Dungeons.Common;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace MapGenerator
 {
@@ -81,7 +80,7 @@ namespace MapGenerator
         }
 
         // Choose from open edges rather than rooms.
-        public async Task GeneratePrimVariant(Map map, Func<Task> callback)
+        public void GeneratePrimVariant(Map map)
         {
             var openEnds = new List<(Point, Direction)>();
             foreach (var room in map.GetRooms())
@@ -96,9 +95,6 @@ namespace MapGenerator
                 openEnds.RemoveAll(a => a.Item1 == p);
                 map[p] = dir;
                 AddNeighborsToFrontier(p);
-
-                if (callback != null)
-                    await callback();
             }
 
             void AddNeighborsToFrontier(Point p)
@@ -135,48 +131,37 @@ namespace MapGenerator
 
         public void AssignBossAndCritRooms(Map map)
         {
-            var deadEnds = map.GetDeadEnds();
-            random.Shuffle(deadEnds);
-            for (int i = 0; map.CritRooms.Count < MinCrit - 1 && i < deadEnds.Count; i++)
-            {
-                map.AddCritRoom(deadEnds[i]);
-            }
+            var desiredCritCount = random.Next(MinCrit, MaxCrit + 1);
+            Debug.WriteLine("Desired crit: " + desiredCritCount);
 
+            // Assign some random (not-too-far) dead ends to crit until crit count exceeds desired.
+            var deadEnds = (from de in map.GetDeadEnds() where map.DistanceToBase(de) < desiredCritCount select de).ToList();
+            random.Shuffle(deadEnds);
             map.Boss = deadEnds[0];
+            for (int i = 0; map.GetCritRooms().Count < desiredCritCount && i < deadEnds.Count; i++)
+                map.AddCritEndpoint(deadEnds[i]);
+
+            // Trim until crit count equals desired.
+            while (map.GetCritRooms().Count > desiredCritCount)
+            {
+                var nonBoss = (from e in map.CritEndpoints where e != map.Boss select e).ToList();
+                map.BacktrackCritEndpoint(random.Choice(nonBoss));
+            }
         }
 
         // Select dead ends at random
-        public async Task MakeGaps(Map map, int roomcount, Func<Task> callback = null)
+        public void MakeGaps(Map map, int roomcount)
         {
             for (int i = 0; i < map.MaxRooms - roomcount; i++)
-            {
                 RemoveBonusDeadEnd(map);
-                if (callback != null)
-                    await callback();
-            }
         }
 
         public void RemoveBonusDeadEnd(Map map)
         {
             // Remove a random turning dead end if possible, otherwise remove any dead end.
             var deadEnds = map.GetBonusDeadEnds();
-            //if (deadEnds.Count == 0)
-            //    deadEnds = map.GetDeadEnds(false);
             if (deadEnds.Count > 0)
                 map.RemoveDeadEnd(random.Choice(deadEnds));
-            //map.RemoveRoom(map.FindDeadEndByRandomWalk());
-        }
-
-        public Point FindDeadEndByRandomWalk(Map map)
-        {
-            var p = map.Base;
-            while (!map.IsDeadEnd(p))
-            {
-                Logger.Log("Random walk yields " + p);
-                var n = map.ChildrenDirs(p).ToList();
-                p = p.Add(random.Choice(n));
-            }
-            return p;
         }
     }
 }

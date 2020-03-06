@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Dungeons.Common;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
@@ -15,7 +16,7 @@ namespace Dungeons
         static readonly Point NotFound = new Point(-1, -1);
         static readonly Point DefaultOffset = new Point(710, 330);
 
-        private Form1 parent;
+        private readonly Form1 parent;
 
         public WinterfaceWindow(Form1 parent)
         {

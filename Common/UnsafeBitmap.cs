@@ -2,7 +2,7 @@
 using System.Drawing;
 using System.Drawing.Imaging;
 
-namespace Dungeons
+namespace Dungeons.Common
 {
     /// <summary>
     /// A wrapper around bitmap for pixel-based access. The corresponding bitmap cannot be modified while an instance of this class has not been disposed.

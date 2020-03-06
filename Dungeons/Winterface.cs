@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using Dungeons.Common;
+using System.Drawing;
 using System.Text;
 
 namespace Dungeons

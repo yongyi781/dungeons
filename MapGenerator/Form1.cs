@@ -12,37 +12,33 @@ namespace MapGenerator
         private const int WIDTH = 8;
         private const int HEIGHT = 8;
 
-        private Map map = new Map(WIDTH, HEIGHT);
-        private MapGenerator mapGenerator;
+        private readonly Map map = new Map(WIDTH, HEIGHT);
+        private readonly MapWriter mapWriter = new MapWriter(Resources.ResourceManager);
         private readonly Random random = new Random();
-
+        private MapGenerator mapGenerator;
 
         public Form1()
         {
             InitializeComponent();
 
+            pictureBox1.Image = new Bitmap(WIDTH * MapUtils.RoomSize, HEIGHT * MapUtils.RoomSize);
+
             Logger.TextBox = logTextBox;
         }
 
-        private async Task GenerateStepCallback()
-        {
-            RenderMap();
-            await Task.Delay(20);
-        }
-
-        private async Task GenerateNormalBase()
+        private void GenerateNormalBase()
         {
             mapGenerator = new MapGenerator((int)seedUpDown.Value, 19, 23);
             mapGenerator.GenerateBaseLocation(map);
 
-            await mapGenerator.GeneratePrimVariant(map, slowCheckBox.Checked ? GenerateStepCallback : (Func<Task>)null);
+            mapGenerator.GeneratePrimVariant(map);
             mapGenerator.AssignBossAndCritRooms(map);
-            await mapGenerator.MakeGaps(map, (int)rcUpDown.Value, slowCheckBox.Checked ? GenerateStepCallback : (Func<Task>)null);
+            mapGenerator.MakeGaps(map, (int)rcUpDown.Value);
 
-            Logger.Log($"seed={seedUpDown.Value}, rc={rcUpDown.Value}, crit count={map.CritRooms.Count + 1}, dead end count={map.GetDeadEnds().Count}");
+            Logger.Log($"seed={seedUpDown.Value}, rc={rcUpDown.Value}, crit count={map.GetCritRooms().Count}, dead end count={map.GetDeadEnds().Count}, east size={map.SubtreeSize(map.Base.Add(Direction.E))}");
         }
 
-        private async Task GeneratePerpendicularBase()
+        private void GeneratePerpendicularBase()
         {
             mapGenerator = new MapGenerator((int)seedUpDown.Value, 19, 23);
 
@@ -56,7 +52,7 @@ namespace MapGenerator
             map[np] = Direction.S;
             map[ep] = Direction.W;
 
-            await mapGenerator.GeneratePrimVariant(map, slowCheckBox.Checked ? GenerateStepCallback : (Func<Task>)null);
+            mapGenerator.GeneratePrimVariant(map);
             //mapGenerator.AssignBossAndCritRooms(map);
             //await mapGenerator.MakeGaps(map, (int)rcUpDown.Value);
 
@@ -72,42 +68,26 @@ namespace MapGenerator
             }
         }
 
-        private int GenerateRoomcount()
-        {
-            if (random.Next(3) == 0)
-            {
-                // Generate 50-53 or 61-64
-                return 50 + random.Next(4) + 11 * random.Next(2);
-            }
-            else
-            {
-                return 54 + random.Next(7);
-            }
-        }
-
         private void RenderMap()
         {
             textBox1.Text = map.ToString();
-            var bmp = map.ToImage(drawCritCheckBox.Checked, drawDeadEndsCheckBox.Checked);
-            if (pictureBox1.Image != null)
-                pictureBox1.Image.Dispose();
-            pictureBox1.Image = bmp;
+            using (var g = Graphics.FromImage(pictureBox1.Image))
+            {
+                mapWriter.Draw(g, map, drawCritCheckBox.Checked, drawDeadEndsCheckBox.Checked);
+            }
+            pictureBox1.Refresh();
         }
 
-        private async void generateButton_Click(object sender, EventArgs e)
+        private void generateButton_Click(object sender, EventArgs e)
         {
-            generateButton.Enabled = false;
-
             if (randomSeedCheckbox.Checked)
                 seedUpDown.Value = random.Next();
             if (randomRcCheckbox.Checked)
-                rcUpDown.Value = GenerateRoomcount();
+                rcUpDown.Value = random.RandomRoomcount(FloorSize.Large);
 
             map.Clear();
-            await GenerateNormalBase();
+            GenerateNormalBase();
             RenderMap();
-
-            generateButton.Enabled = true;
         }
 
         private void copyButton_Click(object sender, EventArgs e)
