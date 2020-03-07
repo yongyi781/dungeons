@@ -22,16 +22,28 @@ namespace MapGenerator
             InitializeComponent();
 
             pictureBox1.Image = new Bitmap(WIDTH * MapUtils.RoomSize, HEIGHT * MapUtils.RoomSize);
+            comboBox1.SelectedIndex = 0;
 
             Logger.TextBox = logTextBox;
         }
 
         private void GenerateNormalBase()
         {
-            mapGenerator = new MapGenerator((int)seedUpDown.Value, 19, 23);
+            mapGenerator = new MapGenerator((int)seedUpDown.Value, FloorSize.ByDimensions(WIDTH, HEIGHT));
             mapGenerator.GenerateBaseLocation(map);
 
-            mapGenerator.GeneratePrimVariant(map);
+            switch (comboBox1.SelectedIndex)
+            {
+                case 1:
+                    mapGenerator.GeneratePrimDoorVariant(map);
+                    break;
+                case 2:
+                    mapGenerator.GenerateAldousBroder(map);
+                    break;
+                default:
+                    mapGenerator.GeneratePrim(map);
+                    break;
+            }
             mapGenerator.AssignBossAndCritRooms(map);
             mapGenerator.MakeGaps(map, (int)rcUpDown.Value);
 
@@ -40,7 +52,7 @@ namespace MapGenerator
 
         private void GeneratePerpendicularBase()
         {
-            mapGenerator = new MapGenerator((int)seedUpDown.Value, 19, 23);
+            mapGenerator = new MapGenerator((int)seedUpDown.Value, FloorSize.ByDimensions(WIDTH, HEIGHT));
 
             // Perpendicular base
             map.Base = new Point(1, 0);
@@ -52,7 +64,7 @@ namespace MapGenerator
             map[np] = Direction.S;
             map[ep] = Direction.W;
 
-            mapGenerator.GeneratePrimVariant(map);
+            mapGenerator.GeneratePrim(map);
             //mapGenerator.AssignBossAndCritRooms(map);
             //await mapGenerator.MakeGaps(map, (int)rcUpDown.Value);
 
@@ -83,7 +95,7 @@ namespace MapGenerator
             if (randomSeedCheckbox.Checked)
                 seedUpDown.Value = random.Next();
             if (randomRcCheckbox.Checked)
-                rcUpDown.Value = random.RandomRoomcount(FloorSize.Large);
+                rcUpDown.Value = random.RandomRoomcount(FloorSize.ByDimensions(WIDTH, HEIGHT));
 
             map.Clear();
             GenerateNormalBase();
@@ -107,6 +119,11 @@ namespace MapGenerator
         private void drawBox_CheckedChanged(object sender, EventArgs e)
         {
             RenderMap();
+        }
+
+        private void openStatsWindowButton_Click(object sender, EventArgs e)
+        {
+            new StatsForm().Show();
         }
     }
 }

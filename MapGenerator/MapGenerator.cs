@@ -12,15 +12,13 @@ namespace MapGenerator
     {
         private Random random;
 
-        public MapGenerator(int seed, int minCrit, int maxCrit)
+        public MapGenerator(int seed, FloorSize floorSize)
         {
             random = new Random(seed);
-            MinCrit = minCrit;
-            MaxCrit = maxCrit;
+            FloorSize = floorSize;
         }
 
-        public int MinCrit { get; set; }
-        public int MaxCrit { get; set; }
+        public FloorSize FloorSize { get; }
 
         public void GenerateBaseLocation(Map map)
         {
@@ -42,45 +40,8 @@ namespace MapGenerator
             }
         }
 
-        public async Task GeneratePrim(Map map, Func<Task> callback = null)
-        {
-            var frontier = new List<Point>();
-            foreach (var room in map.GetRooms())
-            {
-                AddNeighborsToFrontier(room);
-            }
-            while (frontier.Count > 0)
-            {
-                // Select random point in frontier and remove it
-                var p = random.Choice(frontier);
-                frontier.Remove(p);
-                var validDirs = (from d in MapUtils.Directions
-                                 let p2 = p.Add(d)
-                                 where map.IsRoom(p2)
-                                 select d).ToArray();
-                map[p] = random.Choice(validDirs);
-                AddNeighborsToFrontier(p);
-
-                if (callback != null)
-                {
-                    await callback.Invoke();
-                    Logger.Log(string.Join('|', from f in frontier select f.ToShortString()));
-                }
-            }
-
-            void AddNeighborsToFrontier(Point p)
-            {
-                foreach (var dir in MapUtils.Directions)
-                {
-                    var p2 = p.Add(dir);
-                    if (p2.IsInRange(map.Width, map.Height) && !map.IsRoom(p2) && !frontier.Contains(p2))
-                        frontier.Add(p2);
-                }
-            }
-        }
-
         // Choose from open edges rather than rooms.
-        public void GeneratePrimVariant(Map map)
+        public void GeneratePrim(Map map)
         {
             var openEnds = new List<(Point, Direction)>();
             foreach (var room in map.GetRooms())
@@ -108,8 +69,39 @@ namespace MapGenerator
             }
         }
 
+        public void GeneratePrimDoorVariant(Map map)
+        {
+            var frontier = new List<Point>();
+            foreach (var room in map.GetRooms())
+            {
+                AddNeighborsToFrontier(room);
+            }
+            while (frontier.Count > 0)
+            {
+                // Select random point in frontier and remove it
+                var p = random.Choice(frontier);
+                frontier.Remove(p);
+                var validDirs = (from d in MapUtils.Directions
+                                 let p2 = p.Add(d)
+                                 where map.IsRoom(p2)
+                                 select d).ToArray();
+                map[p] = random.Choice(validDirs);
+                AddNeighborsToFrontier(p);
+            }
+
+            void AddNeighborsToFrontier(Point p)
+            {
+                foreach (var dir in MapUtils.Directions)
+                {
+                    var p2 = p.Add(dir);
+                    if (p2.IsInRange(map.Width, map.Height) && !map.IsRoom(p2) && !frontier.Contains(p2))
+                        frontier.Add(p2);
+                }
+            }
+        }
+
         // This makes a uniform distribution of spanning trees.
-        public async Task GenerateAldousBroder(Map map, Func<Task> callback = null)
+        public void GenerateAldousBroder(Map map)
         {
             // Random walk until map is full
             var visited = new HashSet<Point>(map.GetRooms());
@@ -123,15 +115,13 @@ namespace MapGenerator
                 {
                     visited.Add(p);
                     map[p] = dir.Flip();
-                    if (callback != null)
-                        await callback();
                 }
             }
         }
 
         public void AssignBossAndCritRooms(Map map)
         {
-            var desiredCritCount = random.Next(MinCrit, MaxCrit + 1);
+            var desiredCritCount = random.Next(FloorSize.MinCrit, FloorSize.MaxCrit + 1);
             Debug.WriteLine("Desired crit: " + desiredCritCount);
 
             // Assign some random (not-too-far) dead ends to crit until crit count exceeds desired.
@@ -150,8 +140,10 @@ namespace MapGenerator
         }
 
         // Select dead ends at random
-        public void MakeGaps(Map map, int roomcount)
+        public void MakeGaps(Map map, int roomcount = 0)
         {
+            if (roomcount == 0)
+                roomcount = random.RandomRoomcount(FloorSize);
             for (int i = 0; i < map.MaxRooms - roomcount; i++)
                 RemoveBonusDeadEnd(map);
         }

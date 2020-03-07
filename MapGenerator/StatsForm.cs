@@ -11,7 +11,7 @@ namespace MapGenerator
 {
     public partial class StatsForm : Form
     {
-        MapGenerator generator = new MapGenerator(0, 19, 23);
+        MapGenerator generator = new MapGenerator(0, FloorSize.Large);
 
         public StatsForm()
         {
@@ -42,7 +42,7 @@ namespace MapGenerator
                     map[np] = Direction.S;
                 if (ep.IsInRange(8, 8))
                     map[ep] = Direction.W;
-                generator.GeneratePrimVariant(map);
+                generator.GeneratePrim(map);
                 var ws = map.SubtreeSize(wp);
                 var ns = map.SubtreeSize(np);
                 var es = map.SubtreeSize(ep);
@@ -67,7 +67,7 @@ namespace MapGenerator
             {
                 map.Clear();
                 generator.GenerateBaseLocation(map);
-                generator.GeneratePrimVariant(map);
+                generator.GeneratePrim(map);
                 generator.AssignBossAndCritRooms(map);
                 generator.MakeGaps(map, roomcount);
 

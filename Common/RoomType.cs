@@ -12,6 +12,7 @@ namespace Dungeons.Common
         W = 8,
         Base = 16,
         Boss = 32,
-        Mystery = 64,
+        Crit = 64,
+        Mystery = 128,
     }
 }

@@ -84,7 +84,7 @@ namespace Dungeons
                 default:
                     break;
             }
-            if (!d.IsEmpty && FloorSize.IsValidMapCoords(Point.Add(SelectedLocation, d)))
+            if (!d.IsEmpty && FloorSize.IsInRange(Point.Add(SelectedLocation, d)))
             {
                 SelectedLocation = Point.Add(SelectedLocation, d);
                 Invalidate();
@@ -93,7 +93,7 @@ namespace Dungeons
 
         public void ProcessKeyPress(KeyPressEventArgs e)
         {
-            if (FloorSize.IsValidMapCoords(SelectedLocation))
+            if (FloorSize.IsInRange(SelectedLocation))
             {
                 var i = SelectedLocation.Y;
                 var j = SelectedLocation.X;
@@ -139,7 +139,7 @@ namespace Dungeons
         protected override void OnMouseDown(MouseEventArgs e)
         {
             var s = FloorSize.ClientToMapCoords(e.Location);
-            if (FloorSize.IsValidMapCoords(s))
+            if (FloorSize.IsInRange(s))
             {
                 if (e.Button == MouseButtons.Left)
                     SelectedLocation = s;
@@ -283,7 +283,7 @@ namespace Dungeons
 
         private void DrawSelectionRectangle(PaintEventArgs e)
         {
-            if (FloorSize.IsValidMapCoords(SelectedLocation))
+            if (FloorSize.IsInRange(SelectedLocation))
             {
                 var p = FloorSize.MapToClientCoords(SelectedLocation);
                 e.Graphics.DrawRectangle(SelectionPen, p.X, p.Y, 32, 32);

@@ -28,22 +28,22 @@ namespace Dungeons.Common
                 {
                     var p = new Point(x, y);
                     var roomBmp = RoomTypeToBitmap(map.GetRoomType(p));
-                    g.DrawImage(roomBmp, x * 32, (7 - y) * 32, 32, 32);
+                    g.DrawImage(roomBmp, x * 32, (map.Height - 1 - y) * 32, 32, 32);
                     if (drawDeadEnds && map.IsDeadEnd(p))
                     {
-                        g.FillRectangle(Brushes.Red, x * 32 + 14, (7 - y) * 32 + 14, 4, 4);
+                        g.FillRectangle(Brushes.Red, x * 32 + 14, (map.Height - 1 - y) * 32 + 14, 4, 4);
                     }
                     if (drawCritRooms && critRooms.Contains(p))
                     {
-                        g.FillRectangle(critBrush, x * 32 + 14, (7 - y) * 32 + 14, 4, 4);
+                        g.FillRectangle(critBrush, x * 32 + 14, (map.Height - 1 - y) * 32 + 14, 4, 4);
                     }
                 }
             }
 
             if (BaseOverlay != null)
-                g.DrawImage(BaseOverlay, 32 * map.Base.X, 32 * (7 - map.Base.Y));
+                g.DrawImage(BaseOverlay, 32 * map.Base.X, 32 * (map.Height - 1 - map.Base.Y));
             if (BossOverlay != null)
-                g.DrawImage(BossOverlay, 32 * map.Boss.X, 32 * (7 - map.Boss.Y));
+                g.DrawImage(BossOverlay, 32 * map.Boss.X, 32 * (map.Height - 1 - map.Boss.Y));
         }
 
         public Bitmap ToImage(Map map, bool drawCritRooms = false, bool drawDeadEnds = true)

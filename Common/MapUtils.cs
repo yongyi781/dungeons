@@ -133,14 +133,16 @@ namespace Dungeons.Common
 
         public static int RandomRoomcount(this Random random, FloorSize floorSize)
         {
+            var spread = floorSize.MaxRC - floorSize.MinRC + 1;
+
             if (random.Next(3) == 0)
             {
                 // Generate 50-53 or 61-64
-                return 50 + random.Next(4) + 11 * random.Next(2);
+                return floorSize.MinRC + random.Next(floorSize.RareRCSpread) + (spread - floorSize.RareRCSpread) * random.Next(2);
             }
             else
             {
-                return 54 + random.Next(7);
+                return floorSize.MinRC + floorSize.RareRCSpread + random.Next(spread - 2 * floorSize.RareRCSpread);
             }
         }
     }

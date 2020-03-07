@@ -53,7 +53,7 @@ namespace Dungeons.Common
 
             void Visit(Point p, Direction dir, int dist)
             {
-                if (!FloorSize.IsValidMapCoords(p) || visited.Contains(p))
+                if (!FloorSize.IsInRange(p) || visited.Contains(p))
                     return;
                 visited.Add(p);
 
