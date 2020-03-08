@@ -44,6 +44,7 @@
             this.drawDeadEndsCheckBox = new System.Windows.Forms.CheckBox();
             this.openStatsWindowButton = new System.Windows.Forms.Button();
             this.comboBox1 = new System.Windows.Forms.ComboBox();
+            this.browseButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.rcUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.seedUpDown)).BeginInit();
@@ -67,7 +68,7 @@
             this.generateButton.Margin = new System.Windows.Forms.Padding(2);
             this.generateButton.Name = "generateButton";
             this.generateButton.Size = new System.Drawing.Size(75, 23);
-            this.generateButton.TabIndex = 1;
+            this.generateButton.TabIndex = 4;
             this.generateButton.Text = "&Generate";
             this.generateButton.UseVisualStyleBackColor = true;
             this.generateButton.Click += new System.EventHandler(this.generateButton_Click);
@@ -79,7 +80,7 @@
             this.label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(73, 15);
-            this.label1.TabIndex = 2;
+            this.label1.TabIndex = 0;
             this.label1.Text = "Roomcount:";
             // 
             // rcUpDown
@@ -98,7 +99,7 @@
             0});
             this.rcUpDown.Name = "rcUpDown";
             this.rcUpDown.Size = new System.Drawing.Size(54, 23);
-            this.rcUpDown.TabIndex = 3;
+            this.rcUpDown.TabIndex = 1;
             this.rcUpDown.Value = new decimal(new int[] {
             50,
             0,
@@ -114,17 +115,17 @@
             this.textBox1.Multiline = true;
             this.textBox1.Name = "textBox1";
             this.textBox1.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.textBox1.Size = new System.Drawing.Size(390, 279);
+            this.textBox1.Size = new System.Drawing.Size(563, 279);
             this.textBox1.TabIndex = 4;
             // 
             // copyButton
             // 
             this.copyButton.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.copyButton.Location = new System.Drawing.Point(360, 7);
+            this.copyButton.Location = new System.Drawing.Point(451, 7);
             this.copyButton.Margin = new System.Windows.Forms.Padding(2);
             this.copyButton.Name = "copyButton";
             this.copyButton.Size = new System.Drawing.Size(75, 23);
-            this.copyButton.TabIndex = 5;
+            this.copyButton.TabIndex = 6;
             this.copyButton.Text = "&Copy";
             this.copyButton.UseVisualStyleBackColor = true;
             this.copyButton.Click += new System.EventHandler(this.copyButton_Click);
@@ -132,11 +133,11 @@
             // deleteDeadEndButton
             // 
             this.deleteDeadEndButton.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.deleteDeadEndButton.Location = new System.Drawing.Point(439, 7);
+            this.deleteDeadEndButton.Location = new System.Drawing.Point(530, 7);
             this.deleteDeadEndButton.Margin = new System.Windows.Forms.Padding(2);
             this.deleteDeadEndButton.Name = "deleteDeadEndButton";
             this.deleteDeadEndButton.Size = new System.Drawing.Size(98, 23);
-            this.deleteDeadEndButton.TabIndex = 6;
+            this.deleteDeadEndButton.TabIndex = 7;
             this.deleteDeadEndButton.Text = "&Delete Dead End";
             this.deleteDeadEndButton.UseVisualStyleBackColor = true;
             this.deleteDeadEndButton.Click += new System.EventHandler(this.deleteDeadEndButton_Click);
@@ -151,7 +152,7 @@
             this.logTextBox.Multiline = true;
             this.logTextBox.Name = "logTextBox";
             this.logTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.logTextBox.Size = new System.Drawing.Size(675, 131);
+            this.logTextBox.Size = new System.Drawing.Size(848, 276);
             this.logTextBox.TabIndex = 4;
             // 
             // label2
@@ -186,7 +187,7 @@
             this.randomSeedCheckbox.Location = new System.Drawing.Point(172, 37);
             this.randomSeedCheckbox.Name = "randomSeedCheckbox";
             this.randomSeedCheckbox.Size = new System.Drawing.Size(118, 20);
-            this.randomSeedCheckbox.TabIndex = 7;
+            this.randomSeedCheckbox.TabIndex = 10;
             this.randomSeedCheckbox.Text = "&Randomize seed";
             this.randomSeedCheckbox.UseVisualStyleBackColor = true;
             // 
@@ -197,7 +198,7 @@
             this.randomRcCheckbox.Location = new System.Drawing.Point(12, 37);
             this.randomRcCheckbox.Name = "randomRcCheckbox";
             this.randomRcCheckbox.Size = new System.Drawing.Size(154, 20);
-            this.randomRcCheckbox.TabIndex = 7;
+            this.randomRcCheckbox.TabIndex = 9;
             this.randomRcCheckbox.Text = "Randomize roomcount";
             this.randomRcCheckbox.UseVisualStyleBackColor = true;
             // 
@@ -208,7 +209,7 @@
             this.drawCritCheckBox.Location = new System.Drawing.Point(296, 37);
             this.drawCritCheckBox.Name = "drawCritCheckBox";
             this.drawCritCheckBox.Size = new System.Drawing.Size(79, 20);
-            this.drawCritCheckBox.TabIndex = 7;
+            this.drawCritCheckBox.TabIndex = 11;
             this.drawCritCheckBox.Text = "Draw &crit";
             this.drawCritCheckBox.UseVisualStyleBackColor = true;
             this.drawCritCheckBox.CheckedChanged += new System.EventHandler(this.drawBox_CheckedChanged);
@@ -220,7 +221,7 @@
             this.drawDeadEndsCheckBox.Location = new System.Drawing.Point(381, 37);
             this.drawDeadEndsCheckBox.Name = "drawDeadEndsCheckBox";
             this.drawDeadEndsCheckBox.Size = new System.Drawing.Size(116, 20);
-            this.drawDeadEndsCheckBox.TabIndex = 7;
+            this.drawDeadEndsCheckBox.TabIndex = 12;
             this.drawDeadEndsCheckBox.Text = "Draw dead ends";
             this.drawDeadEndsCheckBox.UseVisualStyleBackColor = true;
             this.drawDeadEndsCheckBox.CheckedChanged += new System.EventHandler(this.drawBox_CheckedChanged);
@@ -228,7 +229,7 @@
             // openStatsWindowButton
             // 
             this.openStatsWindowButton.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.openStatsWindowButton.Location = new System.Drawing.Point(542, 7);
+            this.openStatsWindowButton.Location = new System.Drawing.Point(645, 7);
             this.openStatsWindowButton.Name = "openStatsWindowButton";
             this.openStatsWindowButton.Size = new System.Drawing.Size(128, 23);
             this.openStatsWindowButton.TabIndex = 8;
@@ -242,26 +243,38 @@
             this.comboBox1.FormattingEnabled = true;
             this.comboBox1.Items.AddRange(new object[] {
             "Prim (likely same as RS)",
-            "Prim variant (doors)",
             "Uniform spanning tree"});
             this.comboBox1.Location = new System.Drawing.Point(503, 36);
             this.comboBox1.Name = "comboBox1";
             this.comboBox1.Size = new System.Drawing.Size(182, 23);
-            this.comboBox1.TabIndex = 9;
+            this.comboBox1.TabIndex = 13;
+            // 
+            // browseButton
+            // 
+            this.browseButton.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.browseButton.Location = new System.Drawing.Point(360, 7);
+            this.browseButton.Margin = new System.Windows.Forms.Padding(2);
+            this.browseButton.Name = "browseButton";
+            this.browseButton.Size = new System.Drawing.Size(75, 23);
+            this.browseButton.TabIndex = 5;
+            this.browseButton.Text = "&Browse...";
+            this.browseButton.UseVisualStyleBackColor = true;
+            this.browseButton.Click += new System.EventHandler(this.browseButton_Click);
             // 
             // Form1
             // 
             this.AcceptButton = this.generateButton;
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
-            this.ClientSize = new System.Drawing.Size(697, 490);
+            this.ClientSize = new System.Drawing.Size(870, 635);
+            this.Controls.Add(this.openStatsWindowButton);
+            this.Controls.Add(this.deleteDeadEndButton);
+            this.Controls.Add(this.browseButton);
+            this.Controls.Add(this.copyButton);
             this.Controls.Add(this.logTextBox);
             this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.textBox1);
             this.Controls.Add(this.comboBox1);
-            this.Controls.Add(this.openStatsWindowButton);
-            this.Controls.Add(this.deleteDeadEndButton);
-            this.Controls.Add(this.copyButton);
             this.Controls.Add(this.generateButton);
             this.Controls.Add(this.drawDeadEndsCheckBox);
             this.Controls.Add(this.drawCritCheckBox);
@@ -302,6 +315,7 @@
         private System.Windows.Forms.CheckBox drawDeadEndsCheckBox;
         private System.Windows.Forms.Button openStatsWindowButton;
         private System.Windows.Forms.ComboBox comboBox1;
+        private System.Windows.Forms.Button browseButton;
     }
 }
 

@@ -36,6 +36,8 @@ namespace Dungeons.Common
         public Point Base { get; set; } = MapUtils.Invalid;
         public Point Boss { get; set; } = MapUtils.Invalid;
         public SortedSet<Point> CritEndpoints { get; } = new SortedSet<Point>(new PointComparer());
+        public int Roomcount => GetRooms().Count();
+        public int GapCount => GetGaps().Count();
 
         public Point Parent(Point p) => p.Add(this[p]);
 
@@ -58,25 +60,23 @@ namespace Dungeons.Common
             foreach (var dir in ChildrenDirs(p))
                 roomType |= dir.ToRoomType();
 
-            return roomType == 0 ? RoomType.None : roomType;
+            return roomType == 0 ? RoomType.Gap : roomType;
         }
 
-        public bool IsDeadEnd(Point p, bool turningRequired = false)
+        public bool IsDeadEnd(Point p, bool includeBaseAndBoss = false)
         {
-            // Base, boss, and gaps are not dead ends
-            if (p == Base || p == Boss || !IsRoom(p))
+            // Gap is not a dead end, don't count boss unless inlcudeBaseAndBoss is true.
+            if (!IsRoom(p) || (p == Boss && !includeBaseAndBoss))
                 return false;
-            // Check if anything has it as a parent.
-            if (ChildrenDirs(p).Count() > 0)
-                return false;
-            if (turningRequired)
+
+            if (p == Base && includeBaseAndBoss)
             {
-                var d = this[p];
-                var p2 = p.Add(d);
-                if (this[p2] == d)
-                    return false;
+                // Base is a dead end if it has exactly one child.
+                return ChildrenDirs(Base).Count() == 1;
             }
-            return true;
+
+            // Check if anything has it as a parent.
+            return ChildrenDirs(p).Count() == 0;
         }
 
         public bool IsBonusDeadEnd(Point p)
@@ -87,13 +87,12 @@ namespace Dungeons.Common
         // aka non-gap
         public bool IsRoom(Point p)
         {
-            return p == Base || (p.IsInRange(Width, Height) && this[p] != Direction.None);
+            return p == Base || (p.IsInRange(Width, Height) && this[p] > Direction.None);
         }
 
         public void AddCritEndpoint(Point p)
         {
-            if (p != Base)
-                CritEndpoints.Add(p);
+            CritEndpoints.Add(p);
         }
 
         // Precondition: p is in CritEndpoints.
@@ -105,16 +104,16 @@ namespace Dungeons.Common
             }
         }
 
-        public List<Point> GetDeadEnds(bool turningOnly = false)
+        public List<Point> GetDeadEnds(bool includeBaseAndBoss = false)
         {
-            return (from p in MapUtils.GridPoints(Width, Height)
-                    where IsDeadEnd(p, turningOnly)
+            return (from p in MapUtils.Range2D(Width, Height)
+                    where IsDeadEnd(p, includeBaseAndBoss)
                     select p).ToList();
         }
 
         public List<Point> GetBonusDeadEnds()
         {
-            return (from p in MapUtils.GridPoints(Width, Height)
+            return (from p in MapUtils.Range2D(Width, Height)
                     where IsBonusDeadEnd(p)
                     select p).ToList();
         }
@@ -135,44 +134,132 @@ namespace Dungeons.Common
             }
         }
 
-        public void TraverseSubtree(Point p, Action<Point> callback)
+        public void TraverseSubtree(Point p, Action<Point, int> callback)
         {
-            void Visit(Point p2)
+            void Visit(Point p2, int depth)
             {
-                callback(p2);
+                callback(p2, depth);
                 foreach (var d in ChildrenDirs(p2))
-                    Visit(p2.Add(d));
+                    Visit(p2.Add(d), depth + 1);
             }
 
-            Visit(p);
+            Visit(p, 0);
         }
 
-        public int SubtreeSize(Point p)
+        // Traverses the entire map using the specified root.
+        // callback takes parameters point, direction to previous point, and depth.
+        public void TraverseWholeTree(Point root, Action<Point, Direction, int> callback)
         {
-            if (!p.IsInRange(Width, Height))
+            if (!root.IsInRange(Width, Height))
+                return;
+
+            HashSet<Point> visited = new HashSet<Point>();
+
+            void Visit(Point p, int dist)
+            {
+                visited.Add(p);
+
+                // Traverse both parent and children, if not visited before.
+                if (this[p] != Direction.None)
+                {
+                    var parent = Parent(p);
+                    if (!visited.Contains(Parent(p)))
+                    {
+                        Visit(parent, dist + 1);
+                        callback(parent, this[p].Flip(), dist + 1);
+                    }
+                }
+                foreach (var d in ChildrenDirs(p))
+                {
+                    if (!visited.Contains(p.Add(d)))
+                    {
+                        Visit(p.Add(d), dist + 1);
+                        callback(p.Add(d), d.Flip(), dist + 1);
+                    }
+                }
+            }
+
+            Visit(root, 0);
+        }
+
+        public int SubtreeSize(Point point)
+        {
+            if (!point.IsInRange(Width, Height))
                 return 0;
 
             int count = 0;
-            TraverseSubtree(p, _ => ++count);
+            TraverseSubtree(point, (_, _2) => ++count);
             return count;
         }
 
         // Gets the number of neighboring gaps
-        public int GetDensity(Point p)
+        public int GetDensity(Point point)
         {
             return (from d in MapUtils.Directions
-                    let p2 = p.Add(d)
-                    where p2.IsInRange(Width, Height) && IsRoom(p2)
-                    select p2).Count();
+                    let p = point.Add(d)
+                    where p.IsInRange(Width, Height) && IsRoom(p)
+                    select p).Count();
         }
 
         // Returns a list of non-gap rooms.
         public List<Point> GetRooms()
         {
-            return (from p in MapUtils.GridPoints(Width, Height)
+            return (from p in MapUtils.Range2D(Width, Height)
                     where IsRoom(p)
                     select p).ToList();
         }
+
+        // Returns a list of specifically gaps.
+        public List<Point> GetGaps()
+        {
+            return (from p in MapUtils.Range2D(Width, Height)
+                    where this[p] == Direction.Gap
+                    select p).ToList();
+        }
+
+        public List<Point> GetNonRooms()
+        {
+            return (from p in MapUtils.Range2D(Width, Height)
+                    where !IsRoom(p)
+                    select p).ToList();
+        }
+
+        // Returns the height of the tree underlying the map.
+        public int GetTreeHeight()
+        {
+            var maxDepth = -1;
+
+            TraverseSubtree(Base, (_, d) => maxDepth = Math.Max(maxDepth, d));
+
+            return maxDepth;
+        }
+
+        /// <summary>
+        /// Farthest point from p.
+        /// </summary>
+        public (Point, int) GetFarthestPoint(Point point)
+        {
+            var maxDist = 0;
+            var farthest = point;
+
+            TraverseWholeTree(point, (p, _, dist) =>
+            {
+                if (maxDist < dist)
+                {
+                    maxDist = dist;
+                    farthest = p;
+                }
+            });
+
+            return (farthest, maxDist);
+        }
+
+        /// <summary>
+        /// Max distance from p to another point: https://en.wikipedia.org/wiki/Distance_(graph_theory).
+        /// </summary>
+        public int GetEccentricity(Point point) => GetFarthestPoint(point).Item2;
+
+        public int GetDiameter() => GetEccentricity(GetFarthestPoint(Base).Item1);
 
         public void Clear()
         {
@@ -184,8 +271,6 @@ namespace Dungeons.Common
                 }
             }
 
-            Base = MapUtils.Invalid;
-            Boss = MapUtils.Invalid;
             CritEndpoints.Clear();
         }
 
@@ -203,38 +288,57 @@ namespace Dungeons.Common
         // Precondition: p must be a dead end.
         public void RemoveDeadEnd(Point p)
         {
+            if (p == Base)
+            {
+                // Better have just one child. Replace base with its child.
+                var dir = ChildrenDirs(Base).SingleOrDefault();
+                if (dir != Direction.None)
+                {
+                    Base = Base.Add(dir);
+                    this[Base] = Direction.None;
+                    // Remove new base from crit endpoints
+                    CritEndpoints.Remove(Base);
+                }
+            }
+            else if (CritEndpoints.Contains(p))
+            {
+                CritEndpoints.Remove(p);
+                AddCritEndpoint(Parent(p));
+            }
             parentDirs[p.X, p.Y] = Direction.None;
+        }
+
+        // Sets the new base.
+        public void Rebase(Point newBase)
+        {
+            if (newBase == Base)
+                return;
+
+            TraverseWholeTree(newBase, (p, dir, _) =>
+            {
+                this[p] = dir;
+            });
+            this[newBase] = Direction.None;
+            Base = newBase;
         }
 
         public string ToPrettyString()
         {
-            var sb = new StringBuilder();
-            for (int y = Height - 1; y >= 0; y--)
-            {
-                for (int x = 0; x < Width; x++)
-                {
-                    var a = parentDirs[x, y];
-                    sb.Append(a == Direction.None ? "-" : a.ToString());
-                }
-                if (y > 0)
-                    sb.AppendLine();
-            }
-            return sb.ToString();
+            return parentDirs.ToPrettyString(a => DirectionToChar(a), string.Empty);
         }
 
         public override string ToString()
         {
-            var sb = new StringBuilder();
-            for (int y = Height - 1; y >= 0; y--)
-            {
-                for (int x = 0; x < Width; x++)
-                {
-                    var a = parentDirs[x, y];
-                    sb.Append(a == Direction.None ? "-" : a.ToString());
-                }
-            }
-            var critStr = string.Join(",", from x in CritEndpoints where x != Boss select x.ToChessString());
-            return $"{Width},{Height},{sb},{Base.ToChessString()},{Boss.ToChessString()},{critStr}";
+            var sep = " ";
+            var mapStr = parentDirs.ToPrettyString(a => DirectionToChar(a), string.Empty, "/");
+
+            var critStr = string.Join(sep, from x in CritEndpoints where x != Boss select x.ToChessString());
+            return $"{Width}{sep}{Height}{sep}{mapStr}{sep}{Base.ToChessString()}{sep}{Boss.ToChessString()}{sep}{critStr}";
+        }
+
+        private string DirectionToChar(Direction dir)
+        {
+            return dir == Direction.Gap ? "-" : dir == Direction.None ? "." : dir.ToString();
         }
     }
 }

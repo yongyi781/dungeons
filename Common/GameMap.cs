@@ -41,11 +41,11 @@ namespace Dungeons.Common
         private void ComputeMapData()
         {
             // Initialize
-            for (int i = 0; i < Height; i++)
+            for (int y = 0; y < Height; y++)
             {
-                for (int j = 0; j < Width; j++)
+                for (int x = 0; x < Width; x++)
                 {
-                    Distances[i, j] = int.MaxValue;
+                    Distances[x, y] = int.MaxValue;
                 }
             }
 
@@ -59,7 +59,7 @@ namespace Dungeons.Common
 
                 Distances[p.X, p.Y] = dist;
                 Map[p] = dir.Flip();
-                if (RoomTypes[p.X, p.Y] == RoomType.None)
+                if (RoomTypes[p.X, p.Y] == RoomType.Gap)
                     RoomTypes[p.X, p.Y] = RoomType.Mystery;
 
                 foreach (var d in MapUtils.Directions)
@@ -83,6 +83,6 @@ namespace Dungeons.Common
         public int[,] Distances { get; }
         public int OpenedRoomCount { get; set; }
         public int DeadEndCount { get; set; }
-        public bool IsComplete => MapUtils.GridPoints(FloorSize.NumColumns, FloorSize.NumRows).All(p => RoomTypes[p.X, p.Y] != RoomType.Mystery);
+        public bool IsComplete => OpenedRoomCount > 0 && MapUtils.Range2D(FloorSize.NumColumns, FloorSize.NumRows).All(p => RoomTypes[p.X, p.Y] != RoomType.Mystery);
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Dungeons.Common;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
@@ -28,6 +29,13 @@ namespace Dungeons
             Keys.Down
         };
 
+        private static readonly Dictionary<FloorSize, Size> rsMapSizes = new Dictionary<FloorSize, Size>
+        {
+            [FloorSize.Small] = new Size(140, 140),
+            [FloorSize.Medium] = new Size(140, 280),
+            [FloorSize.Large] = new Size(280, 280)
+        };
+
         public Form1()
         {
             InitializeComponent();
@@ -49,6 +57,7 @@ namespace Dungeons
 
         public void SaveMap()
         {
+            Directory.CreateDirectory(Properties.Settings.Default.MapSaveLocation);
             if (mapPictureBox.Image != null && Directory.Exists(Properties.Settings.Default.MapSaveLocation))
             {
                 var fileName = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss");
@@ -128,7 +137,8 @@ namespace Dungeons
             {
                 if (Properties.Settings.Default.MapLocation != MapUtils.Invalid)
                 {
-                    var bmp = new Bitmap(floorSize.MapSize.Width, floorSize.MapSize.Height);
+                    var mapSize = rsMapSizes[floorSize];
+                    var bmp = new Bitmap(mapSize.Width, mapSize.Height);
                     using (var g = Graphics.FromImage(bmp))
                     {
                         try
@@ -143,6 +153,7 @@ namespace Dungeons
                     if (MapReader.IsValidInGameMap(bmp))
                     {
                         FloorSize = floorSize;
+                        mapPictureBox.Size = mapSize;
                         timer.Start();
                         if (mapPictureBox.Image != null)
                             mapPictureBox.Image.Dispose();

@@ -3,13 +3,13 @@
   <Profiles />
   <Settings>
     <Setting Name="MapSaveLocation" Type="System.String" Scope="User">
-      <Value Profile="(Default)">C:\Users\yongy\OneDrive\Pictures\RS Screenshots\DG Maps</Value>
+      <Value Profile="(Default)">Maps</Value>
     </Setting>
     <Setting Name="MapLocation" Type="System.Drawing.Point" Scope="User">
       <Value Profile="(Default)">2703, 370</Value>
     </Setting>
     <Setting Name="WinterfaceSaveLocation" Type="System.String" Scope="User">
-      <Value Profile="(Default)">C:\Users\yongy\OneDrive\Pictures\Winterfaces</Value>
+      <Value Profile="(Default)">Winterfaces</Value>
     </Setting>
   </Settings>
 </SettingsFile>

@@ -41,7 +41,11 @@
             this.comboBox1.FormattingEnabled = true;
             this.comboBox1.Items.AddRange(new object[] {
             "Perpendicular base",
-            "Row or column gap"});
+            "Row or column gap",
+            "Dead end distribution",
+            "Height and eccentricity distribution",
+            "Read from folder",
+            "Wall test"});
             this.comboBox1.Location = new System.Drawing.Point(12, 12);
             this.comboBox1.Name = "comboBox1";
             this.comboBox1.Size = new System.Drawing.Size(295, 23);
@@ -95,8 +99,8 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
-            this.Controls.Add(this.resultsTextBox);
             this.Controls.Add(this.runButton);
+            this.Controls.Add(this.resultsTextBox);
             this.Controls.Add(this.textBox1);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.comboBox1);

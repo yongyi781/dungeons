@@ -5,7 +5,7 @@ namespace Dungeons.Common
     [Flags]
     public enum RoomType
     {
-        None,
+        Gap,
         E = 1,
         N = 2,
         S = 4,

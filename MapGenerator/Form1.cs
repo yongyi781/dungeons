@@ -1,6 +1,7 @@
 ﻿using Dungeons.Common;
 using System;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -12,7 +13,7 @@ namespace MapGenerator
         private const int WIDTH = 8;
         private const int HEIGHT = 8;
 
-        private readonly Map map = new Map(WIDTH, HEIGHT);
+        private Map map = new Map(WIDTH, HEIGHT);
         private readonly MapWriter mapWriter = new MapWriter(Resources.ResourceManager);
         private readonly Random random = new Random();
         private MapGenerator mapGenerator;
@@ -30,54 +31,30 @@ namespace MapGenerator
         private void GenerateNormalBase()
         {
             mapGenerator = new MapGenerator((int)seedUpDown.Value, FloorSize.ByDimensions(WIDTH, HEIGHT));
-            mapGenerator.GenerateBaseLocation(map);
+            var bossFaceDir = mapGenerator.MakeBossAndStartingGaps(map, (int)rcUpDown.Value);
+            map.Base = map.Boss;
 
             switch (comboBox1.SelectedIndex)
             {
                 case 1:
-                    mapGenerator.GeneratePrimDoorVariant(map);
-                    break;
-                case 2:
-                    mapGenerator.GenerateAldousBroder(map);
+                    mapGenerator.GenerateAldousBroder(map, bossFaceDir);
                     break;
                 default:
-                    mapGenerator.GeneratePrim(map);
+                    mapGenerator.GeneratePrimDeadEndBase(map, bossFaceDir);
                     break;
             }
-            mapGenerator.AssignBossAndCritRooms(map);
-            mapGenerator.MakeGaps(map, (int)rcUpDown.Value);
 
-            Logger.Log($"seed={seedUpDown.Value}, rc={rcUpDown.Value}, crit count={map.GetCritRooms().Count}, dead end count={map.GetDeadEnds().Count}, east size={map.SubtreeSize(map.Base.Add(Direction.E))}");
-        }
+            // Rebase
+            mapGenerator.AssignCritRooms(map);
+            mapGenerator.Rebase(map);
 
-        private void GeneratePerpendicularBase()
-        {
-            mapGenerator = new MapGenerator((int)seedUpDown.Value, FloorSize.ByDimensions(WIDTH, HEIGHT));
-
-            // Perpendicular base
-            map.Base = new Point(1, 0);
-            var wp = map.Base.Add(Direction.W);
-            var np = map.Base.Add(Direction.N);
-            var ep = map.Base.Add(Direction.E);
-
-            map[wp] = Direction.E;
-            map[np] = Direction.S;
-            map[ep] = Direction.W;
-
-            mapGenerator.GeneratePrim(map);
-            //mapGenerator.AssignBossAndCritRooms(map);
-            //await mapGenerator.MakeGaps(map, (int)rcUpDown.Value);
-
-            if (map.ChildrenDirs(map.Base).Count() == 3)
+            var subtreeStr = string.Empty;
+            foreach (var dir in map.ChildrenDirs(map.Base))
             {
-                var ws = map.SubtreeSize(wp);
-                var ns = map.SubtreeSize(np);
-                var es = map.SubtreeSize(ep);
-                var max = Math.Max(ws, Math.Max(ns, es));
-
-                //Logger.Log($"seed={seedUpDown.Value}, rc={rcUpDown.Value}, crit count={map.CritRooms.Count}, dead end count={map.GetDeadEnds().Count}, w={ws}, n={ns}, e={es}");
-                Logger.Log($"{(ws==max?1:0)}\t{(ns == max ? 1 : 0)}\t{(es == max ? 1 : 0)}");
+                subtreeStr += $", {dir}={map.SubtreeSize(map.Base.Add(dir))}";
             }
+
+            Logger.Log($"seed={seedUpDown.Value,10}, rc={map.Roomcount}, crit count={map.GetCritRooms().Count}, dead end count={map.GetDeadEnds().Count,2}, tree height={map.GetTreeHeight()}, boss ecc={map.GetEccentricity(map.Boss)}, diameter={map.GetDiameter()}, boss-base dist={map.DistanceToBase(map.Boss)}{subtreeStr}");
         }
 
         private void RenderMap()
@@ -123,7 +100,26 @@ namespace MapGenerator
 
         private void openStatsWindowButton_Click(object sender, EventArgs e)
         {
-            new StatsForm().Show();
+            new StatsForm().Show(this);
+        }
+
+        private void browseButton_Click(object sender, EventArgs e)
+        {
+            using var ofd = new OpenFileDialog { Filter = "Image Files|*.png|All Files|*.*" };
+            if (ofd.ShowDialog() == DialogResult.OK)
+            {
+                var bmp = new Bitmap(ofd.FileName);
+                var gameMap = new MapReader(Resources.ResourceManager).ReadMap(bmp, FloorSize.ByImageSize(bmp.Size));
+                map = gameMap.Map;
+                RenderMap();
+
+                var subtreeStr = string.Empty;
+                foreach (var dir in map.ChildrenDirs(map.Base))
+                {
+                    subtreeStr += $", {dir}={map.SubtreeSize(map.Base.Add(dir))}";
+                }
+                Logger.Log($"{(gameMap.IsComplete ? "[complete]   " : "[incomplete] ")}name={Path.GetFileName(ofd.FileName)}, rc={map.Roomcount}, dead end count={map.GetDeadEnds().Count,2}, tree height={map.GetTreeHeight()}, boss ecc={map.GetEccentricity(map.Boss)}, diameter={map.GetDiameter()}{subtreeStr}");
+            }
         }
     }
 }

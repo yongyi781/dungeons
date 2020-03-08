@@ -27,15 +27,18 @@ namespace Dungeons.Common
                 for (int x = 0; x < map.Width; x++)
                 {
                     var p = new Point(x, y);
-                    var roomBmp = RoomTypeToBitmap(map.GetRoomType(p));
-                    g.DrawImage(roomBmp, x * 32, (map.Height - 1 - y) * 32, 32, 32);
-                    if (drawDeadEnds && map.IsDeadEnd(p))
+                    if (map[p] != Direction.Gap)
                     {
-                        g.FillRectangle(Brushes.Red, x * 32 + 14, (map.Height - 1 - y) * 32 + 14, 4, 4);
-                    }
-                    if (drawCritRooms && critRooms.Contains(p))
-                    {
-                        g.FillRectangle(critBrush, x * 32 + 14, (map.Height - 1 - y) * 32 + 14, 4, 4);
+                        var roomBmp = RoomTypeToBitmap(map.GetRoomType(p));
+                        g.DrawImage(roomBmp, x * 32, (map.Height - 1 - y) * 32, 32, 32);
+                        if (drawDeadEnds && map.IsDeadEnd(p))
+                        {
+                            g.FillRectangle(Brushes.Red, x * 32 + 14, (map.Height - 1 - y) * 32 + 14, 4, 4);
+                        }
+                        if (drawCritRooms && critRooms.Contains(p))
+                        {
+                            g.FillRectangle(critBrush, x * 32 + 14, (map.Height - 1 - y) * 32 + 14, 4, 4);
+                        }
                     }
                 }
             }
@@ -46,7 +49,7 @@ namespace Dungeons.Common
                 g.DrawImage(BossOverlay, 32 * map.Boss.X, 32 * (map.Height - 1 - map.Boss.Y));
         }
 
-        public Bitmap ToImage(Map map, bool drawCritRooms = false, bool drawDeadEnds = true)
+        public Bitmap WriteToImage(Map map, bool drawCritRooms = false, bool drawDeadEnds = false)
         {
             var bmp = new Bitmap(32 * map.Width, 32 * map.Height);
             using (var g = Graphics.FromImage(bmp))

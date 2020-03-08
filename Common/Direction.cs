@@ -1,4 +1,4 @@
 ﻿namespace Dungeons.Common
 {
-    public enum Direction { None, W, E, S, N };
+    public enum Direction { Gap = -1, None, W, E, S, N };
 }

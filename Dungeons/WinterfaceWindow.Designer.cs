@@ -48,10 +48,18 @@
             this.Roomcount = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.DeadEnds = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.browseWinterfaceSaveLocationButton = new System.Windows.Forms.Button();
+            this.winterfaceSaveLocationTextBox = new System.Windows.Forms.TextBox();
+            this.winterfaceSaveLocationLabel = new System.Windows.Forms.Label();
+            this.browseMapSaveLocationButton = new System.Windows.Forms.Button();
+            this.mapSaveLocationTextBox = new System.Windows.Forms.TextBox();
+            this.label1 = new System.Windows.Forms.Label();
             this.saveImagesCheckBox = new System.Windows.Forms.CheckBox();
             this.captureButton = new System.Windows.Forms.Button();
             this.multiplayerColumnsRadioButton = new System.Windows.Forms.RadioButton();
             this.soloColumnsRadioButton = new System.Windows.Forms.RadioButton();
+            this.mapFolderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
+            this.winterfaceFolderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
@@ -83,9 +91,9 @@
             this.Roomcount,
             this.DeadEnds});
             this.dataGridView1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dataGridView1.Location = new System.Drawing.Point(0, 26);
+            this.dataGridView1.Location = new System.Drawing.Point(0, 55);
             this.dataGridView1.Name = "dataGridView1";
-            this.dataGridView1.Size = new System.Drawing.Size(688, 179);
+            this.dataGridView1.Size = new System.Drawing.Size(765, 236);
             this.dataGridView1.TabIndex = 0;
             // 
             // ID
@@ -200,6 +208,12 @@
             // 
             this.panel1.AutoSize = true;
             this.panel1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.panel1.Controls.Add(this.browseWinterfaceSaveLocationButton);
+            this.panel1.Controls.Add(this.winterfaceSaveLocationTextBox);
+            this.panel1.Controls.Add(this.winterfaceSaveLocationLabel);
+            this.panel1.Controls.Add(this.browseMapSaveLocationButton);
+            this.panel1.Controls.Add(this.mapSaveLocationTextBox);
+            this.panel1.Controls.Add(this.label1);
             this.panel1.Controls.Add(this.saveImagesCheckBox);
             this.panel1.Controls.Add(this.captureButton);
             this.panel1.Controls.Add(this.multiplayerColumnsRadioButton);
@@ -207,8 +221,64 @@
             this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(688, 26);
+            this.panel1.Size = new System.Drawing.Size(765, 55);
             this.panel1.TabIndex = 1;
+            // 
+            // browseWinterfaceSaveLocationButton
+            // 
+            this.browseWinterfaceSaveLocationButton.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.browseWinterfaceSaveLocationButton.Location = new System.Drawing.Point(572, 28);
+            this.browseWinterfaceSaveLocationButton.Name = "browseWinterfaceSaveLocationButton";
+            this.browseWinterfaceSaveLocationButton.Size = new System.Drawing.Size(24, 23);
+            this.browseWinterfaceSaveLocationButton.TabIndex = 9;
+            this.browseWinterfaceSaveLocationButton.Text = "...";
+            this.browseWinterfaceSaveLocationButton.UseVisualStyleBackColor = true;
+            this.browseWinterfaceSaveLocationButton.Click += new System.EventHandler(this.browseWinterfaceSaveLocationButton_Click);
+            // 
+            // winterfaceSaveLocationTextBox
+            // 
+            this.winterfaceSaveLocationTextBox.Location = new System.Drawing.Point(435, 29);
+            this.winterfaceSaveLocationTextBox.Name = "winterfaceSaveLocationTextBox";
+            this.winterfaceSaveLocationTextBox.ReadOnly = true;
+            this.winterfaceSaveLocationTextBox.Size = new System.Drawing.Size(131, 23);
+            this.winterfaceSaveLocationTextBox.TabIndex = 8;
+            // 
+            // winterfaceSaveLocationLabel
+            // 
+            this.winterfaceSaveLocationLabel.AutoSize = true;
+            this.winterfaceSaveLocationLabel.Location = new System.Drawing.Point(290, 32);
+            this.winterfaceSaveLocationLabel.Name = "winterfaceSaveLocationLabel";
+            this.winterfaceSaveLocationLabel.Size = new System.Drawing.Size(139, 15);
+            this.winterfaceSaveLocationLabel.TabIndex = 7;
+            this.winterfaceSaveLocationLabel.Text = "Winterface save location:";
+            // 
+            // browseMapSaveLocationButton
+            // 
+            this.browseMapSaveLocationButton.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.browseMapSaveLocationButton.Location = new System.Drawing.Point(260, 28);
+            this.browseMapSaveLocationButton.Name = "browseMapSaveLocationButton";
+            this.browseMapSaveLocationButton.Size = new System.Drawing.Size(24, 23);
+            this.browseMapSaveLocationButton.TabIndex = 6;
+            this.browseMapSaveLocationButton.Text = "...";
+            this.browseMapSaveLocationButton.UseVisualStyleBackColor = true;
+            this.browseMapSaveLocationButton.Click += new System.EventHandler(this.browseMapSaveLocationButton_Click);
+            // 
+            // mapSaveLocationTextBox
+            // 
+            this.mapSaveLocationTextBox.Location = new System.Drawing.Point(123, 29);
+            this.mapSaveLocationTextBox.Name = "mapSaveLocationTextBox";
+            this.mapSaveLocationTextBox.ReadOnly = true;
+            this.mapSaveLocationTextBox.Size = new System.Drawing.Size(131, 23);
+            this.mapSaveLocationTextBox.TabIndex = 5;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(11, 32);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(106, 15);
+            this.label1.TabIndex = 4;
+            this.label1.Text = "Map save location:";
             // 
             // saveImagesCheckBox
             // 
@@ -260,11 +330,19 @@
             this.soloColumnsRadioButton.UseVisualStyleBackColor = true;
             this.soloColumnsRadioButton.CheckedChanged += new System.EventHandler(this.modeRadioButton_CheckedChanged);
             // 
+            // mapFolderBrowserDialog
+            // 
+            this.mapFolderBrowserDialog.Description = "Select map save location.";
+            // 
+            // winterfaceFolderBrowserDialog
+            // 
+            this.winterfaceFolderBrowserDialog.Description = "Select winterface save location.";
+            // 
             // WinterfaceWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
-            this.ClientSize = new System.Drawing.Size(688, 205);
+            this.ClientSize = new System.Drawing.Size(765, 291);
             this.Controls.Add(this.dataGridView1);
             this.Controls.Add(this.panel1);
             this.DoubleBuffered = true;
@@ -308,5 +386,13 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn Roomcount;
         private System.Windows.Forms.DataGridViewTextBoxColumn DeadEnds;
         private System.Windows.Forms.CheckBox saveImagesCheckBox;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.TextBox mapSaveLocationTextBox;
+        private System.Windows.Forms.Button browseMapSaveLocationButton;
+        private System.Windows.Forms.Button browseWinterfaceSaveLocationButton;
+        private System.Windows.Forms.TextBox winterfaceSaveLocationTextBox;
+        private System.Windows.Forms.Label winterfaceSaveLocationLabel;
+        private System.Windows.Forms.FolderBrowserDialog mapFolderBrowserDialog;
+        private System.Windows.Forms.FolderBrowserDialog winterfaceFolderBrowserDialog;
     }
 }

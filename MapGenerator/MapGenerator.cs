@@ -10,7 +10,7 @@ namespace MapGenerator
 {
     public class MapGenerator
     {
-        private Random random;
+        private readonly Random random;
 
         public MapGenerator(int seed, FloorSize floorSize)
         {
@@ -28,7 +28,7 @@ namespace MapGenerator
         // Generates a completely random map with possible loops.
         public async Task GenerateWithPossibleLoops(Map map, Func<Task> callback)
         {
-            foreach (var p in MapUtils.GridPoints(map.Width, map.Height))
+            foreach (var p in MapUtils.Range2D(map.Width, map.Height))
             {
                 if (p != map.Base)
                 {
@@ -41,7 +41,7 @@ namespace MapGenerator
         }
 
         // Choose from open edges rather than rooms.
-        public void GeneratePrim(Map map)
+        public void GeneratePrim(Map map, bool oneWayRoot = false)
         {
             var openEnds = new List<(Point, Direction)>();
             foreach (var room in map.GetRooms())
@@ -68,6 +68,60 @@ namespace MapGenerator
                 }
             }
         }
+
+        // Choose from open edges rather than rooms.
+        public void GeneratePrimDeadEndBase(Map map, Direction baseFaceDir)
+        {
+            var openEnds = new List<(Point, Direction)> { (map.Base.Add(baseFaceDir), baseFaceDir.Flip()) };
+
+            while (openEnds.Count > 0)
+            {
+                // Select random element in openEnds and remove every other entry with the same point.
+                var (p, dir) = random.Choice(openEnds);
+                openEnds.RemoveAll(a => a.Item1 == p);
+                map[p] = dir;
+                AddNeighborsToFrontier(p);
+            }
+
+            void AddNeighborsToFrontier(Point p)
+            {
+                foreach (var dir in MapUtils.Directions)
+                {
+                    var p2 = p.Add(dir);
+                    if (p2.IsInRange(map.Width, map.Height) && map[p2] != Direction.Gap && !map.IsRoom(p2))
+                        openEnds.Add((p2, dir.Flip()));
+                }
+            }
+        }
+
+        //// Generate entire map, starting with boss, also assigning crit. This also clears the map.
+        //public void GeneratePrimBackwards(Map map)
+        //{
+        //    map.Clear();
+        //    map.Boss = random.NextPoint(map.Width, map.Height);
+
+        //    var bossFaceDir = random.Choice(map.Boss.ValidDirections(map.Width, map.Height));
+        //    var openEnds = new List<(Point, Direction)> { (map.Boss.Add(bossFaceDir), bossFaceDir.Flip()) };
+
+        //    while (openEnds.Count > 0)
+        //    {
+        //        // Select random element in openEnds and remove every other entry with the same point.
+        //        var (p, dir) = random.Choice(openEnds);
+        //        openEnds.RemoveAll(a => a.Item1 == p);
+        //        map[p] = dir;
+        //        AddNeighborsToFrontier(p);
+        //    }
+
+        //    void AddNeighborsToFrontier(Point p)
+        //    {
+        //        foreach (var dir in MapUtils.Directions)
+        //        {
+        //            var p2 = p.Add(dir);
+        //            if (p2.IsInRange(map.Width, map.Height) && p2 != map.Boss && !map.IsRoom(p2))
+        //                openEnds.Add((p2, dir.Flip()));
+        //        }
+        //    }
+        //}
 
         public void GeneratePrimDoorVariant(Map map)
         {
@@ -101,14 +155,19 @@ namespace MapGenerator
         }
 
         // This makes a uniform distribution of spanning trees.
-        public void GenerateAldousBroder(Map map)
+        public void GenerateAldousBroder(Map map, Direction baseFaceDir)
         {
             // Random walk until map is full
             var visited = new HashSet<Point>(map.GetRooms());
-            var p = map.Base;
-            while (visited.Count < map.Width * map.Height)
+            var p = map.Base.Add(baseFaceDir);
+            visited.Add(p);
+            map[p] = baseFaceDir.Flip();
+            while (visited.Count < map.MaxRooms - map.GapCount)
             {
-                var validDirs = p.ValidDirections(map.Width, map.Height);
+                var validDirs = (from d in p.ValidDirections(map.Width, map.Height)
+                                 let p2 = p.Add(d)
+                                 where p2 != map.Base && map[p2] != Direction.Gap
+                                 select d).ToList();
                 var dir = random.Choice(validDirs);
                 p = p.Add(dir);
                 if (!visited.Contains(p))
@@ -119,15 +178,17 @@ namespace MapGenerator
             }
         }
 
-        public void AssignBossAndCritRooms(Map map)
+        public void AssignCritRooms(Map map)
         {
             var desiredCritCount = random.Next(FloorSize.MinCrit, FloorSize.MaxCrit + 1);
             Debug.WriteLine("Desired crit: " + desiredCritCount);
 
+            // Boss is crit.
+            map.AddCritEndpoint(map.Boss);
+            
             // Assign some random (not-too-far) dead ends to crit until crit count exceeds desired.
             var deadEnds = (from de in map.GetDeadEnds() where map.DistanceToBase(de) < desiredCritCount select de).ToList();
             random.Shuffle(deadEnds);
-            map.Boss = deadEnds[0];
             for (int i = 0; map.GetCritRooms().Count < desiredCritCount && i < deadEnds.Count; i++)
                 map.AddCritEndpoint(deadEnds[i]);
 
@@ -148,12 +209,74 @@ namespace MapGenerator
                 RemoveBonusDeadEnd(map);
         }
 
+        // Returns the boss face direction.
+        public Direction MakeBossAndStartingGaps(Map map, int roomcount = 0)
+        {
+            if (roomcount == 0)
+                roomcount = random.RandomRoomcount(FloorSize);
+
+            Direction bossFaceDir = Direction.None;
+            var solvable = false;
+
+            while (!solvable)
+            {
+                map.Clear();
+
+                var points = MapUtils.Range2D(map.Width, map.Height).ToList();
+                random.Shuffle(points);
+                map.Boss = points[0];
+                for (int i = 0; i < map.MaxRooms - roomcount; i++)
+                {
+                    map[points[i + 1]] = Direction.Gap;
+                }
+                var validDirs = (from d in map.Boss.ValidDirections(map.Width, map.Height)
+                                 where map[map.Boss.Add(d)] != Direction.Gap
+                                 select d).ToList();
+                if (validDirs.Count == 0)
+                    continue;
+                bossFaceDir = random.Choice(validDirs);
+                solvable = IsSolvable();
+            }
+
+            return bossFaceDir;
+
+            bool IsSolvable()
+            {
+                var visited = new HashSet<Point> { map.Boss };
+                var visitCount = 1;
+
+                void Visit(Point p)
+                {
+                    visited.Add(p);
+                    ++visitCount;
+                    foreach (var dir in p.ValidDirections(map.Width, map.Height))
+                    {
+                        var p2 = p.Add(dir);
+                        if (map[p2] != Direction.Gap && !visited.Contains(p2))
+                            Visit(p2);
+                    }
+                }
+
+                Visit(map.Boss.Add(bossFaceDir));
+                return visitCount == roomcount;
+            }
+        }
+
         public void RemoveBonusDeadEnd(Map map)
         {
             // Remove a random turning dead end if possible, otherwise remove any dead end.
             var deadEnds = map.GetBonusDeadEnds();
             if (deadEnds.Count > 0)
                 map.RemoveDeadEnd(random.Choice(deadEnds));
+        }
+
+        public void Rebase(Map map)
+        {
+            var rooms = (from r in map.GetCritRooms()
+                         where r != map.Boss
+                         select r).ToList();
+            if (rooms.Count > 0)
+                map.Rebase(random.Choice(rooms));
         }
     }
 }

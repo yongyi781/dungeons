@@ -29,6 +29,8 @@ namespace Dungeons
             {
                 column.SortMode = DataGridViewColumnSortMode.NotSortable;
             }
+
+            UpdateSaveLocationTextBoxes();
         }
 
         public DataGridViewRow AddRow(Dictionary<string, string> row)
@@ -149,6 +151,8 @@ namespace Dungeons
                 }
                 var now = DateTime.Now;
                 row["Timestamp"] = now.ToString();
+
+                Directory.CreateDirectory(Properties.Settings.Default.WinterfaceSaveLocation);
                 if (saveToFile && Directory.Exists(Properties.Settings.Default.WinterfaceSaveLocation))
                 {
                     // The \\g is because g is a date format character
@@ -157,6 +161,12 @@ namespace Dungeons
 
                 return row;
             }
+        }
+
+        private void UpdateSaveLocationTextBoxes()
+        {
+            mapSaveLocationTextBox.Text = Properties.Settings.Default.MapSaveLocation;
+            winterfaceSaveLocationTextBox.Text = Properties.Settings.Default.WinterfaceSaveLocation;
         }
 
         private void modeRadioButton_CheckedChanged(object sender, EventArgs e)
@@ -168,6 +178,26 @@ namespace Dungeons
         private void CaptureButton_Click(object sender, EventArgs e)
         {
             GrabFromScreen();
+        }
+
+        private void browseMapSaveLocationButton_Click(object sender, EventArgs e)
+        {
+            if (mapFolderBrowserDialog.ShowDialog() == DialogResult.OK)
+            {
+                Properties.Settings.Default.MapSaveLocation = mapFolderBrowserDialog.SelectedPath;
+                Properties.Settings.Default.Save();
+                UpdateSaveLocationTextBoxes();
+            }
+        }
+
+        private void browseWinterfaceSaveLocationButton_Click(object sender, EventArgs e)
+        {
+            if (winterfaceFolderBrowserDialog.ShowDialog() == DialogResult.OK)
+            {
+                Properties.Settings.Default.WinterfaceSaveLocation = winterfaceFolderBrowserDialog.SelectedPath;
+                Properties.Settings.Default.Save();
+                UpdateSaveLocationTextBoxes();
+            }
         }
     }
 }

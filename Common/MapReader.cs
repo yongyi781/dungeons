@@ -57,19 +57,22 @@ namespace Dungeons.Common
 
         public RoomType ReadRoom(Bitmap image, Point p, FloorSize floorSize)
         {
-            var pc = floorSize.MapToClientCoords(p);
+            if (image == null)
+                return RoomType.Gap;
+
+            var pc = floorSize.MapToClientCoords(p, image.Size);
             return ReadRoom(image, pc.X, pc.Y);
         }
 
         public RoomType ReadRoom(Bitmap image, int offX = 0, int offY = 0)
         {
             if (image == null)
-                return RoomType.None;
+                return RoomType.Gap;
 
             var sig = ComputeSignature(image, offX, offY);
             var result = signatures.FirstOrDefault(pair => Enumerable.SequenceEqual(sig, pair.Value)).Key;
             if (result == 0)
-                return RoomType.None;
+                return RoomType.Gap;
 
             if (image.GetPixel(offX + 19, offY + 18) == Color.FromArgb(150, 145, 105))
                 result |= RoomType.Base;

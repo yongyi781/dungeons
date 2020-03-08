@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Text;
 
 namespace Dungeons.Common
 {
@@ -19,7 +20,7 @@ namespace Dungeons.Common
         private static readonly Random random = new Random();
 
         // [0..8) x [0..8)
-        public static IEnumerable<Point> GridPoints(int width, int height) =>
+        public static IEnumerable<Point> Range2D(int width, int height) =>
             from y in Enumerable.Range(0, height) from x in Enumerable.Range(0, width) select new Point(x, y);
 
         public static IEnumerable<RoomType> EnumerateRoomTypes() =>
@@ -36,6 +37,8 @@ namespace Dungeons.Common
         public static T At<T>(this T[,] grid, Point p) => grid[p.X, p.Y];
 
         public static Point Add(this Point p, Direction dir) => dir == Direction.None ? Invalid : p + Offsets[(int)(dir - 1)];
+
+        public static bool IsOnWall(this Point p, int width, int height) => p.X == 0 || p.X == width - 1 || p.Y == 0 || p.Y == height - 1;
 
         public static Direction Flip(this Direction dir)
         {
@@ -66,6 +69,8 @@ namespace Dungeons.Common
                     return RoomType.S;
                 case Direction.N:
                     return RoomType.N;
+                case Direction.Gap:
+                    return RoomType.Gap;
                 default:
                     return RoomType.Mystery;
             }
@@ -122,6 +127,24 @@ namespace Dungeons.Common
 
         public static string ToShortString(this Point p) => p == Invalid ? "-" : $"({p.X},{p.Y})";
         public static string ToChessString(this Point p) => p == Invalid ? "-" : $"{(char)(p.X + 'a')}{(char)(p.Y + '1')}";
+
+        // Prints matrix where (0,0) is bottom left.
+        public static string ToPrettyString<T>(this T[,] matrix, Func<T, string> converter, string separator = ",", string lineSeparator = "\r\n")
+        {
+            var sb = new StringBuilder();
+            for (int y = matrix.GetLength(1) - 1; y >= 0; y--)
+            {
+                for (int x = 0; x < matrix.GetLength(0); x++)
+                {
+                    sb.Append(converter(matrix[x, y]));
+                    if (x < matrix.GetLength(0) - 1)
+                        sb.Append(separator);
+                }
+                if (y > 0)
+                    sb.Append(lineSeparator);
+            }
+            return sb.ToString();
+        }
 
         // Parse chess notation
         public static Point ParseChess(string text)
