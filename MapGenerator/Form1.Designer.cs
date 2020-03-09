@@ -43,8 +43,9 @@
             this.drawCritCheckBox = new System.Windows.Forms.CheckBox();
             this.drawDeadEndsCheckBox = new System.Windows.Forms.CheckBox();
             this.openStatsWindowButton = new System.Windows.Forms.Button();
-            this.comboBox1 = new System.Windows.Forms.ComboBox();
+            this.algorithmComboBox = new System.Windows.Forms.ComboBox();
             this.browseButton = new System.Windows.Forms.Button();
+            this.sizeComboBox = new System.Windows.Forms.ComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.rcUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.seedUpDown)).BeginInit();
@@ -88,12 +89,12 @@
             this.rcUpDown.Location = new System.Drawing.Point(87, 9);
             this.rcUpDown.Margin = new System.Windows.Forms.Padding(2);
             this.rcUpDown.Maximum = new decimal(new int[] {
-            64,
+            2147483647,
             0,
             0,
             0});
             this.rcUpDown.Minimum = new decimal(new int[] {
-            10,
+            1,
             0,
             0,
             0});
@@ -108,15 +109,17 @@
             // 
             // textBox1
             // 
-            this.textBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.textBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBox1.Font = new System.Drawing.Font("Consolas", 21F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.textBox1.Location = new System.Drawing.Point(296, 62);
+            this.textBox1.Font = new System.Drawing.Font("Consolas", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.textBox1.Location = new System.Drawing.Point(360, 62);
             this.textBox1.Multiline = true;
             this.textBox1.Name = "textBox1";
+            this.textBox1.ReadOnly = true;
             this.textBox1.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.textBox1.Size = new System.Drawing.Size(563, 279);
+            this.textBox1.Size = new System.Drawing.Size(499, 279);
             this.textBox1.TabIndex = 4;
+            this.textBox1.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // copyButton
             // 
@@ -144,8 +147,7 @@
             // 
             // logTextBox
             // 
-            this.logTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.logTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.logTextBox.Font = new System.Drawing.Font("Consolas", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.logTextBox.Location = new System.Drawing.Point(10, 347);
@@ -154,6 +156,7 @@
             this.logTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Both;
             this.logTextBox.Size = new System.Drawing.Size(848, 276);
             this.logTextBox.TabIndex = 4;
+            this.logTextBox.WordWrap = false;
             // 
             // label2
             // 
@@ -237,17 +240,19 @@
             this.openStatsWindowButton.UseVisualStyleBackColor = true;
             this.openStatsWindowButton.Click += new System.EventHandler(this.openStatsWindowButton_Click);
             // 
-            // comboBox1
+            // algorithmComboBox
             // 
-            this.comboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Items.AddRange(new object[] {
-            "Prim (likely same as RS)",
-            "Uniform spanning tree"});
-            this.comboBox1.Location = new System.Drawing.Point(503, 36);
-            this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(182, 23);
-            this.comboBox1.TabIndex = 13;
+            this.algorithmComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.algorithmComboBox.FormattingEnabled = true;
+            this.algorithmComboBox.Items.AddRange(new object[] {
+            "Prim",
+            "Uniform spanning tree",
+            "Prim, room variant",
+            "Random edges"});
+            this.algorithmComboBox.Location = new System.Drawing.Point(664, 34);
+            this.algorithmComboBox.Name = "algorithmComboBox";
+            this.algorithmComboBox.Size = new System.Drawing.Size(155, 23);
+            this.algorithmComboBox.TabIndex = 13;
             // 
             // browseButton
             // 
@@ -261,12 +266,37 @@
             this.browseButton.UseVisualStyleBackColor = true;
             this.browseButton.Click += new System.EventHandler(this.browseButton_Click);
             // 
+            // sizeComboBox
+            // 
+            this.sizeComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.sizeComboBox.FormattingEnabled = true;
+            this.sizeComboBox.Items.AddRange(new object[] {
+            "Small (4 x 4)",
+            "Medium (4 x 8)",
+            "Large (8 x 8)",
+            "Larger (9 x 9)",
+            "Huge (10 x 10)",
+            "Massive (11 x 11)",
+            "Gigantic (12 x 12)",
+            "Colossal (13 x 13)",
+            "Enormous (14 x 14)",
+            "Stupendous (15 x 15)",
+            "Humongous (16 x 16)",
+            "Gargantuan (20 x 20)"});
+            this.sizeComboBox.Location = new System.Drawing.Point(503, 34);
+            this.sizeComboBox.Name = "sizeComboBox";
+            this.sizeComboBox.Size = new System.Drawing.Size(155, 23);
+            this.sizeComboBox.TabIndex = 13;
+            this.sizeComboBox.SelectedIndexChanged += new System.EventHandler(this.sizeComboBox_SelectedIndexChanged);
+            // 
             // Form1
             // 
             this.AcceptButton = this.generateButton;
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.ClientSize = new System.Drawing.Size(870, 635);
+            this.Controls.Add(this.algorithmComboBox);
+            this.Controls.Add(this.sizeComboBox);
             this.Controls.Add(this.openStatsWindowButton);
             this.Controls.Add(this.deleteDeadEndButton);
             this.Controls.Add(this.browseButton);
@@ -274,7 +304,6 @@
             this.Controls.Add(this.logTextBox);
             this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.textBox1);
-            this.Controls.Add(this.comboBox1);
             this.Controls.Add(this.generateButton);
             this.Controls.Add(this.drawDeadEndsCheckBox);
             this.Controls.Add(this.drawCritCheckBox);
@@ -314,8 +343,9 @@
         private System.Windows.Forms.CheckBox drawCritCheckBox;
         private System.Windows.Forms.CheckBox drawDeadEndsCheckBox;
         private System.Windows.Forms.Button openStatsWindowButton;
-        private System.Windows.Forms.ComboBox comboBox1;
+        private System.Windows.Forms.ComboBox algorithmComboBox;
         private System.Windows.Forms.Button browseButton;
+        private System.Windows.Forms.ComboBox sizeComboBox;
     }
 }
 

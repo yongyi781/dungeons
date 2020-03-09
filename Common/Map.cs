@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -30,12 +31,14 @@ namespace Dungeons.Common
             set { parentDirs[p.X, p.Y] = value; }
         }
 
+        public Point Base { get; set; } = MapUtils.Invalid;
+        public Point Boss { get; set; } = MapUtils.Invalid;
+        public Direction BossFaceDirection { get; set; }
+        public SortedSet<Point> CritEndpoints { get; } = new SortedSet<Point>(new PointComparer());
+
         public int Width => parentDirs.GetLength(0);
         public int Height => parentDirs.GetLength(1);
         public int MaxRooms => Width * Height;
-        public Point Base { get; set; } = MapUtils.Invalid;
-        public Point Boss { get; set; } = MapUtils.Invalid;
-        public SortedSet<Point> CritEndpoints { get; } = new SortedSet<Point>(new PointComparer());
         public int Roomcount => GetRooms().Count();
         public int GapCount => GetGaps().Count();
 
@@ -98,9 +101,10 @@ namespace Dungeons.Common
         // Precondition: p is in CritEndpoints.
         public void BacktrackCritEndpoint(Point p)
         {
-            if (CritEndpoints.Remove(p))
+            var parent = Parent(p);
+            if (CritEndpoints.Remove(p) && parent != Base && parent != MapUtils.Invalid)
             {
-                AddCritEndpoint(Parent(p));
+                AddCritEndpoint(parent);
             }
         }
 
@@ -138,6 +142,12 @@ namespace Dungeons.Common
         {
             void Visit(Point p2, int depth)
             {
+                if (depth > MaxRooms)
+                {
+                    Debug.WriteLine("Something went horribly wrong...");
+                    return;
+                }
+
                 callback(p2, depth);
                 foreach (var d in ChildrenDirs(p2))
                     Visit(p2.Add(d), depth + 1);
@@ -192,6 +202,11 @@ namespace Dungeons.Common
             return count;
         }
 
+        public Dictionary<Direction, int> SubtreeSizes(Point point)
+        {
+            return (from dir in ChildrenDirs(point) select (dir, SubtreeSize(point.Add(dir)))).ToDictionary(k => k.dir, k => k.Item2);
+        }
+
         // Gets the number of neighboring gaps
         public int GetDensity(Point point)
         {
@@ -214,6 +229,14 @@ namespace Dungeons.Common
         {
             return (from p in MapUtils.Range2D(Width, Height)
                     where this[p] == Direction.Gap
+                    select p).ToList();
+        }
+
+        // Returns a list of specifically gaps.
+        public List<Point> GetNonGaps()
+        {
+            return (from p in MapUtils.Range2D(Width, Height)
+                    where this[p] != Direction.Gap
                     select p).ToList();
         }
 
@@ -276,8 +299,7 @@ namespace Dungeons.Common
 
         public SortedSet<Point> GetCritRooms()
         {
-            var set = new SortedSet<Point>(new PointComparer());
-            set.Add(Base);
+            var set = new SortedSet<Point>(new PointComparer()) { Base };
             foreach (var e in CritEndpoints)
             {
                 TraverseToBase(e, p => set.Add(p));
@@ -313,11 +335,10 @@ namespace Dungeons.Common
         {
             if (newBase == Base)
                 return;
+            if (!IsRoom(newBase))
+                throw new ArgumentException("New base is not a room.", nameof(newBase));
 
-            TraverseWholeTree(newBase, (p, dir, _) =>
-            {
-                this[p] = dir;
-            });
+            TraverseWholeTree(newBase, (p, dir, _) => this[p] = dir);
             this[newBase] = Direction.None;
             Base = newBase;
         }

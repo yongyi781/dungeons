@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace Dungeons.Common
@@ -16,8 +15,6 @@ namespace Dungeons.Common
 
         public static readonly Size[] Offsets = { new Size(-1, 0), new Size(1, 0), new Size(0, -1), new Size(0, 1) };
         public static readonly Direction[] Directions = { Direction.W, Direction.E, Direction.S, Direction.N };
-
-        private static readonly Random random = new Random();
 
         // [0..8) x [0..8)
         public static IEnumerable<Point> Range2D(int width, int height) =>
@@ -36,7 +33,22 @@ namespace Dungeons.Common
 
         public static T At<T>(this T[,] grid, Point p) => grid[p.X, p.Y];
 
-        public static Point Add(this Point p, Direction dir) => dir == Direction.None ? Invalid : p + Offsets[(int)(dir - 1)];
+        public static Point Add(this Point p, Direction dir)
+        {
+            switch (dir)
+            {
+                case Direction.W:
+                    return new Point(p.X - 1, p.Y);
+                case Direction.E:
+                    return new Point(p.X + 1, p.Y);
+                case Direction.S:
+                    return new Point(p.X, p.Y - 1);
+                case Direction.N:
+                    return new Point(p.X, p.Y + 1);
+                default:
+                    return Invalid;
+            }
+        }
 
         public static bool IsOnWall(this Point p, int width, int height) => p.X == 0 || p.X == width - 1 || p.Y == 0 || p.Y == height - 1;
 
@@ -126,7 +138,23 @@ namespace Dungeons.Common
         public static Point NextPoint(this Random random, int width, int height) => new Point(random.Next(width), random.Next(height));
 
         public static string ToShortString(this Point p) => p == Invalid ? "-" : $"({p.X},{p.Y})";
-        public static string ToChessString(this Point p) => p == Invalid ? "-" : $"{(char)(p.X + 'a')}{(char)(p.Y + '1')}";
+        public static string ToChessString(this Point p) => p == Invalid ? "-" : $"{(char)(p.X + 'a')}{p.Y + 1}";
+
+        public static double[,] Normalize(this int[,] matrix)
+        {
+            var result = new double[matrix.GetLength(0), matrix.GetLength(1)];
+            int total = 0;
+            foreach (var x in matrix)
+                total += x;
+            for (int y = 0; y < matrix.GetLength(1); y++)
+            {
+                for (int x = 0; x < matrix.GetLength(0); x++)
+                {
+                    result[x, y] = (double)matrix[x, y] / total;
+                }
+            }
+            return result;
+        }
 
         // Prints matrix where (0,0) is bottom left.
         public static string ToPrettyString<T>(this T[,] matrix, Func<T, string> converter, string separator = ",", string lineSeparator = "\r\n")

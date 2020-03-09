@@ -13,7 +13,6 @@ namespace Dungeons.Common
             FloorSize = FloorSize.ByDimensions(roomTypes.GetLength(0), roomTypes.GetLength(1));
 
             Map = new Map(roomTypes.GetLength(0), roomTypes.GetLength(1));
-            Distances = new int[Width, Height];
 
             for (int y = 0; y < roomTypes.GetLength(1); y++)
             {
@@ -40,15 +39,6 @@ namespace Dungeons.Common
 
         private void ComputeMapData()
         {
-            // Initialize
-            for (int y = 0; y < Height; y++)
-            {
-                for (int x = 0; x < Width; x++)
-                {
-                    Distances[x, y] = int.MaxValue;
-                }
-            }
-
             var visited = new HashSet<Point>();
 
             void Visit(Point p, Direction dir, int dist)
@@ -57,8 +47,9 @@ namespace Dungeons.Common
                     return;
                 visited.Add(p);
 
-                Distances[p.X, p.Y] = dist;
                 Map[p] = dir.Flip();
+
+                // An reachable "gap" is probably a mystery room instead.
                 if (RoomTypes[p.X, p.Y] == RoomType.Gap)
                     RoomTypes[p.X, p.Y] = RoomType.Mystery;
 
@@ -74,15 +65,14 @@ namespace Dungeons.Common
         }
 
         public RoomType[,] RoomTypes { get; }
-        public Map Map { get; set; }
+        public Map Map { get; }
         public FloorSize FloorSize { get; }
         public int Width => Map.Width;
         public int Height => Map.Height;
         public Point Base => Map.Base;
         public Point Boss => Map.Boss;
-        public int[,] Distances { get; }
-        public int OpenedRoomCount { get; set; }
-        public int DeadEndCount { get; set; }
+        public int OpenedRoomCount { get; private set; }
+        public int DeadEndCount { get; private set; }
         public bool IsComplete => OpenedRoomCount > 0 && MapUtils.Range2D(FloorSize.NumColumns, FloorSize.NumRows).All(p => RoomTypes[p.X, p.Y] != RoomType.Mystery);
     }
 }

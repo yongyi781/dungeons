@@ -117,7 +117,7 @@ namespace Dungeons
                 // Search for map marker
                 var desktopBounds = DesktopBounds;
                 desktopBounds.Offset(-SystemInformation.VirtualScreen.X, -SystemInformation.VirtualScreen.Y);
-                foreach (var floorSize in FloorSize.Sizes)
+                foreach (var floorSize in FloorSize.RSSizes)
                 {
                     var match = UnsafeBitmap.FindMatch(bmp, floorSize.GetMapMarker(), p => !desktopBounds.Contains(p), MapReader.MapEdgeColorTolerance);
                     if (match != MapUtils.Invalid)
@@ -133,7 +133,7 @@ namespace Dungeons
 
         private void UpdateMap()
         {
-            foreach (var floorSize in FloorSize.Sizes)
+            foreach (var floorSize in FloorSize.RSSizes)
             {
                 if (Properties.Settings.Default.MapLocation != MapUtils.Invalid)
                 {
