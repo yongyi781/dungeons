@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.generateButton = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
@@ -46,9 +47,11 @@
             this.algorithmComboBox = new System.Windows.Forms.ComboBox();
             this.browseButton = new System.Windows.Forms.Button();
             this.sizeComboBox = new System.Windows.Forms.ComboBox();
+            this.sizeUpDown = new System.Windows.Forms.NumericUpDown();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.rcUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.seedUpDown)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.sizeUpDown)).BeginInit();
             this.SuspendLayout();
             // 
             // pictureBox1
@@ -249,7 +252,7 @@
             "Uniform spanning tree",
             "Prim, room variant",
             "Random edges"});
-            this.algorithmComboBox.Location = new System.Drawing.Point(664, 34);
+            this.algorithmComboBox.Location = new System.Drawing.Point(703, 36);
             this.algorithmComboBox.Name = "algorithmComboBox";
             this.algorithmComboBox.Size = new System.Drawing.Size(155, 23);
             this.algorithmComboBox.TabIndex = 13;
@@ -282,12 +285,34 @@
             "Enormous (14 x 14)",
             "Stupendous (15 x 15)",
             "Humongous (16 x 16)",
-            "Gargantuan (20 x 20)"});
-            this.sizeComboBox.Location = new System.Drawing.Point(503, 34);
+            "Custom"});
+            this.sizeComboBox.Location = new System.Drawing.Point(503, 36);
             this.sizeComboBox.Name = "sizeComboBox";
-            this.sizeComboBox.Size = new System.Drawing.Size(155, 23);
+            this.sizeComboBox.Size = new System.Drawing.Size(125, 23);
             this.sizeComboBox.TabIndex = 13;
             this.sizeComboBox.SelectedIndexChanged += new System.EventHandler(this.sizeComboBox_SelectedIndexChanged);
+            // 
+            // sizeUpDown
+            // 
+            this.sizeUpDown.Location = new System.Drawing.Point(634, 37);
+            this.sizeUpDown.Maximum = new decimal(new int[] {
+            1024,
+            0,
+            0,
+            0});
+            this.sizeUpDown.Minimum = new decimal(new int[] {
+            3,
+            0,
+            0,
+            0});
+            this.sizeUpDown.Name = "sizeUpDown";
+            this.sizeUpDown.Size = new System.Drawing.Size(63, 23);
+            this.sizeUpDown.TabIndex = 14;
+            this.sizeUpDown.Value = new decimal(new int[] {
+            16,
+            0,
+            0,
+            0});
             // 
             // Form1
             // 
@@ -295,6 +320,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.ClientSize = new System.Drawing.Size(870, 635);
+            this.Controls.Add(this.sizeUpDown);
             this.Controls.Add(this.algorithmComboBox);
             this.Controls.Add(this.sizeComboBox);
             this.Controls.Add(this.openStatsWindowButton);
@@ -315,12 +341,14 @@
             this.Controls.Add(this.label1);
             this.DoubleBuffered = true;
             this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "Form1";
             this.Text = "Map Generator";
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.rcUpDown)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.seedUpDown)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.sizeUpDown)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -346,6 +374,7 @@
         private System.Windows.Forms.ComboBox algorithmComboBox;
         private System.Windows.Forms.Button browseButton;
         private System.Windows.Forms.ComboBox sizeComboBox;
+        private System.Windows.Forms.NumericUpDown sizeUpDown;
     }
 }
 

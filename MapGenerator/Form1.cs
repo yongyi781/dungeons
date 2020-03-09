@@ -2,6 +2,7 @@
 using System;
 using System.Drawing;
 using System.IO;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace MapGenerator
@@ -20,14 +21,17 @@ namespace MapGenerator
 
             algorithmComboBox.SelectedIndex = 0;
             sizeComboBox.SelectedIndex = 2;
+            UpdateSize();
 
             Logger.TextBox = logTextBox;
         }
 
         private void Generate(int roomcount)
         {
+            var algorithm = Algorithms[algorithmComboBox.SelectedIndex];
+
             mapGenerator = new MapGenerator((int)seedUpDown.Value, FloorSize.ByDimensions(map.Width, map.Height));
-            mapGenerator.Generate(map, roomcount, Algorithms[algorithmComboBox.SelectedIndex]);
+            mapGenerator.Generate(map, roomcount, algorithm);
 
             var subtreeStr = string.Empty;
             foreach (var dir in map.ChildrenDirs(map.Base))
@@ -35,7 +39,7 @@ namespace MapGenerator
                 subtreeStr += $", {dir}={map.SubtreeSize(map.Base.Add(dir))}";
             }
 
-            Logger.Log($"seed={seedUpDown.Value,10}, rc={map.Roomcount}, crit count={map.GetCritRooms().Count}, dead end count={map.GetDeadEnds().Count,2}, length from base={map.GetTreeHeight()}, length from boss={map.GetEccentricity(map.Boss)}, diameter={map.GetDiameter()}, boss-base dist={map.DistanceToBase(map.Boss)}{subtreeStr}");
+            Logger.Log($"size={mapGenerator.FloorSize.Name}, seed={seedUpDown.Value,10}, rc={map.Roomcount}, alg={algorithm}, crc={map.GetCritRooms().Count}, boss-base dist={map.DistanceToBase(map.Boss)}, dead ends={map.GetDeadEnds().Count,2}, length from base={map.GetTreeHeight()}, length from boss={map.GetEccentricity(map.Boss)}, diameter={map.GetDiameter()}{subtreeStr}");
         }
 
         private void RenderMap()
@@ -54,25 +58,34 @@ namespace MapGenerator
             {
                 0 => new Size(4, 4),
                 1 => new Size(4, 8),
-                11 => new Size(20, 20),
+                11 => new Size((int)sizeUpDown.Value, (int)sizeUpDown.Value),
                 var x when x >= 2 => new Size(x + 6, x + 6),
                 _ => throw new NotImplementedException(),
             };
 
-            map = new Map(size.Width, size.Height);
-            pictureBox1.Width = size.Width * MapUtils.RoomSize + 24;
-            pictureBox1.Height = size.Height * MapUtils.RoomSize + 24;
-            pictureBox1.Image = new Bitmap(size.Width * MapUtils.RoomSize, size.Height * MapUtils.RoomSize);
+            if (map?.Size != size)
+            {
+                map = new Map(size.Width, size.Height);
+                pictureBox1.Width = size.Width * MapUtils.RoomSize + 24;
+                pictureBox1.Height = size.Height * MapUtils.RoomSize + 24;
+                pictureBox1.Image = new Bitmap(size.Width * MapUtils.RoomSize, size.Height * MapUtils.RoomSize);
+            }
         }
 
-        private void generateButton_Click(object sender, EventArgs e)
+        private async void generateButton_Click(object sender, EventArgs e)
         {
+            generateButton.Enabled = false;
+
+            UpdateSize();
+
             if (randomSeedCheckbox.Checked)
                 seedUpDown.Value = random.Next();
 
-            Generate(randomRcCheckbox.Checked ? 0 : (int)rcUpDown.Value);
+            await Task.Run(() => Generate(randomRcCheckbox.Checked ? 0 : (int)rcUpDown.Value));
             rcUpDown.Value = map.Roomcount;
             RenderMap();
+
+            generateButton.Enabled = true;
         }
 
         private void copyButton_Click(object sender, EventArgs e)
@@ -120,7 +133,7 @@ namespace MapGenerator
 
         private void sizeComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            UpdateSize();
+            sizeUpDown.Enabled = sizeComboBox.SelectedIndex == sizeComboBox.Items.Count - 1;
         }
     }
 }

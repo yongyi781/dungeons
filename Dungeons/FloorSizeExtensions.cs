@@ -5,6 +5,6 @@ namespace Dungeons
 {
     public static class FloorSizeExtensions
     {
-        public static Bitmap GetMapMarker(this FloorSize floorSize) => (Bitmap)Properties.Resources.ResourceManager.GetObject($"Outline{floorSize.GetName()}");
+        public static Bitmap GetMapMarker(this FloorSize floorSize) => (Bitmap)Properties.Resources.ResourceManager.GetObject($"Outline{floorSize.Name}");
     }
 }

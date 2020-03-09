@@ -70,10 +70,13 @@ namespace MapGenerator
             if (roomcount > map.MaxRooms)
                 roomcount = map.MaxRooms;
 
+            // If we have max rooms, we don't need gaps...
+            if (roomcount == map.MaxRooms)
+                return;
+
             // This is for computational reasons.
-            var minRC = Math.Max(FloorSize.MinRC, map.MaxRooms - 4 * map.Width);
-            if (roomcount < minRC)
-                roomcount = minRC;
+            if (roomcount < FloorSize.MinRC)
+                roomcount = FloorSize.MinRC;
 
             int attempts = 0;
             while (!IsSolvable())

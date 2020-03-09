@@ -44,10 +44,11 @@
             "Row or column gap",
             "Dead end distribution",
             "Height and eccentricity distribution",
-            "Read from folder",
+            "Real matrices",
             "Wall test",
             "Base-boss distance test",
-            "Base matrix"});
+            "Base matrix",
+            "Real perpendicular base"});
             this.comboBox1.Location = new System.Drawing.Point(12, 12);
             this.comboBox1.Name = "comboBox1";
             this.comboBox1.Size = new System.Drawing.Size(295, 23);

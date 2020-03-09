@@ -23,7 +23,7 @@ namespace MapGenerator
             comboBox1.SelectedIndex = 5;
         }
 
-        private void RunPerpendicularBaseTest(int trials = 10000)
+        private void RunPerpendicularBaseTest(int trials = 1000)
         {
             var map = new Map(8, 8);
 
@@ -36,35 +36,11 @@ namespace MapGenerator
 
                 foreach (var baseLoc in map.GetRooms())
                 {
-                    int t = 0, tw = 0, tn = 0, te = 0;
-                    map.Rebase(baseLoc);
-
-                    var dirs = map.ChildrenDirs(map.Base).ToList();
-                    if (dirs.Count == 3 && dirs.Contains(Direction.W) && dirs.Contains(Direction.N) && dirs.Contains(Direction.E))
-                    {
-                        ++t;
-                        var ws = map.SubtreeSize(map.Base.Add(Direction.W));
-                        var ns = map.SubtreeSize(map.Base.Add(Direction.N));
-                        var es = map.SubtreeSize(map.Base.Add(Direction.E));
-                        var max = Math.Max(ws, Math.Max(ns, es));
-
-                        var wsc = ws == max ? 1 : 0;
-                        tw += wsc;
-                        var nsc = ns == max ? 1 : 0;
-                        tn += nsc;
-                        var esc = es == max ? 1 : 0;
-                        te += esc;
-                    }
-                    var item = data.GetValueOrDefault(baseLoc);
-                    item.t += t;
-                    item.tw += tw;
-                    item.tn += tn;
-                    item.te += te;
-                    data[baseLoc] = item;
+                    UpdatePerpendicularBase(map, baseLoc, data);
                 }
             }
 
-            foreach (var kv in from pair in data orderby pair.Key.Y orderby pair.Key.X select pair)
+            foreach (var kv in from pair in data orderby pair.Key.Y, pair.Key.X select pair)
             {
                 var (t, tw, tn, te) = kv.Value;
                 if (t > 0)
@@ -72,6 +48,35 @@ namespace MapGenerator
                     resultsTextBox.AppendText($"Perpendicular base {kv.Key.ToChessString()}, maps={t}, w={(double)tw / t:f2}, n={(double)tn / t:f2}, e={(double)te / t:f2}{Environment.NewLine}");
                 }
             }
+        }
+
+        private static void UpdatePerpendicularBase(Map map, Point baseLoc, Dictionary<Point, (int t, int tw, int tn, int te)> data)
+        {
+            int t = 0, tw = 0, tn = 0, te = 0;
+            map.Rebase(baseLoc);
+
+            var dirs = map.ChildrenDirs(map.Base).ToList();
+            if (dirs.Count == 3 && dirs.Contains(Direction.W) && dirs.Contains(Direction.N) && dirs.Contains(Direction.E))
+            {
+                ++t;
+                var ws = map.SubtreeSize(map.Base.Add(Direction.W));
+                var ns = map.SubtreeSize(map.Base.Add(Direction.N));
+                var es = map.SubtreeSize(map.Base.Add(Direction.E));
+                var max = Math.Max(ws, Math.Max(ns, es));
+
+                var wsc = ws == max ? 1 : 0;
+                tw += wsc;
+                var nsc = ns == max ? 1 : 0;
+                tn += nsc;
+                var esc = es == max ? 1 : 0;
+                te += esc;
+            }
+            var item = data.GetValueOrDefault(baseLoc);
+            item.t += t;
+            item.tw += tw;
+            item.tn += tn;
+            item.te += te;
+            data[baseLoc] = item;
         }
 
         private void RunRowColumnGapTest(int roomcount, int trials = 10000)
@@ -182,7 +187,7 @@ namespace MapGenerator
             var rcs = new List<int>();
             //var gapMatrix = new int[8, 8];
             //var bossMatrix = new int[8, 8];
-            var baseMatrix = new int[8, 8];
+            //var baseMatrix = new int[8, 8];
             //var deMatrix = new int[8, 8];
             //var treeHeights = new List<int>();
             //var bossEccs = new List<int>();
@@ -202,13 +207,18 @@ namespace MapGenerator
                         ++count;
                         var map = gameMap.Map;
                         rcs.Add(gameMap.OpenedRoomCount);
-
-                        ++baseMatrix[map.Base.X, map.Base.Y];
+                        if (map[new Point(0, 0)] <= Direction.None &&
+                            map[new Point(0, 7)] <= Direction.None &&
+                            map[new Point(7, 0)] <= Direction.None &&
+                            map[new Point(7, 7)] <= Direction.None)
+                        {
+                            resultsTextBox.AppendText($"No corner: {Path.GetFileName(file)}");
+                        }
                     }
                 }
             }
             resultsTextBox.AppendText($"Scoured {count} files\r\navg rc={rcs.Average()}\r\n");
-            resultsTextBox.AppendText($"Base matrix:\r\n{baseMatrix.Normalize().ToPrettyString(a => a.ToString("f4"))}\r\n");
+            //resultsTextBox.AppendText($"Base matrix:\r\n{baseMatrix.Normalize().ToPrettyString(a => a.ToString("f4"))}\r\n");
             //resultsTextBox.AppendText($"Boss matrix:\r\n{bossMatrix.ToPrettyString(a => a.ToString())}\r\n");
             //resultsTextBox.AppendText($"Gap matrix:\r\n{gapMatrix.ToPrettyString(a => a.ToString())}\r\n");
             //resultsTextBox.AppendText($"Dead end matrix:\r\n{deMatrix.ToPrettyString(a => a.ToString())}\r\n");
@@ -249,6 +259,42 @@ namespace MapGenerator
             resultsTextBox.AppendText($"Base-boss distances:\r\n{string.Join(",", baseBossDistances)}\r\n");
         }
 
+        private void RealPerpendicularBaseTest(string path)
+        {
+            if (!Directory.Exists(path))
+            {
+                resultsTextBox.AppendText("Directory not found." + Environment.NewLine);
+                return;
+            }
+
+            int count = 0;
+            var data = new Dictionary<Point, (int t, int tw, int tn, int te)>();
+            var reader = new MapReader(Resources.ResourceManager);
+            foreach (var file in Directory.EnumerateFiles(path, "*.png"))
+            {
+                var bmp = new Bitmap(file);
+                var floorSize = FloorSize.ByImageSize(bmp.Size);
+                if (floorSize == FloorSize.Large)
+                {
+                    var gameMap = reader.ReadMap(bmp, floorSize);
+                    if (gameMap.OpenedRoomCount >= 50 && gameMap.IsComplete)
+                    {
+                        ++count;
+                        var map = gameMap.Map;
+                        UpdatePerpendicularBase(map, map.Base, data);
+                    }
+                }
+            }
+            foreach (var kv in from pair in data orderby pair.Key.Y, pair.Key.X select pair)
+            {
+                var (t, tw, tn, te) = kv.Value;
+                if (t > 0)
+                {
+                    resultsTextBox.AppendText($"Perpendicular base {kv.Key.ToChessString()}, maps={t}, w={(double)tw / t:f2}, n={(double)tn / t:f2}, e={(double)te / t:f2}{Environment.NewLine}");
+                }
+            }
+        }
+
         private void RunBaseBossDistanceTest(int trials = 10000)
         {
             var map = new Map(8, 8);
@@ -263,14 +309,30 @@ namespace MapGenerator
             resultsTextBox.AppendText(string.Join(", ", baseBossDistances) + "\r\n\r\n");
         }
 
-        private void RunBaseMatrixTest(int trials = 10000)
+        private void RunBaseMatrixTest(Point bossLoc, int trials = 10000)
         {
             var map = new Map(8, 8);
             var baseMatrix = new int[8, 8];
             for (int i = 0; i < trials; i++)
             {
-                generator.Generate(map);
-                ++baseMatrix[map.Base.X, map.Base.Y];
+                if (bossLoc == MapUtils.Invalid)
+                    generator.GenerateBoss(map);
+                else
+                {
+                    map.Base = map.Boss = bossLoc;
+                    map.BossFaceDirection = random.Choice(bossLoc.ValidDirections(map.Width, map.Height));
+                }
+                generator.GenerateGaps(map);
+                generator.GeneratePrim(map);
+                generator.AssignCritRooms(map);
+
+                var newBases = (from r in map.GetCritRooms()
+                                where r != map.Boss
+                                select r).ToList();
+                foreach (var newBase in newBases)
+                {
+                    ++baseMatrix[newBase.X, newBase.Y];
+                }
             }
             resultsTextBox.AppendText($"Base matrix:\r\n{baseMatrix.Normalize().ToPrettyString(a => a.ToString("f4"))}\r\n");
         }
@@ -300,17 +362,16 @@ namespace MapGenerator
             return HasRowGap(0) || HasRowGap(map.Height - 1) || HasColumnGap(0) || HasColumnGap(map.Width - 1);
         }
 
-        private async void runButton_Click(object sender, EventArgs e)
+        private void RunStatsTest(int test)
         {
-            runButton.Enabled = false;
-            switch (comboBox1.SelectedIndex)
+            switch (test)
             {
                 case 0:
-                    await Task.Run(() => RunPerpendicularBaseTest());
+                    RunPerpendicularBaseTest();
                     break;
                 case 1:
                     if (int.TryParse(textBox1.Text, out int rc))
-                        await Task.Run(() => RunRowColumnGapTest(rc));
+                        RunRowColumnGapTest(rc);
                     break;
                 case 2:
                     RunDeadEndTest();
@@ -328,11 +389,20 @@ namespace MapGenerator
                     RunBaseBossDistanceTest();
                     break;
                 case 7:
-                    RunBaseMatrixTest();
+                    RunBaseMatrixTest(MapUtils.ParseChess(textBox1.Text));
+                    break;
+                case 8:
+                    RealPerpendicularBaseTest(textBox1.Text);
                     break;
                 default:
                     break;
             }
+        }
+
+        private async void runButton_Click(object sender, EventArgs e)
+        {
+            runButton.Enabled = false;
+            await Task.Run(() => RunStatsTest(comboBox1.SelectedIndex));
             runButton.Enabled = true;
         }
     }

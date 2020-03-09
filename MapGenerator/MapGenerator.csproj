@@ -9,6 +9,7 @@
     <Copyright>Copyright © 2020 Fiery001.</Copyright>
     <RepositoryUrl></RepositoryUrl>
     <Version>1.0.1</Version>
+    <ApplicationIcon>map-generator.ico</ApplicationIcon>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">

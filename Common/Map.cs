@@ -38,6 +38,7 @@ namespace Dungeons.Common
 
         public int Width => parentDirs.GetLength(0);
         public int Height => parentDirs.GetLength(1);
+        public Size Size => new Size(Width, Height);
         public int MaxRooms => Width * Height;
         public int Roomcount => GetRooms().Count();
         public int GapCount => GetGaps().Count();

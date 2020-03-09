@@ -33,60 +33,35 @@ namespace Dungeons.Common
 
         public static T At<T>(this T[,] grid, Point p) => grid[p.X, p.Y];
 
-        public static Point Add(this Point p, Direction dir)
+        public static Point Add(this Point p, Direction dir) => dir switch
         {
-            switch (dir)
-            {
-                case Direction.W:
-                    return new Point(p.X - 1, p.Y);
-                case Direction.E:
-                    return new Point(p.X + 1, p.Y);
-                case Direction.S:
-                    return new Point(p.X, p.Y - 1);
-                case Direction.N:
-                    return new Point(p.X, p.Y + 1);
-                default:
-                    return Invalid;
-            }
-        }
+            Direction.W => new Point(p.X - 1, p.Y),
+            Direction.E => new Point(p.X + 1, p.Y),
+            Direction.S => new Point(p.X, p.Y - 1),
+            Direction.N => new Point(p.X, p.Y + 1),
+            _ => Invalid,
+        };
 
         public static bool IsOnWall(this Point p, int width, int height) => p.X == 0 || p.X == width - 1 || p.Y == 0 || p.Y == height - 1;
 
-        public static Direction Flip(this Direction dir)
+        public static Direction Flip(this Direction dir) => dir switch
         {
-            switch (dir)
-            {
-                case Direction.W:
-                    return Direction.E;
-                case Direction.E:
-                    return Direction.W;
-                case Direction.S:
-                    return Direction.N;
-                case Direction.N:
-                    return Direction.S;
-                default:
-                    return Direction.None;
-            }
-        }
+            Direction.W => Direction.E,
+            Direction.E => Direction.W,
+            Direction.S => Direction.N,
+            Direction.N => Direction.S,
+            _ => Direction.None,
+        };
 
-        public static RoomType ToRoomType(this Direction dir)
+        public static RoomType ToRoomType(this Direction dir) => dir switch
         {
-            switch (dir)
-            {
-                case Direction.W:
-                    return RoomType.W;
-                case Direction.E:
-                    return RoomType.E;
-                case Direction.S:
-                    return RoomType.S;
-                case Direction.N:
-                    return RoomType.N;
-                case Direction.Gap:
-                    return RoomType.Gap;
-                default:
-                    return RoomType.Mystery;
-            }
-        }
+            Direction.W => RoomType.W,
+            Direction.E => RoomType.E,
+            Direction.S => RoomType.S,
+            Direction.N => RoomType.N,
+            Direction.Gap => RoomType.Gap,
+            _ => RoomType.Mystery,
+        };
 
         public static bool IsLeaf(this RoomType roomType)
         {
