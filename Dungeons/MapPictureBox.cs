@@ -172,9 +172,9 @@ namespace Dungeons
 
         private void DrawAnnotations(PaintEventArgs e)
         {
-            for (int y = 0; y < FloorSize.NumRows; y++)
+            for (int y = 0; y < FloorSize.Height; y++)
             {
-                for (int x = 0; x < FloorSize.NumColumns; x++)
+                for (int x = 0; x < FloorSize.Width; x++)
                 {
                     var ann = annotations[y, x];
                     var colorIndex = colors.Select((c, i) => new { c, i }).FirstOrDefault(c => ann.StartsWith(c.c))?.i;

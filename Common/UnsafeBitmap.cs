@@ -24,7 +24,7 @@ namespace Dungeons.Common
 
         public unsafe int this[int x, int y] => ((int*)BitmapData.Scan0)[BitmapData.Width * y + x];
 
-        public unsafe Color GetPixel(int x, int y) => Color.FromArgb(this[x, y]);
+        public Color GetPixel(int x, int y) => Color.FromArgb(this[x, y]);
 
         public void Dispose()
         {
@@ -80,13 +80,13 @@ namespace Dungeons.Common
             return new Point(-1, -1);
         }
 
-        public unsafe bool IsMatch(Bitmap template, int offX, int offY, int tolerance)
+        public bool IsMatch(Bitmap template, int offX, int offY, int tolerance)
         {
             using (var u = new UnsafeBitmap(template, ImageLockMode.ReadOnly))
                 return IsMatch(u, offX, offY, tolerance);
         }
 
-        public unsafe bool IsMatch(UnsafeBitmap template, int offX, int offY, int tolerance)
+        public bool IsMatch(UnsafeBitmap template, int offX, int offY, int tolerance)
         {
             for (int y = 0; y < template.Height; y++)
                 for (int x = 0; x < template.Width; x++)
@@ -99,7 +99,7 @@ namespace Dungeons.Common
         /// Returns true if the template matches the image at the corresponding offset; otherwise false.
         /// Transparent pixels in the template (alpha < 255) are required to be a different color in order for it to match. 
         /// </summary>
-        public unsafe bool IsMatchAlphaColor(UnsafeBitmap template, int offX, int offY, Color color)
+        public bool IsMatchAlphaColor(UnsafeBitmap template, int offX, int offY, Color color)
         {
             for (int y = 0; y < template.Height; y++)
                 for (int x = 0; x < template.Width; x++)
@@ -109,7 +109,7 @@ namespace Dungeons.Common
             return true;
         }
 
-        public unsafe bool IsMatchAlphaColor(Bitmap template, int offX, int offY, Color color)
+        public bool IsMatchAlphaColor(Bitmap template, int offX, int offY, Color color)
         {
             if (template == null)
                 return false;

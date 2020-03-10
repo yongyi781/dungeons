@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace MapGenerator
 {
@@ -27,6 +28,8 @@ namespace MapGenerator
         /// <param name="spanningTreeAlgorithm">The spanning tree algorithm to use.</param>
         public void Generate(Map map, int roomcount = 0, string spanningTreeAlgorithm = "Prim")
         {
+            map.Clear();
+
             GenerateBoss(map);
             GenerateGaps(map, roomcount);
 
@@ -67,11 +70,9 @@ namespace MapGenerator
         {
             if (roomcount <= 0)
                 roomcount = random.RandomRoomcount(FloorSize);
-            if (roomcount > map.MaxRooms)
-                roomcount = map.MaxRooms;
 
             // If we have max rooms, we don't need gaps...
-            if (roomcount == map.MaxRooms)
+            if (roomcount >= map.MaxRooms)
                 return;
 
             // This is for computational reasons.
@@ -79,8 +80,9 @@ namespace MapGenerator
                 roomcount = FloorSize.MinRC;
 
             int attempts = 0;
-            while (!IsSolvable())
+            do
             {
+                Logger.Log($"Starting gap generation", LogLevel.Trace);
                 ++attempts;
                 map.Clear();
 
@@ -89,30 +91,10 @@ namespace MapGenerator
                 points.Remove(map.Boss.Add(map.BossFaceDirection));
                 random.Shuffle(points);
                 for (int i = 0; i < map.MaxRooms - roomcount; i++)
-                    map[points[i + 1]] = Direction.Gap;
-            }
-            Debug.WriteLine($"[{attempts} gap generation attempts to make contiguous map with {roomcount} rc]");
+                    map[points[i]] = Direction.Gap;
+            } while (!AreNonGapsConnected(map, roomcount));
 
-            bool IsSolvable()
-            {
-                var visited = new HashSet<Point> { map.Boss };
-                var visitCount = 1;
-
-                void Visit(Point p)
-                {
-                    ++visitCount;
-                    visited.Add(p);
-                    foreach (var dir in ValidExpandDirections(map, p))
-                    {
-                        var p2 = p.Add(dir);
-                        if (!visited.Contains(p2))
-                            Visit(p2);
-                    }
-                }
-
-                Visit(map.Boss.Add(map.BossFaceDirection));
-                return visitCount == roomcount;
-            }
+            Logger.Log($"[{attempts} gap generation attempts to make contiguous map with {roomcount} rc]");
         }
 
         // Generates a completely random map with possible loops.
@@ -251,6 +233,44 @@ namespace MapGenerator
                          select r).ToList();
             if (rooms.Count > 0)
                 map.Rebase(random.Choice(rooms));
+        }
+
+        static bool AreNonGapsConnected(Map map, int roomcount)
+        {
+            // DFS, also time it
+#if DEBUG
+            var sw = Stopwatch.StartNew();
+#endif
+            var stack = new Stack<Point>(new Point[] { map.Boss.Add(map.BossFaceDirection) });
+            // Count boss as visited.
+            var visited = new HashSet<Point> { map.Boss };
+            var visitCount = 1;
+            var maxStackCount = 0;
+
+            while (stack.Count > 0)
+            {
+                if (maxStackCount < stack.Count)
+                    maxStackCount = stack.Count;
+
+                var p = stack.Pop();
+                if (visited.Contains(p))
+                    continue;
+
+                visited.Add(p);
+                ++visitCount;
+                foreach (var dir in ValidExpandDirections(map, p))
+                {
+                    var p2 = p.Add(dir);
+                    if (!visited.Contains(p2))
+                        stack.Push(p2);
+                }
+            }
+
+#if DEBUG
+            sw.Stop();
+            Logger.Log($"{roomcount - visitCount} unreachable rooms, max stack count={maxStackCount}, connectedness test took {sw.Elapsed.TotalMilliseconds} ms", LogLevel.Information);
+#endif
+            return visitCount >= roomcount;
         }
 
         static IEnumerable<Direction> ValidExpandDirections(Map map, Point p)

@@ -25,10 +25,6 @@
   <Import Project="..\Common\Common.projitems" Label="Shared" />
 
   <ItemGroup>
-    <Folder Include="Resources\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Compile Update="Resources.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -42,6 +38,10 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <CustomToolNamespace></CustomToolNamespace>
     </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Resources\" />
   </ItemGroup>
 
 </Project>

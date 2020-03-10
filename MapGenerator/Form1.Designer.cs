@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.pictureBox = new System.Windows.Forms.PictureBox();
             this.generateButton = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.rcUpDown = new System.Windows.Forms.NumericUpDown();
@@ -48,22 +48,24 @@
             this.browseButton = new System.Windows.Forms.Button();
             this.sizeComboBox = new System.Windows.Forms.ComboBox();
             this.sizeUpDown = new System.Windows.Forms.NumericUpDown();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.rcUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.seedUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.sizeUpDown)).BeginInit();
             this.SuspendLayout();
             // 
-            // pictureBox1
+            // pictureBox
             // 
-            this.pictureBox1.BackColor = System.Drawing.Color.Black;
-            this.pictureBox1.Location = new System.Drawing.Point(10, 62);
-            this.pictureBox1.Margin = new System.Windows.Forms.Padding(2);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(280, 280);
-            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
-            this.pictureBox1.TabIndex = 0;
-            this.pictureBox1.TabStop = false;
+            this.pictureBox.BackColor = System.Drawing.Color.Black;
+            this.pictureBox.Location = new System.Drawing.Point(10, 62);
+            this.pictureBox.Margin = new System.Windows.Forms.Padding(2);
+            this.pictureBox.MaximumSize = new System.Drawing.Size(664, 664);
+            this.pictureBox.Name = "pictureBox";
+            this.pictureBox.Padding = new System.Windows.Forms.Padding(12);
+            this.pictureBox.Size = new System.Drawing.Size(280, 280);
+            this.pictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pictureBox.TabIndex = 0;
+            this.pictureBox.TabStop = false;
             // 
             // generateButton
             // 
@@ -277,14 +279,8 @@
             "Small (4 x 4)",
             "Medium (4 x 8)",
             "Large (8 x 8)",
-            "Larger (9 x 9)",
-            "Huge (10 x 10)",
-            "Massive (11 x 11)",
-            "Gigantic (12 x 12)",
-            "Colossal (13 x 13)",
-            "Enormous (14 x 14)",
-            "Stupendous (15 x 15)",
-            "Humongous (16 x 16)",
+            "Huge (12 x 12)",
+            "Gigantic (16 x 16)",
             "Custom"});
             this.sizeComboBox.Location = new System.Drawing.Point(503, 36);
             this.sizeComboBox.Name = "sizeComboBox";
@@ -301,7 +297,7 @@
             0,
             0});
             this.sizeUpDown.Minimum = new decimal(new int[] {
-            3,
+            2,
             0,
             0,
             0});
@@ -328,7 +324,7 @@
             this.Controls.Add(this.browseButton);
             this.Controls.Add(this.copyButton);
             this.Controls.Add(this.logTextBox);
-            this.Controls.Add(this.pictureBox1);
+            this.Controls.Add(this.pictureBox);
             this.Controls.Add(this.textBox1);
             this.Controls.Add(this.generateButton);
             this.Controls.Add(this.drawDeadEndsCheckBox);
@@ -345,7 +341,7 @@
             this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "Form1";
             this.Text = "Map Generator";
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.rcUpDown)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.seedUpDown)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.sizeUpDown)).EndInit();
@@ -356,7 +352,7 @@
 
         #endregion
 
-        private System.Windows.Forms.PictureBox pictureBox1;
+        private System.Windows.Forms.PictureBox pictureBox;
         private System.Windows.Forms.Button generateButton;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.NumericUpDown rcUpDown;

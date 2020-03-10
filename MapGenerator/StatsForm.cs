@@ -97,7 +97,8 @@ namespace MapGenerator
         private void RunDeadEndTest(int trials = 10000)
         {
             var map = new Map(8, 8);
-            var dist = new Dictionary<int, int>();
+            var deDist = new Dictionary<int, int>();
+            var rrDist = new Dictionary<double, int>();
             for (int i = 0; i < trials; i++)
             {
                 var seed = random.Next();
@@ -106,15 +107,18 @@ namespace MapGenerator
                 generator.Generate(map);
 
                 var deCount = map.GetDeadEnds().Count;
-                dist[deCount] = dist.GetValueOrDefault(deCount) + 1;
+                deDist[deCount] = deDist.GetValueOrDefault(deCount) + 1;
 
-                if (deCount <= 12 || deCount >= 26)
+                var rr = map.Roomcount - 0.8 * deCount;
+                rrDist[rr] = rrDist.GetValueOrDefault(rr) + 1;
+
+                if (rr <= 34 || rr >= 52)
                     resultsTextBox.AppendText($"dead end count={deCount}, rc={map.Roomcount}, seed={seed}{Environment.NewLine}");
             }
-            var pairs = from pair in dist
+            var pairs = from pair in rrDist
                         orderby pair.Key
-                        select pair.Key + ": " + pair.Value;
-            var str = "{" + string.Join(",", pairs) + "}";
+                        select pair.Key + ":" + pair.Value;
+            var str = "{" + string.Join(", ", pairs) + "}";
             resultsTextBox.AppendText(str + Environment.NewLine);
         }
 

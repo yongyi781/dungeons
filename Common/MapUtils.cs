@@ -59,8 +59,7 @@ namespace Dungeons.Common
             Direction.E => RoomType.E,
             Direction.S => RoomType.S,
             Direction.N => RoomType.N,
-            Direction.Gap => RoomType.Gap,
-            _ => RoomType.Mystery,
+            _ => RoomType.Gap,
         };
 
         public static bool IsLeaf(this RoomType roomType)
@@ -77,10 +76,15 @@ namespace Dungeons.Common
 
         public static string ToResourceString(this RoomType type)
         {
-            if (type <= 0 || type == RoomType.Mystery)
+            if (type <= 0)
                 return "NotOpened";
 
             var str = "Room";
+            if ((type & RoomType.Crit) != 0)
+                str = "Crit";
+            else if ((type & RoomType.Mystery) != 0)
+                str = "Mystery";
+
             if ((type & RoomType.E) != 0)
                 str += "E";
             if ((type & RoomType.N) != 0)
@@ -113,7 +117,10 @@ namespace Dungeons.Common
         public static Point NextPoint(this Random random, int width, int height) => new Point(random.Next(width), random.Next(height));
 
         public static string ToShortString(this Point p) => p == Invalid ? "-" : $"({p.X},{p.Y})";
-        public static string ToChessString(this Point p) => p == Invalid ? "-" : $"{(char)(p.X + 'a')}{p.Y + 1}";
+
+        // Prints chess string if p.X < 26, otherwise the short string.
+        public static string ToChessString(this Point p) => p == Invalid ? "-" :
+            p.X < 26 ? $"{(char)(p.X + 'a')}{p.Y + 1}" : p.ToShortString();
 
         public static double[,] Normalize(this int[,] matrix)
         {
@@ -148,6 +155,8 @@ namespace Dungeons.Common
             }
             return sb.ToString();
         }
+
+        public static string ToPrettyString(this IEnumerable<Point> points) => "[" + string.Join(",", from p in points select p.ToChessString()) + "]";
 
         // Parse chess notation
         public static Point ParseChess(string text)

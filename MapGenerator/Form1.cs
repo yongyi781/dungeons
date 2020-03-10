@@ -12,6 +12,8 @@ namespace MapGenerator
         private readonly MapWriter mapWriter = new MapWriter(Resources.ResourceManager);
         private readonly Random random = new Random();
         private readonly string[] Algorithms = { "Prim", "AldousBroder", "PrimVariant", "RandomEdges" };
+        private readonly FloorSize[] FloorSizes = { FloorSize.Small, FloorSize.Medium, FloorSize.Large, new FloorSize(12, 12), new FloorSize(16, 16) };
+
         private Map map;
         private MapGenerator mapGenerator;
 
@@ -24,73 +26,74 @@ namespace MapGenerator
             UpdateSize();
 
             Logger.TextBox = logTextBox;
+#if DEBUG
+            Logger.LogLevel = LogLevel.Debug;
+            sizeComboBox.SelectedIndex = sizeComboBox.Items.Count - 1;
+            sizeUpDown.Value = 64;
+            rcUpDown.Value = 64 * 64 - 1;
+#else
+            Logger.LogLevel = LogLevel.Information;
+#endif
         }
 
-        private void Generate(int roomcount)
+        private void Generate(int roomcount, string algorithm)
         {
-            var algorithm = Algorithms[algorithmComboBox.SelectedIndex];
-
-            mapGenerator = new MapGenerator((int)seedUpDown.Value, FloorSize.ByDimensions(map.Width, map.Height));
+            mapGenerator = new MapGenerator((int)seedUpDown.Value, new FloorSize(map.Width, map.Height));
             mapGenerator.Generate(map, roomcount, algorithm);
 
-            var subtreeStr = string.Empty;
-            foreach (var dir in map.ChildrenDirs(map.Base))
-            {
-                subtreeStr += $", {dir}={map.SubtreeSize(map.Base.Add(dir))}";
-            }
-
-            Logger.Log($"size={mapGenerator.FloorSize.Name}, seed={seedUpDown.Value,10}, rc={map.Roomcount}, alg={algorithm}, crc={map.GetCritRooms().Count}, boss-base dist={map.DistanceToBase(map.Boss)}, dead ends={map.GetDeadEnds().Count,2}, length from base={map.GetTreeHeight()}, length from boss={map.GetEccentricity(map.Boss)}, diameter={map.GetDiameter()}{subtreeStr}");
+            Logger.Log($"size={mapGenerator.FloorSize}, seed={seedUpDown.Value,10}, rc={map.Roomcount}, alg={algorithm}, crc={map.GetCritRooms().Count}, dead ends={map.GetDeadEnds().Count}, boss-base dist={map.DistanceToBase(map.Boss)}, length from base={map.GetTreeHeight()}", LogLevel.Information);
         }
 
         private void RenderMap()
         {
             textBox1.Text = map.ToString();
-            using (var g = Graphics.FromImage(pictureBox1.Image))
+            using (var g = Graphics.FromImage(pictureBox.Image))
             {
                 mapWriter.Draw(g, map, drawCritCheckBox.Checked, drawDeadEndsCheckBox.Checked);
             }
-            pictureBox1.Refresh();
+            pictureBox.Refresh();
         }
 
         private void UpdateSize()
         {
-            var size = sizeComboBox.SelectedIndex switch
-            {
-                0 => new Size(4, 4),
-                1 => new Size(4, 8),
-                11 => new Size((int)sizeUpDown.Value, (int)sizeUpDown.Value),
-                var x when x >= 2 => new Size(x + 6, x + 6),
-                _ => throw new NotImplementedException(),
-            };
+            var index = sizeComboBox.SelectedIndex;
+            var size = index == sizeComboBox.Items.Count - 1 ? new FloorSize((int)sizeUpDown.Value, (int)sizeUpDown.Value) : FloorSizes[index];
 
-            if (map?.Size != size)
+            if (map?.Size != size.Size)
             {
                 map = new Map(size.Width, size.Height);
-                pictureBox1.Width = size.Width * MapUtils.RoomSize + 24;
-                pictureBox1.Height = size.Height * MapUtils.RoomSize + 24;
-                pictureBox1.Image = new Bitmap(size.Width * MapUtils.RoomSize, size.Height * MapUtils.RoomSize);
+                pictureBox.Width = size.Width * MapUtils.RoomSize + 24;
+                pictureBox.Height = size.Height * MapUtils.RoomSize + 24;
+                pictureBox.Image = new Bitmap(size.Width * MapUtils.RoomSize, size.Height * MapUtils.RoomSize);
             }
         }
 
         private async void generateButton_Click(object sender, EventArgs e)
         {
-            generateButton.Enabled = false;
+            try
+            {
+                generateButton.Enabled = false;
 
-            UpdateSize();
+                UpdateSize();
 
-            if (randomSeedCheckbox.Checked)
-                seedUpDown.Value = random.Next();
+                if (randomSeedCheckbox.Checked)
+                    seedUpDown.Value = random.Next();
 
-            await Task.Run(() => Generate(randomRcCheckbox.Checked ? 0 : (int)rcUpDown.Value));
-            rcUpDown.Value = map.Roomcount;
-            RenderMap();
-
-            generateButton.Enabled = true;
+                var rc = randomRcCheckbox.Checked ? 0 : (int)rcUpDown.Value;
+                var alg = Algorithms[algorithmComboBox.SelectedIndex];
+                await Task.Run(() => Generate(rc, alg));
+                rcUpDown.Value = map.Roomcount;
+                RenderMap();
+            }
+            finally
+            {
+                generateButton.Enabled = true;
+            }
         }
 
         private void copyButton_Click(object sender, EventArgs e)
         {
-            Clipboard.SetImage(pictureBox1.Image);
+            Clipboard.SetImage(pictureBox.Image);
         }
 
         private void deleteDeadEndButton_Click(object sender, EventArgs e)
@@ -119,6 +122,8 @@ namespace MapGenerator
             {
                 var bmp = new Bitmap(ofd.FileName);
                 var gameMap = new MapReader(Resources.ResourceManager).ReadMap(bmp, FloorSize.ByImageSize(bmp.Size));
+                sizeComboBox.SelectedIndex = Array.IndexOf(FloorSizes, gameMap.FloorSize);
+                UpdateSize();
                 map = gameMap.Map;
                 RenderMap();
 

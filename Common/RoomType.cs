@@ -10,9 +10,9 @@ namespace Dungeons.Common
         N = 2,
         S = 4,
         W = 8,
-        Base = 16,
-        Boss = 32,
-        Crit = 64,
-        Mystery = 128,
+        Mystery = 16,
+        Crit = 32,
+        Base = 64,
+        Boss = 128,
     }
 }

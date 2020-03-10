@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Resources;
 
@@ -16,19 +17,19 @@ namespace Dungeons.Common
 
         public MapReader(ResourceManager resources)
         {
+            // Normal and crit rooms
             foreach (var roomType in MapUtils.EnumerateRoomTypes())
             {
                 signatures.Add(roomType, ComputeSignature((Bitmap)resources.GetObject(roomType.ToResourceString())));
+                var critRoomType = roomType | RoomType.Crit;
+                var critBmp = (Bitmap)resources.GetObject(critRoomType.ToResourceString());
+                if (critBmp != null)
+                    signatures.Add(critRoomType, ComputeSignature(critBmp));
             }
-        }
-
-        public MapReader(Dictionary<RoomType, Bitmap> roomImageDict)
-        {
-            RoomImageDict = roomImageDict;
-
-            foreach (var roomType in roomImageDict.Keys)
+            foreach (var dir in MapUtils.Directions)
             {
-                signatures.Add(roomType, ComputeSignature(roomImageDict[roomType]));
+                var roomType = dir.ToRoomType() | RoomType.Mystery;
+                signatures.Add(roomType, ComputeSignature((Bitmap)resources.GetObject(roomType.ToResourceString())));
             }
         }
 
@@ -47,9 +48,9 @@ namespace Dungeons.Common
 
         public GameMap ReadMap(Bitmap image, FloorSize floorSize)
         {
-            var roomTypes = new RoomType[floorSize.NumColumns, floorSize.NumRows];
-            for (int y = 0; y < floorSize.NumRows; y++)
-                for (int x = 0; x < floorSize.NumColumns; x++)
+            var roomTypes = new RoomType[floorSize.Width, floorSize.Height];
+            for (int y = 0; y < floorSize.Height; y++)
+                for (int x = 0; x < floorSize.Width; x++)
                     roomTypes[x, y] = ReadRoom(image, new Point(x, y), floorSize);
 
             return new GameMap(roomTypes);
@@ -71,8 +72,6 @@ namespace Dungeons.Common
 
             var sig = ComputeSignature(image, offX, offY);
             var result = signatures.FirstOrDefault(pair => Enumerable.SequenceEqual(sig, pair.Value)).Key;
-            if (result == 0)
-                return RoomType.Gap;
 
             if (image.GetPixel(offX + 19, offY + 18) == Color.FromArgb(150, 145, 105))
                 result |= RoomType.Base;

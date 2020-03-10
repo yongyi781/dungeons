@@ -154,6 +154,42 @@
   <data name="BossOverlay" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\..\common\resources\bossoverlay.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="CritEN" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\common\resources\crit\criten.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="CritENS" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\common\resources\crit\critens.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="CritENSW" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\common\resources\crit\critensw.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="CritENW" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\common\resources\crit\critenw.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="CritES" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\common\resources\crit\crites.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="CritESW" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\common\resources\crit\critesw.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="CritEW" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\common\resources\crit\critew.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="CritNS" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\common\resources\crit\critns.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="CritNSW" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\common\resources\crit\critnsw.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="CritNW" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\common\resources\crit\critnw.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="CritS" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\common\resources\crit\crits.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="CritSW" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\common\resources\crit\critsw.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="Grid" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\..\common\resources\grid.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -186,6 +222,18 @@
   </data>
   <data name="Large9" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\..\common\resources\large9.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="MysteryE" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\common\resources\mystery\mysterye.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="MysteryN" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\common\resources\mystery\mysteryn.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="MysteryS" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\common\resources\mystery\mysterys.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="MysteryW" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\common\resources\mystery\mysteryw.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="NotOpened" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\..\common\resources\notopened.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>

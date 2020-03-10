@@ -10,7 +10,7 @@ namespace Dungeons.Common
         {
             RoomTypes = roomTypes;
 
-            FloorSize = FloorSize.ByDimensions(roomTypes.GetLength(0), roomTypes.GetLength(1));
+            FloorSize = new FloorSize(roomTypes.GetLength(0), roomTypes.GetLength(1));
 
             Map = new Map(roomTypes.GetLength(0), roomTypes.GetLength(1));
 
@@ -73,6 +73,6 @@ namespace Dungeons.Common
         public Point Boss => Map.Boss;
         public int OpenedRoomCount { get; private set; }
         public int DeadEndCount { get; private set; }
-        public bool IsComplete => OpenedRoomCount > 0 && MapUtils.Range2D(FloorSize.NumColumns, FloorSize.NumRows).All(p => RoomTypes[p.X, p.Y] != RoomType.Mystery);
+        public bool IsComplete => OpenedRoomCount > 0 && MapUtils.Range2D(FloorSize.Width, FloorSize.Height).All(p => (RoomTypes[p.X, p.Y] & RoomType.Mystery) == 0);
     }
 }
