@@ -25,14 +25,14 @@ namespace MapGenerator
             sizeComboBox.SelectedIndex = 2;
             UpdateSize();
 
-            Logger.TextBox = logTextBox;
+            Logger.Global.TextBox = logTextBox;
 #if DEBUG
-            Logger.LogLevel = LogLevel.Debug;
+            Logger.Global.LogLevel = LogLevel.Debug;
             sizeComboBox.SelectedIndex = sizeComboBox.Items.Count - 1;
             sizeUpDown.Value = 64;
             rcUpDown.Value = 64 * 64 - 1;
 #else
-            Logger.LogLevel = LogLevel.Information;
+            Logger.Global.LogLevel = LogLevel.Information;
 #endif
         }
 
@@ -41,7 +41,7 @@ namespace MapGenerator
             mapGenerator = new MapGenerator((int)seedUpDown.Value, new FloorSize(map.Width, map.Height));
             mapGenerator.Generate(map, roomcount, algorithm);
 
-            Logger.Log($"size={mapGenerator.FloorSize}, seed={seedUpDown.Value,10}, rc={map.Roomcount}, alg={algorithm}, crc={map.GetCritRooms().Count}, dead ends={map.GetDeadEnds().Count}, boss-base dist={map.DistanceToBase(map.Boss)}, length from base={map.GetTreeHeight()}", LogLevel.Information);
+            Logger.Global.Log(LogLevel.Information, $"size={mapGenerator.FloorSize}, seed={seedUpDown.Value,10}, rc={map.Roomcount}, alg={algorithm}, crc={map.GetCritRooms().Count}, dead ends={map.GetDeadEnds().Count}, boss-base dist={map.DistanceToBase(map.Boss)}, length from base={map.GetTreeHeight()}");
         }
 
         private void RenderMap()
@@ -68,7 +68,7 @@ namespace MapGenerator
             }
         }
 
-        private async void generateButton_Click(object sender, EventArgs e)
+        private async void GenerateButton_Click(object sender, EventArgs e)
         {
             try
             {
@@ -91,31 +91,32 @@ namespace MapGenerator
             }
         }
 
-        private void copyButton_Click(object sender, EventArgs e)
+        private void CopyButton_Click(object sender, EventArgs e)
         {
             Clipboard.SetImage(pictureBox.Image);
         }
 
-        private void deleteDeadEndButton_Click(object sender, EventArgs e)
+        private void DeleteDeadEndButton_Click(object sender, EventArgs e)
         {
             if (map != null)
             {
-                mapGenerator.RemoveBonusDeadEnd(map);
+                foreach (var point in map.GetBonusDeadEnds())
+                    map.RemoveDeadEnd(point);
                 RenderMap();
             }
         }
 
-        private void drawBox_CheckedChanged(object sender, EventArgs e)
+        private void DrawBox_CheckedChanged(object sender, EventArgs e)
         {
             RenderMap();
         }
 
-        private void openStatsWindowButton_Click(object sender, EventArgs e)
+        private void OpenStatsWindowButton_Click(object sender, EventArgs e)
         {
             new StatsForm().Show(this);
         }
 
-        private void browseButton_Click(object sender, EventArgs e)
+        private void BrowseButton_Click(object sender, EventArgs e)
         {
             using var ofd = new OpenFileDialog { Filter = "Image Files|*.png|All Files|*.*" };
             if (ofd.ShowDialog() == DialogResult.OK)
@@ -132,11 +133,11 @@ namespace MapGenerator
                 {
                     subtreeStr += $", {dir}={map.SubtreeSize(map.Base.Add(dir))}";
                 }
-                Logger.Log($"{(gameMap.IsComplete ? "[complete]   " : "[incomplete] ")}name={Path.GetFileName(ofd.FileName)}, rc={map.Roomcount}, dead end count={map.GetDeadEnds().Count,2}, tree height={map.GetTreeHeight()}, boss ecc={map.GetEccentricity(map.Boss)}, diameter={map.GetDiameter()}{subtreeStr}");
+                Logger.Global.Log(LogLevel.Information, $"{(gameMap.IsComplete ? "[complete]   " : "[incomplete] ")}name={Path.GetFileName(ofd.FileName)}, rc={map.Roomcount}, dead ends={map.GetDeadEnds().Count,2}, boss-base dist={map.DistanceToBase(map.Boss)}, length from base={map.GetTreeHeight()}{subtreeStr}");
             }
         }
 
-        private void sizeComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        private void SizeComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             sizeUpDown.Enabled = sizeComboBox.SelectedIndex == sizeComboBox.Items.Count - 1;
         }

@@ -6,7 +6,6 @@ namespace Dungeons.Common
     // A class to write maps to an image.
     public class MapWriter
     {
-        private static readonly Brush critBrush = new SolidBrush(Color.FromArgb(128, 128, 255, 255));
         private readonly ResourceManager resources;
 
         public MapWriter(ResourceManager resources)
@@ -29,17 +28,14 @@ namespace Dungeons.Common
                     var p = new Point(x, y);
                     if (map[p] != Direction.Gap)
                     {
-                        var roomBmp = RoomTypeToBitmap(map.GetRoomType(p));
+                        var roomType = map.GetRoomType(p);
+                        var roomBmp =  RoomTypeToBitmap(drawCritRooms && critRooms.Contains(p) ? roomType | RoomType.Crit : roomType);
                         if (roomBmp != null)
                         {
                             g.DrawImage(roomBmp, x * 32, (map.Height - 1 - y) * 32, 32, 32);
                             if (drawDeadEnds && map.IsDeadEnd(p))
                             {
                                 g.FillRectangle(Brushes.Red, x * 32 + 14, (map.Height - 1 - y) * 32 + 14, 4, 4);
-                            }
-                            if (drawCritRooms && critRooms.Contains(p))
-                            {
-                                g.FillRectangle(critBrush, x * 32 + 14, (map.Height - 1 - y) * 32 + 14, 4, 4);
                             }
                         }
                     }

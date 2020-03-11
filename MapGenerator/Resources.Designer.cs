@@ -183,6 +183,16 @@ namespace MapGenerator {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap CritE {
+            get {
+                object obj = ResourceManager.GetObject("CritE", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap CritEN {
             get {
                 object obj = ResourceManager.GetObject("CritEN", resourceCulture);
@@ -253,6 +263,16 @@ namespace MapGenerator {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap CritN {
+            get {
+                object obj = ResourceManager.GetObject("CritN", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap CritNS {
             get {
                 object obj = ResourceManager.GetObject("CritNS", resourceCulture);
@@ -296,6 +316,16 @@ namespace MapGenerator {
         internal static System.Drawing.Bitmap CritSW {
             get {
                 object obj = ResourceManager.GetObject("CritSW", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap CritW {
+            get {
+                object obj = ResourceManager.GetObject("CritW", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

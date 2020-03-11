@@ -4,18 +4,20 @@ using System.Windows.Forms;
 
 namespace MapGenerator
 {
-    public static class Logger
+    public class Logger
     {
-        public static TextBox TextBox { get; set; }
-        public static LogLevel LogLevel { get; set; }
+        public static readonly Logger Global = new Logger();
 
-        public static void Log(string text, LogLevel level = LogLevel.Debug)
+        public TextBox TextBox { get; set; }
+        public LogLevel LogLevel { get; set; }
+
+        public void Log(LogLevel level, string text)
         {
             if (level >= LogLevel)
                 LogHelper(text);
         }
 
-        static void LogHelper(string text)
+        void LogHelper(string text)
         {
             if (TextBox != null)
             {

@@ -94,12 +94,29 @@ namespace Dungeons.Common
             return p == Base || (p.IsInRange(Width, Height) && this[p] > Direction.None);
         }
 
-        public void AddCritEndpoint(Point p)
+        public void AddCritEndpoint(Point point)
         {
-            CritEndpoints.Add(p);
+            CritEndpoints.Add(point);
         }
 
-        // Precondition: p is in CritEndpoints.
+        // Trim crit endpoints.
+        public void SimplifyCrit()
+        {
+            foreach (var point in CritEndpoints.ToList())
+            {
+                if (!CritEndpoints.Contains(point))
+                    continue;
+                if (point == Base || point == Boss)
+                    CritEndpoints.Remove(point);
+                TraverseToBase(point, p =>
+                {
+                    if (p != point)
+                        CritEndpoints.Remove(p);
+                });
+            }
+        }
+
+        // Precondition: point is in CritEndpoints.
         public void BacktrackCritEndpoint(Point p)
         {
             var parent = Parent(p);
@@ -133,10 +150,23 @@ namespace Dungeons.Common
         public void TraverseToBase(Point p, Action<Point> callback)
         {
             // Prevent infinite loops
-            for (int i = 0; p != Base && i < Width * Height; i++, p = Parent(p))
-            {
+            for (int i = 0; p != MapUtils.Invalid && p != Base && i < Width * Height; i++, p = Parent(p))
                 callback(p);
-            }
+        }
+
+        /// <summary>
+        /// Traverses the map from a specified point all the way to base, excluding base.
+        /// </summary>
+        /// <param name="p">The point.</param>
+        /// <param name="callback">The function to perform on each point. The return value of callback determines whether to stop early.</param>
+        /// <returns>true if callback returned true at least once; otherwise, false.</returns>
+        public bool TraverseToBase(Point point, Func<Point, bool> callback)
+        {
+            // Prevent infinite loops
+            for (int i = 0; point != MapUtils.Invalid && point != Base && i < Width * Height; i++, point = Parent(point))
+                if (callback(point))
+                    return true;
+            return false;
         }
 
         public void TraverseSubtree(Point p, Action<Point, int> callback)
@@ -174,7 +204,7 @@ namespace Dungeons.Common
                 if (this[p] != Direction.None)
                 {
                     var parent = Parent(p);
-                    if (!visited.Contains(Parent(p)))
+                    if (!visited.Contains(parent))
                     {
                         Visit(parent, dist + 1);
                         callback(parent, this[p].Flip(), dist + 1);
@@ -259,7 +289,7 @@ namespace Dungeons.Common
         }
 
         /// <summary>
-        /// Farthest point from p.
+        /// Farthest point from point.
         /// </summary>
         public (Point, int) GetFarthestPoint(Point point)
         {
@@ -279,7 +309,7 @@ namespace Dungeons.Common
         }
 
         /// <summary>
-        /// Max distance from p to another point: https://en.wikipedia.org/wiki/Distance_(graph_theory).
+        /// Max distance from point to another point: https://en.wikipedia.org/wiki/Distance_(graph_theory).
         /// </summary>
         public int GetEccentricity(Point point) => GetFarthestPoint(point).Item2;
 
@@ -298,20 +328,29 @@ namespace Dungeons.Common
             CritEndpoints.Clear();
         }
 
-        public SortedSet<Point> GetCritRooms()
+        public HashSet<Point> GetCritRooms()
         {
-            var set = new SortedSet<Point>(new PointComparer()) { Base };
-            foreach (var e in CritEndpoints)
+            var set = new HashSet<Point> { Base };
+            var critWithBoss = CritEndpoints.Union(new Point[] { Boss }).ToList();
+            foreach (var e in critWithBoss)
             {
-                TraverseToBase(e, p => set.Add(p));
+                TraverseToBase(e, p => { set.Add(p); });
             }
             return set;
         }
 
-        // Precondition: p must be a dead end.
-        public void RemoveDeadEnd(Point p)
+        public bool IsCrit(Point point)
         {
-            if (p == Base)
+            foreach (var e in CritEndpoints.Union(new Point[] { Boss }))
+                if (TraverseToBase(e, p => p == point))
+                    return true;
+            return false;
+        }
+
+        // Precondition: point must be a dead end.
+        public void RemoveDeadEnd(Point point)
+        {
+            if (point == Base)
             {
                 // Better have just one child. Replace base with its child.
                 var dir = ChildrenDirs(Base).SingleOrDefault();
@@ -323,15 +362,15 @@ namespace Dungeons.Common
                     CritEndpoints.Remove(Base);
                 }
             }
-            else if (CritEndpoints.Contains(p))
+            else if (CritEndpoints.Contains(point))
             {
-                CritEndpoints.Remove(p);
-                AddCritEndpoint(Parent(p));
+                CritEndpoints.Remove(point);
+                AddCritEndpoint(Parent(point));
             }
-            parentDirs[p.X, p.Y] = Direction.None;
+            parentDirs[point.X, point.Y] = Direction.None;
         }
 
-        // Sets the new base.
+        // Sets the new base, updating parents to point to the new base.
         public void Rebase(Point newBase)
         {
             if (newBase == Base)
@@ -344,7 +383,7 @@ namespace Dungeons.Common
             Base = newBase;
         }
 
-        public string ToPrettyString()
+        public string GetMapString()
         {
             return parentDirs.ToPrettyString(a => DirectionToChar(a), string.Empty);
         }

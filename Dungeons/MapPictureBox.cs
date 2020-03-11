@@ -12,18 +12,17 @@ namespace Dungeons
     public class MapPictureBox : PictureBox
     {
         const int MaxAnnotationLength = 4;
-        const int MapSize = 8;
 
         static readonly Font AnnotationFont = new Font("Consolas", 8);
-        static readonly Font DistanceAnnotationFont = new Font("Arial", 7);
+        //static readonly Font DistanceAnnotationFont = new Font("Arial", 7);
         static readonly Color AnnotationColor = Color.FromArgb(240, 240, 240);
         //static readonly Pen AnnotationPen = new Pen(AnnotationColor, 1);
-        static readonly Pen SelectionPen = new Pen(Color.DarkGreen, 1);
+        //static readonly Pen SelectionPen = new Pen(Color.DarkGreen, 1);
         static readonly Brush AnnotationBrush = new SolidBrush(AnnotationColor);
-        static readonly Brush HomeBrush = Brushes.White;
-        static readonly Brush DefaultRoomBrush = new SolidBrush(Color.FromArgb(128, 255, 255, 255));
-        static readonly Pen GridLinePen = new Pen(Color.FromArgb(32, 255, 255, 255));
-        static readonly Pen PathLinePen = new Pen(Color.FromArgb(80, 255, 255, 255));
+        //static readonly Brush HomeBrush = Brushes.White;
+        //static readonly Brush DefaultRoomBrush = new SolidBrush(Color.FromArgb(128, 255, 255, 255));
+        //static readonly Pen GridLinePen = new Pen(Color.FromArgb(32, 255, 255, 255));
+        //static readonly Pen PathLinePen = new Pen(Color.FromArgb(80, 255, 255, 255));
         //static readonly Font RoomCountFont = new Font("Georgia", 12);
         //static readonly Brush RoomCountBrush = new SolidBrush(Color.FromArgb(200, 180, 180));
 

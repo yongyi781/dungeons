@@ -19,6 +19,7 @@ namespace MapGenerator
         }
 
         public FloorSize FloorSize { get; }
+        public Logger Logger { get; set; } = Logger.Global;
 
         /// <summary>
         /// Replaces the given map with generated map using the specified algorithm.
@@ -32,6 +33,8 @@ namespace MapGenerator
 
             GenerateBoss(map);
             GenerateGaps(map, roomcount);
+
+            Logger.Log(LogLevel.Debug, "Finished generating gaps");
 
             switch (spanningTreeAlgorithm)
             {
@@ -49,10 +52,13 @@ namespace MapGenerator
                     break;
             }
 
+            Logger.Log(LogLevel.Debug, "Finished generating spanning tree");
+
             if (spanningTreeAlgorithm != "RandomEdges")
             {
                 AssignCritRooms(map);
-                Rebase(map);
+                Logger.Log(LogLevel.Debug, "Finished assigning crit rooms");
+                RebaseToRandomCritRoom(map);
             }
         }
 
@@ -76,13 +82,13 @@ namespace MapGenerator
                 return;
 
             // This is for computational reasons.
-            if (roomcount < FloorSize.MinRC)
-                roomcount = FloorSize.MinRC;
+            if (roomcount < FloorSize.MinAllowedRC)
+                roomcount = FloorSize.MinAllowedRC;
 
             int attempts = 0;
             do
             {
-                Logger.Log($"Starting gap generation", LogLevel.Trace);
+                Logger.Log(LogLevel.Trace, $"Starting gap generation");
                 ++attempts;
                 map.Clear();
 
@@ -94,7 +100,7 @@ namespace MapGenerator
                     map[points[i]] = Direction.Gap;
             } while (!AreNonGapsConnected(map, roomcount));
 
-            Logger.Log($"[{attempts} gap generation attempts to make contiguous map with {roomcount} rc]");
+            Logger.Log(LogLevel.Debug, text: $"[{attempts} gap generation attempts to make contiguous map with {roomcount} rc]");
         }
 
         // Generates a completely random map with possible loops.
@@ -189,11 +195,8 @@ namespace MapGenerator
                                  select d).ToList();
                 var dir = random.Choice(validDirs);
                 p = p.Add(dir);
-                if (!visited.Contains(p))
-                {
-                    visited.Add(p);
+                if (visited.Add(p))
                     map[p] = dir.Flip();
-                }
             }
         }
 
@@ -204,8 +207,16 @@ namespace MapGenerator
             // Assign some random (not-too-far) dead ends to crit until crit count exceeds desired.
             var deadEnds = map.GetDeadEnds().ToList();
             random.Shuffle(deadEnds);
-            for (int i = 0; map.GetCritRooms().Count < desiredCritCount && i < deadEnds.Count; i++)
+
+            // Need performance, so build crit rooms manually.
+            var critRooms = map.GetCritRooms();
+            for (int i = 0; critRooms.Count < desiredCritCount && i < deadEnds.Count; i++)
+            {
                 map.AddCritEndpoint(deadEnds[i]);
+                map.TraverseToBase(deadEnds[i], p => !critRooms.Add(p));
+            }
+
+            Logger.Log(LogLevel.Debug, $"Added {map.CritEndpoints.Count} crit endpoints. Need to trim off {map.GetCritRooms().Count - desiredCritCount} crit rooms");
 
             // Trim until crit count equals desired.
             while (map.GetCritRooms().Count > desiredCritCount)
@@ -213,9 +224,6 @@ namespace MapGenerator
                 var critEndpointList = map.CritEndpoints.ToList();
                 map.BacktrackCritEndpoint(random.Choice(critEndpointList));
             }
-
-            // Boss is crit.
-            map.AddCritEndpoint(map.Boss);
         }
 
         public void RemoveBonusDeadEnd(Map map)
@@ -226,7 +234,7 @@ namespace MapGenerator
                 map.RemoveDeadEnd(random.Choice(deadEnds));
         }
 
-        public void Rebase(Map map)
+        public void RebaseToRandomCritRoom(Map map)
         {
             var rooms = (from r in map.GetCritRooms()
                          where r != map.Boss
@@ -235,7 +243,7 @@ namespace MapGenerator
                 map.Rebase(random.Choice(rooms));
         }
 
-        static bool AreNonGapsConnected(Map map, int roomcount)
+        private bool AreNonGapsConnected(Map map, int roomcount)
         {
             // DFS, also time it
 #if DEBUG
@@ -253,22 +261,19 @@ namespace MapGenerator
                     maxStackCount = stack.Count;
 
                 var p = stack.Pop();
-                if (visited.Contains(p))
+                if (!visited.Add(p))
                     continue;
 
-                visited.Add(p);
                 ++visitCount;
                 foreach (var dir in ValidExpandDirections(map, p))
                 {
-                    var p2 = p.Add(dir);
-                    if (!visited.Contains(p2))
-                        stack.Push(p2);
+                    stack.Push(p.Add(dir));
                 }
             }
 
 #if DEBUG
             sw.Stop();
-            Logger.Log($"{roomcount - visitCount} unreachable rooms, max stack count={maxStackCount}, connectedness test took {sw.Elapsed.TotalMilliseconds} ms", LogLevel.Information);
+            Logger.Log(LogLevel.Trace, $"{roomcount - visitCount} unreachable rooms, max stack count={maxStackCount}, connectedness test took {sw.Elapsed.TotalMilliseconds} ms");
 #endif
             return visitCount >= roomcount;
         }

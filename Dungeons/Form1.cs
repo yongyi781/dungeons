@@ -197,7 +197,7 @@ namespace Dungeons
             return DateTimeOffset.Now - FloorStartTime;
         }
 
-        private void calibrateButton_Click(object sender, EventArgs e)
+        private void CalibrateButton_Click(object sender, EventArgs e)
         {
             var (mapLocation, _) = FindMap();
             if (mapLocation != MapUtils.Invalid)
@@ -209,7 +209,7 @@ namespace Dungeons
             }
         }
 
-        private void timer_Tick(object sender, EventArgs e)
+        private void Timer_Tick(object sender, EventArgs e)
         {
             UpdateMap();
 
@@ -226,40 +226,40 @@ namespace Dungeons
             timerLabel.Text = elapsed.ToString(elapsed.Hours > 0 ? "h\\:mm\\:ss" : "m':'ss");
         }
 
-        private void saveMapButton_Click(object sender, EventArgs e)
+        private void SaveMapButton_Click(object sender, EventArgs e)
         {
             SaveMap();
         }
 
-        private void saveLabelHideTimer_Tick(object sender, EventArgs e)
+        private void SaveLabelHideTimer_Tick(object sender, EventArgs e)
         {
             savedLabel.Visible = false;
             saveLabelHideTimer.Stop();
         }
 
-        private void mapPictureBox_MouseDown(object sender, MouseEventArgs e)
+        private void MapPictureBox_MouseDown(object sender, MouseEventArgs e)
         {
             // Close if on close button
 
             UpdateDataLabel();
         }
 
-        private void clearAnnotationsButton_Click(object sender, EventArgs e)
+        private void ClearAnnotationsButton_Click(object sender, EventArgs e)
         {
             mapPictureBox.ClearAnnotations();
         }
 
-        private void topMostCheckBox_CheckedChanged(object sender, EventArgs e)
+        private void TopMostCheckBox_CheckedChanged(object sender, EventArgs e)
         {
             TopMost = topMostCheckBox.Checked;
         }
 
-        private void resetTimerButton_Click(object sender, EventArgs e)
+        private void ResetTimerButton_Click(object sender, EventArgs e)
         {
             FloorStartTime = DateTimeOffset.Now;
         }
 
-        private void plusOneOrTenButton_Click(object sender, EventArgs e)
+        private void PlusOneOrTenButton_Click(object sender, EventArgs e)
         {
             if (FloorStartTime != DateTimeOffset.MinValue)
             {
@@ -273,7 +273,7 @@ namespace Dungeons
             UpdateTimerLabel();
         }
 
-        private void closeButton_Click(object sender, EventArgs e)
+        private void CloseButton_Click(object sender, EventArgs e)
         {
             Close();
         }

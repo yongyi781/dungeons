@@ -115,52 +115,50 @@ namespace Dungeons
 
         private Dictionary<string, string> ParseBitmap(Bitmap bmp, bool saveToFile = false)
         {
-            using (var b = new UnsafeBitmap(bmp, ImageLockMode.ReadOnly))
+            using var b = new UnsafeBitmap(bmp, ImageLockMode.ReadOnly);
+            Point p;
+            var firstPointToTry = new Point(710, 330);
+            if (b.IsMatch(Properties.Resources.WinterfaceMarker, DefaultOffset.X, DefaultOffset.Y, 0))
+                p = DefaultOffset;
+            else
+                p = b.FindMatch(Properties.Resources.WinterfaceMarker, 0);
+
+            if (p == NotFound)
             {
-                Point p;
-                var firstPointToTry = new Point(710, 330);
-                if (b.IsMatch(Properties.Resources.WinterfaceMarker, DefaultOffset.X, DefaultOffset.Y, 0))
-                    p = DefaultOffset;
-                else
-                    p = b.FindMatch(Properties.Resources.WinterfaceMarker, 0);
-
-                if (p == NotFound)
-                {
-                    return null;
-                }
-                var w = new Winterface(b, p.X, p.Y);
-
-                var fields = new List<Field> { Field.Time, Field.FloorXP, Field.PrestigeXP, Field.AverageBaseXP, Field.SizeMod, Field.BonusMod, Field.LevelMod };
-                fields.Add(Field.DifficultyMod);
-                fields.Add(Field.TotalMod);
-                fields.Add(Field.FinalXP);
-
-                var row = (from f in fields
-                           select new { Key = f.Name, Value = w.ReadField(f) }).ToDictionary(a => a.Key, a => a.Value);
-
-                var floor = w.ReadField(Field.Floor);
-                var redFloor = w.ReadField(Field.RedFloor);
-                var floorSizeMod = row["SizeMod"];
-                var sizeText = floorSizeMod == "+15" ? "Large" : floorSizeMod == "+7" ? "Medium" : "Small";
-                row["Floor"] = floor + redFloor;
-                row["FloorSize"] = sizeText;
-                if (parent != null)
-                {
-                    row["Roomcount"] = parent.Roomcount.ToString();
-                    row["DeadEnds"] = parent.LeafCount.ToString();
-                }
-                var now = DateTime.Now;
-                row["Timestamp"] = now.ToString();
-
-                Directory.CreateDirectory(Properties.Settings.Default.WinterfaceSaveLocation);
-                if (saveToFile && Directory.Exists(Properties.Settings.Default.WinterfaceSaveLocation))
-                {
-                    // The \\g is because g is a date format character
-                    w.Save(Path.Combine(Properties.Settings.Default.WinterfaceSaveLocation, now.ToString("yyyy-MM-dd HH-mm-ss.pn\\g")));
-                }
-
-                return row;
+                return null;
             }
+            var w = new Winterface(b, p.X, p.Y);
+
+            var fields = new List<Field> { Field.Time, Field.FloorXP, Field.PrestigeXP, Field.AverageBaseXP, Field.SizeMod, Field.BonusMod, Field.LevelMod };
+            fields.Add(Field.DifficultyMod);
+            fields.Add(Field.TotalMod);
+            fields.Add(Field.FinalXP);
+
+            var row = (from f in fields
+                       select new { Key = f.Name, Value = w.ReadField(f) }).ToDictionary(a => a.Key, a => a.Value);
+
+            var floor = w.ReadField(Field.Floor);
+            var redFloor = w.ReadField(Field.RedFloor);
+            var floorSizeMod = row["SizeMod"];
+            var sizeText = floorSizeMod == "+15" ? "Large" : floorSizeMod == "+7" ? "Medium" : "Small";
+            row["Floor"] = floor + redFloor;
+            row["FloorSize"] = sizeText;
+            if (parent != null)
+            {
+                row["Roomcount"] = parent.Roomcount.ToString();
+                row["DeadEnds"] = parent.LeafCount.ToString();
+            }
+            var now = DateTime.Now;
+            row["Timestamp"] = now.ToString();
+
+            Directory.CreateDirectory(Properties.Settings.Default.WinterfaceSaveLocation);
+            if (saveToFile && Directory.Exists(Properties.Settings.Default.WinterfaceSaveLocation))
+            {
+                // The \\g is because g is a date format character
+                w.Save(Path.Combine(Properties.Settings.Default.WinterfaceSaveLocation, now.ToString("yyyy-MM-dd HH-mm-ss.pn\\g")));
+            }
+
+            return row;
         }
 
         private void UpdateSaveLocationTextBoxes()

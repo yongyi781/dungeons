@@ -40,15 +40,17 @@
             this.comboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBox1.FormattingEnabled = true;
             this.comboBox1.Items.AddRange(new object[] {
-            "Perpendicular base",
-            "Row or column gap",
-            "Dead end distribution",
-            "Height and eccentricity distribution",
+            "Generated perpendicular base test",
+            "Generated wall test",
+            "Generated base-boss distance test",
+            "Generated matrices",
+            "Generated height and eccentricity distribution",
+            "Generated dead end distribution",
+            "Generated row or column gap",
+            "Real perpendicular base test",
+            "Real base-boss distance test",
             "Real matrices",
-            "Wall test",
-            "Base-boss distance test",
-            "Base matrix",
-            "Real perpendicular base"});
+            "Find duplicate and guide mode maps"});
             this.comboBox1.Location = new System.Drawing.Point(12, 12);
             this.comboBox1.Name = "comboBox1";
             this.comboBox1.Size = new System.Drawing.Size(295, 23);

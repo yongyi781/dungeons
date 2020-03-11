@@ -45,7 +45,7 @@ namespace MapGenerator
                 var (t, tw, tn, te) = kv.Value;
                 if (t > 0)
                 {
-                    resultsTextBox.AppendText($"Perpendicular base {kv.Key.ToChessString()}, maps={t}, w={(double)tw / t:f2}, n={(double)tn / t:f2}, e={(double)te / t:f2}{Environment.NewLine}");
+                    Log($"Perpendicular base {kv.Key.ToChessString()}, maps={t}, w={(double)tw / t:f2}, n={(double)tn / t:f2}, e={(double)te / t:f2}{Environment.NewLine}");
                 }
             }
         }
@@ -91,7 +91,7 @@ namespace MapGenerator
                 if (HasColumnOrRowGap(map))
                     ++count;
             }
-            resultsTextBox.AppendText($"rc={roomcount}, trials={trials}, p={(double)count / trials}{Environment.NewLine}");
+            Log($"rc={roomcount}, trials={trials}, p={(double)count / trials}{Environment.NewLine}");
         }
 
         private void RunDeadEndTest(int trials = 10000)
@@ -113,13 +113,13 @@ namespace MapGenerator
                 rrDist[rr] = rrDist.GetValueOrDefault(rr) + 1;
 
                 if (rr <= 34 || rr >= 52)
-                    resultsTextBox.AppendText($"dead end count={deCount}, rc={map.Roomcount}, seed={seed}{Environment.NewLine}");
+                    Log($"dead end count={deCount}, rc={map.Roomcount}, seed={seed}{Environment.NewLine}");
             }
             var pairs = from pair in rrDist
                         orderby pair.Key
                         select pair.Key + ":" + pair.Value;
             var str = "{" + string.Join(", ", pairs) + "}";
-            resultsTextBox.AppendText(str + Environment.NewLine);
+            Log(str + Environment.NewLine);
         }
 
         private void RunHeightTest(int trials = 5000)
@@ -138,12 +138,12 @@ namespace MapGenerator
                 diameters.Add(map.GetDiameter());
             }
 
-            resultsTextBox.AppendText(heights.Average() + Environment.NewLine);
-            resultsTextBox.AppendText(bossEccs.Average() + Environment.NewLine);
-            resultsTextBox.AppendText(diameters.Average() + Environment.NewLine);
-            resultsTextBox.AppendText(string.Join(", ", heights) + "\r\n\r\n");
-            resultsTextBox.AppendText(string.Join(", ", bossEccs) + "\r\n\r\n");
-            resultsTextBox.AppendText(string.Join(", ", diameters) + "\r\n\r\n");
+            Log(heights.Average() + Environment.NewLine);
+            Log(bossEccs.Average() + Environment.NewLine);
+            Log(diameters.Average() + Environment.NewLine);
+            Log(string.Join(", ", heights) + "\r\n");
+            Log(string.Join(", ", bossEccs) + "\r\n");
+            Log(string.Join(", ", diameters) + "\r\n");
         }
 
         private void RunWallTest(int trials = 10000)
@@ -171,28 +171,28 @@ namespace MapGenerator
                 totalGaps += gapList.Count;
             }
 
-            resultsTextBox.AppendText($"{trials} trials\r\n");
-            resultsTextBox.AppendText($"Wall bases = {(double)wallBases / trials}\r\n");
-            resultsTextBox.AppendText($"Wall bosses = {(double)wallBosses / trials}\r\n");
-            resultsTextBox.AppendText($"Wall gaps = {(double)wallGaps / totalGaps}\r\n");
-            resultsTextBox.AppendText($"Wall dead ends = {(double)wallDeadEnds / totalDeadEnds}\r\n");
+            Log($"{trials} trials");
+            Log($"Wall bases = {(double)wallBases / trials}");
+            Log($"Wall bosses = {(double)wallBosses / trials}");
+            Log($"Wall gaps = {(double)wallGaps / totalGaps}");
+            Log($"Wall dead ends = {(double)wallDeadEnds / totalDeadEnds}");
         }
 
-        private void RunReadFromFolderTest(string path)
+        private void RealMatricesTest(string path)
         {
             if (!Directory.Exists(path))
             {
-                resultsTextBox.AppendText("Directory not found." + Environment.NewLine);
+                Log("Directory not found." + Environment.NewLine);
                 return;
             }
 
             var reader = new MapReader(Resources.ResourceManager);
             int count = 0;
             var rcs = new List<int>();
-            //var gapMatrix = new int[8, 8];
-            //var bossMatrix = new int[8, 8];
-            //var baseMatrix = new int[8, 8];
-            //var deMatrix = new int[8, 8];
+            var gapMatrix = new int[8, 8];
+            var bossMatrix = new int[8, 8];
+            var baseMatrix = new int[8, 8];
+            var deMatrix = new int[8, 8];
             //var treeHeights = new List<int>();
             //var bossEccs = new List<int>();
             //var diameters = new List<int>();
@@ -216,33 +216,33 @@ namespace MapGenerator
                             map[new Point(7, 0)] <= Direction.None &&
                             map[new Point(7, 7)] <= Direction.None)
                         {
-                            resultsTextBox.AppendText($"No corner: {Path.GetFileName(file)}");
+                            Log($"No corner: {Path.GetFileName(file)}");
                         }
                     }
                 }
             }
-            resultsTextBox.AppendText($"Scoured {count} files\r\navg rc={rcs.Average()}\r\n");
-            //resultsTextBox.AppendText($"Base matrix:\r\n{baseMatrix.Normalize().ToPrettyString(a => a.ToString("f4"))}\r\n");
-            //resultsTextBox.AppendText($"Boss matrix:\r\n{bossMatrix.ToPrettyString(a => a.ToString())}\r\n");
-            //resultsTextBox.AppendText($"Gap matrix:\r\n{gapMatrix.ToPrettyString(a => a.ToString())}\r\n");
-            //resultsTextBox.AppendText($"Dead end matrix:\r\n{deMatrix.ToPrettyString(a => a.ToString())}\r\n");
-            //resultsTextBox.AppendText($"Wall bases={(double)countWallBosses / count}\r\n");
-            //resultsTextBox.AppendText($"Average wall dead ends={(double)wallDes / totalDes}\r\n");
-            //resultsTextBox.AppendText(string.Join(", ", treeHeights) + "\r\n\r\n");
-            //resultsTextBox.AppendText(string.Join(", ", bossEccs) + "\r\n\r\n");
-            //resultsTextBox.AppendText(string.Join(", ", diameters));
+            Log($"Scoured {count} files\r\navg rc={rcs.Average()}");
+            //Log($"Base matrix:\r\n{baseMatrix.Normalize().ToPrettyString(a => a.ToString("f4"))}");
+            //Log($"Boss matrix:\r\n{bossMatrix.ToPrettyString(a => a.ToString())}");
+            //Log($"Gap matrix:\r\n{gapMatrix.ToPrettyString(a => a.ToString())}");
+            //Log($"Dead end matrix:\r\n{deMatrix.ToPrettyString(a => a.ToString())}");
+            //Log($"Wall bases={(double)countWallBosses / count}");
+            //Log($"Average wall dead ends={(double)wallDes / totalDes}");
+            //Log(string.Join(", ", treeHeights) + "\r\n");
+            //Log(string.Join(", ", bossEccs) + "\r\n");
+            //Log(string.Join(", ", diameters));
         }
 
         private void RealBaseBossDistanceTest(string path)
         {
             if (!Directory.Exists(path))
             {
-                resultsTextBox.AppendText("Directory not found." + Environment.NewLine);
+                Log("Directory not found." + Environment.NewLine);
                 return;
             }
 
             int count = 0;
-            var baseBossDistances = new List<int>();
+            var bossBaseDist = new double[24];
             var reader = new MapReader(Resources.ResourceManager);
             foreach (var file in Directory.EnumerateFiles(path, "*.png"))
             {
@@ -255,19 +255,34 @@ namespace MapGenerator
                     {
                         ++count;
                         var map = gameMap.Map;
-                        baseBossDistances.Add(map.DistanceToBase(map.Boss));
+                        var dist = map.DistanceToBase(map.Boss);
+                        if (dist >= 21)
+                        {
+                            Log($"Found interesting map: {Path.GetFileName(file)}");
+                        }
+                        ++bossBaseDist[map.DistanceToBase(map.Boss)];
                     }
                 }
             }
-            resultsTextBox.AppendText($"Scoured {count} files\r\n");
-            resultsTextBox.AppendText($"Base-boss distances:\r\n{string.Join(",", baseBossDistances)}\r\n");
+
+            for (int i = 0; i < bossBaseDist.Length; i++)
+                bossBaseDist[i] /= count;
+
+            var average = Enumerable.Range(0, bossBaseDist.Length).Sum(i => i * bossBaseDist[i]);
+            Log($"Scoured {count} files\r\nAverage boss-base distance: {average}");
+            Log($"Base-boss distribution:\r\n{string.Join(", ", from i in Enumerable.Range(0, bossBaseDist.Length) select $"{i}:{bossBaseDist[i]:f4}")}");
+        }
+
+        private void Log(string text)
+        {
+            resultsTextBox.AppendText(text + Environment.NewLine);
         }
 
         private void RealPerpendicularBaseTest(string path)
         {
             if (!Directory.Exists(path))
             {
-                resultsTextBox.AppendText("Directory not found." + Environment.NewLine);
+                Log("Directory not found." + Environment.NewLine);
                 return;
             }
 
@@ -294,7 +309,7 @@ namespace MapGenerator
                 var (t, tw, tn, te) = kv.Value;
                 if (t > 0)
                 {
-                    resultsTextBox.AppendText($"Perpendicular base {kv.Key.ToChessString()}, maps={t}, w={(double)tw / t:f2}, n={(double)tn / t:f2}, e={(double)te / t:f2}{Environment.NewLine}");
+                    Log($"Perpendicular base {kv.Key.ToChessString()}, maps={t}, w={(double)tw / t:f2}, n={(double)tn / t:f2}, e={(double)te / t:f2}{Environment.NewLine}");
                 }
             }
         }
@@ -302,15 +317,19 @@ namespace MapGenerator
         private void RunBaseBossDistanceTest(int trials = 10000)
         {
             var map = new Map(8, 8);
-            var baseBossDistances = new List<int>();
+            var bossBaseDist = new double[24];
             for (int i = 0; i < trials; i++)
             {
                 generator.Generate(map);
-                baseBossDistances.Add(map.DistanceToBase(map.Boss));
+                ++bossBaseDist[map.DistanceToBase(map.Boss)];
             }
 
-            resultsTextBox.AppendText(baseBossDistances.Average() + Environment.NewLine);
-            resultsTextBox.AppendText(string.Join(", ", baseBossDistances) + "\r\n\r\n");
+            for (int i = 0; i < bossBaseDist.Length; i++)
+                bossBaseDist[i] /= trials;
+
+            var average = Enumerable.Range(0, bossBaseDist.Length).Sum(i => i * bossBaseDist[i]);
+            Log($"Trials: {trials}\r\nAverage boss-base distance: {average}");
+            Log($"Base-boss distribution:\r\n{string.Join(", ", from i in Enumerable.Range(0, bossBaseDist.Length) select $"{i}:{bossBaseDist[i]:f4}")}");
         }
 
         private void RunBaseMatrixTest(Point bossLoc, int trials = 10000)
@@ -338,7 +357,60 @@ namespace MapGenerator
                     ++baseMatrix[newBase.X, newBase.Y];
                 }
             }
-            resultsTextBox.AppendText($"Base matrix:\r\n{baseMatrix.Normalize().ToPrettyString(a => a.ToString("f4"))}\r\n");
+            Log($"Base matrix:\r\n{baseMatrix.Normalize().ToPrettyString(a => a.ToString("f4"))}");
+        }
+
+        private void FindDuplicateAndGuideModeMaps(string path)
+        {
+            if (!Directory.Exists(path))
+            {
+                Log("Directory not found." + Environment.NewLine);
+                return;
+            }
+
+            int count = 0;
+            var mapStrs = new HashSet<string>();
+            var reader = new MapReader(Resources.ResourceManager);
+            foreach (var file in Directory.EnumerateFiles(path, "*.png"))
+            {
+                ++count;
+                string mapStr;
+                Map map;
+                using (var bmp = new Bitmap(file))
+                {
+                    var floorSize = FloorSize.ByImageSize(bmp.Size);
+                    var gameMap = reader.ReadMap(bmp, floorSize);
+                    map = gameMap.Map;
+                    mapStr = gameMap.Map.ToString();
+                }
+                if (map.CritEndpoints.Count > 0)
+                {
+                    // It's a guide mode map.
+                    try
+                    {
+                        File.Move(file, Path.Combine(path, "Guide Mode", Path.GetFileName(file)));
+                        Log($"Guide mode map moved: {Path.GetFileName(file)}");
+                    }
+                    catch (IOException)
+                    {
+                        Log($"Could not move guide mode map: {Path.GetFileName(file)}");
+                    }
+                }
+                if (!mapStrs.Add(mapStr))
+                {
+                    // Duplicate.
+                    try
+                    {
+                        File.Move(file, Path.Combine(path, "Duplicates", Path.GetFileName(file)));
+                        Log($"Duplicate moved: {Path.GetFileName(file)}");
+                    }
+                    catch (IOException)
+                    {
+                        Log($"Could not move duplicate: {Path.GetFileName(file)}");
+                    }
+                }
+            }
+            Log($"Scoured {count} files");
         }
 
         private bool HasColumnOrRowGap(Map map)
@@ -374,31 +446,38 @@ namespace MapGenerator
                     RunPerpendicularBaseTest();
                     break;
                 case 1:
+                    RunWallTest();
+                    break;
+                case 2:
+                    RunBaseBossDistanceTest();
+                    break;
+                case 3:
+                    RunBaseMatrixTest(MapUtils.ParseChess(textBox1.Text));
+                    break;
+                case 4:
+                    RunHeightTest();
+                    break;
+                case 5:
+                    RunDeadEndTest();
+                    break;
+                case 6:
                     if (int.TryParse(textBox1.Text, out int rc))
                         RunRowColumnGapTest(rc);
                     break;
-                case 2:
-                    RunDeadEndTest();
-                    break;
-                case 3:
-                    RunHeightTest();
-                    break;
-                case 4:
-                    RunReadFromFolderTest(textBox1.Text);
-                    break;
-                case 5:
-                    RunWallTest();
-                    break;
-                case 6:
-                    RunBaseBossDistanceTest();
-                    break;
                 case 7:
-                    RunBaseMatrixTest(MapUtils.ParseChess(textBox1.Text));
-                    break;
-                case 8:
                     RealPerpendicularBaseTest(textBox1.Text);
                     break;
+                case 8:
+                    RealBaseBossDistanceTest(textBox1.Text);
+                    break;
+                case 9:
+                    RealMatricesTest(textBox1.Text);
+                    break;
+                case 10:
+                    FindDuplicateAndGuideModeMaps(textBox1.Text);
+                    break;
                 default:
+                    Log("This shouldn't happen");
                     break;
             }
         }

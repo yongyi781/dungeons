@@ -64,10 +64,8 @@ namespace Dungeons
 
         public void Save(string fileName)
         {
-            using (var bmp = Bitmap.Bitmap.Clone(new Rectangle(OffsetX, OffsetY, WinterfaceWidth, WinterfaceHeight), Bitmap.Bitmap.PixelFormat))
-            {
-                bmp.Save(fileName);
-            }
+            using var bmp = Bitmap.Bitmap.Clone(new Rectangle(OffsetX, OffsetY, WinterfaceWidth, WinterfaceHeight), Bitmap.Bitmap.PixelFormat);
+            bmp.Save(fileName);
         }
 
         private Color GetPixel(int x, int y) => Bitmap.GetPixel(x + OffsetX, y + OffsetY);

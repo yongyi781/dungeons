@@ -64,15 +64,15 @@ namespace Dungeons.Common
 
         public static bool IsLeaf(this RoomType roomType)
         {
-            var type = roomType & (RoomType.W | RoomType.E | RoomType.S | RoomType.N);
-            return type == RoomType.W || roomType == RoomType.E || roomType == RoomType.S || roomType == RoomType.N;
+            var t = roomType & (RoomType.W | RoomType.E | RoomType.S | RoomType.N);
+            return t == RoomType.W || t == RoomType.E || t == RoomType.S || t == RoomType.N;
         }
 
         public static bool IsOpened(this RoomType t) => t > 0 && (t & RoomType.Mystery) == 0;
-
         public static bool IsBase(this RoomType roomType) => (roomType & RoomType.Base) != 0;
-
         public static bool IsBoss(this RoomType roomType) => (roomType & RoomType.Boss) != 0;
+        public static bool IsCrit(this RoomType roomType) => (roomType & RoomType.Crit) != 0;
+        public static bool IsMystery(this RoomType roomType) => (roomType & RoomType.Mystery) != 0;
 
         public static string ToResourceString(this RoomType type)
         {
@@ -80,9 +80,9 @@ namespace Dungeons.Common
                 return "NotOpened";
 
             var str = "Room";
-            if ((type & RoomType.Crit) != 0)
+            if (type.IsCrit())
                 str = "Crit";
-            else if ((type & RoomType.Mystery) != 0)
+            else if (type.IsMystery())
                 str = "Mystery";
 
             if ((type & RoomType.E) != 0)

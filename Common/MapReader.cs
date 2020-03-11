@@ -72,7 +72,12 @@ namespace Dungeons.Common
 
             var sig = ComputeSignature(image, offX, offY);
             var result = signatures.FirstOrDefault(pair => Enumerable.SequenceEqual(sig, pair.Value)).Key;
-
+#if false
+            if (result == 0)
+            {
+                image.Clone(new Rectangle(offX, offY, 32, 32), System.Drawing.Imaging.PixelFormat.Format32bppArgb).Save("out\\" + Path.ChangeExtension(Path.GetRandomFileName(), "png"));
+            }
+#endif
             if (image.GetPixel(offX + 19, offY + 18) == Color.FromArgb(150, 145, 105))
                 result |= RoomType.Base;
             else if (image.GetPixel(offX + 8, offY + 11) == Color.FromArgb(63, 20, 13))

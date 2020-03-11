@@ -22,17 +22,20 @@ namespace Dungeons.Common
                     if (roomType.IsOpened())
                     {
                         ++OpenedRoomCount;
+                        if (roomType.IsCrit())
+                            Map.AddCritEndpoint(new Point(x, y));
                         if (roomType.IsBase())
                             Map.Base = new Point(x, y);
                         else if (roomType.IsBoss())
                             Map.Boss = new Point(x, y);
+                        if (roomType.IsLeaf() && !roomType.IsBoss() && !roomType.IsBase())
+                            ++DeadEndCount;
                     }
-                    if (roomType.IsLeaf() && !roomType.IsBoss() && !roomType.IsBase())
-                        ++DeadEndCount;
                 }
             }
 
             ComputeMapData();
+            Map.SimplifyCrit();
         }
 
         public bool IsRoom(Point p) => Map.IsRoom(p);

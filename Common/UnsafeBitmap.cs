@@ -34,32 +34,32 @@ namespace Dungeons.Common
 
         public static Point FindMatch(Bitmap bitmap, Bitmap template, int tolerance)
         {
-            using (var u = new UnsafeBitmap(bitmap))
-                return u.FindMatch(template, tolerance);
+            using var u = new UnsafeBitmap(bitmap);
+            return u.FindMatch(template, tolerance);
         }
 
         public static Point FindMatch(Bitmap bitmap, Bitmap template, Predicate<Point> condition, int tolerance)
         {
-            using (var u = new UnsafeBitmap(bitmap))
-                return u.FindMatch(template, condition, tolerance);
+            using var u = new UnsafeBitmap(bitmap);
+            return u.FindMatch(template, condition, tolerance);
         }
 
         public static bool IsMatch(Bitmap bitmap, Bitmap template, int offX, int offY, int tolerance)
         {
-            using (var u = new UnsafeBitmap(bitmap))
-                return u.IsMatch(template, offX, offY, tolerance);
+            using var u = new UnsafeBitmap(bitmap);
+            return u.IsMatch(template, offX, offY, tolerance);
         }
 
         public Point FindMatch(Bitmap template, int tolerance)
         {
-            using (var u = new UnsafeBitmap(template))
-                return FindMatch(u, tolerance);
+            using var u = new UnsafeBitmap(template);
+            return FindMatch(u, tolerance);
         }
 
         public Point FindMatch(Bitmap template, Predicate<Point> condition, int tolerance)
         {
-            using (var u = new UnsafeBitmap(template))
-                return FindMatch(u, condition, tolerance);
+            using var u = new UnsafeBitmap(template);
+            return FindMatch(u, condition, tolerance);
         }
 
         public Point FindMatch(UnsafeBitmap template, int tolerance)
@@ -82,8 +82,8 @@ namespace Dungeons.Common
 
         public bool IsMatch(Bitmap template, int offX, int offY, int tolerance)
         {
-            using (var u = new UnsafeBitmap(template, ImageLockMode.ReadOnly))
-                return IsMatch(u, offX, offY, tolerance);
+            using var u = new UnsafeBitmap(template, ImageLockMode.ReadOnly);
+            return IsMatch(u, offX, offY, tolerance);
         }
 
         public bool IsMatch(UnsafeBitmap template, int offX, int offY, int tolerance)
@@ -114,8 +114,8 @@ namespace Dungeons.Common
             if (template == null)
                 return false;
 
-            using (var u = new UnsafeBitmap(template))
-                return IsMatchAlphaColor(u, offX, offY, color);
+            using UnsafeBitmap u = new UnsafeBitmap(template);
+            return IsMatchAlphaColor(u, offX, offY, color);
         }
 
         public static int ColorDistance(Color a, Color b)

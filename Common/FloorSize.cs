@@ -5,9 +5,9 @@ namespace Dungeons.Common
 {
     public struct FloorSize : IEquatable<FloorSize>
     {
-        public static readonly FloorSize Small = new FloorSize { Height = 4, Width = 4 };
-        public static readonly FloorSize Medium = new FloorSize { Height = 8, Width = 4 };
-        public static readonly FloorSize Large = new FloorSize { Height = 8, Width = 8 };
+        public static readonly FloorSize Small = new FloorSize { Height = 4, Width = 4, MinRC = 10 };
+        public static readonly FloorSize Medium = new FloorSize { Height = 8, Width = 4, MinRC = 23 };
+        public static readonly FloorSize Large = new FloorSize { Height = 8, Width = 8, MinRC = 50 };
 
         public static readonly FloorSize[] RSSizes = { Small, Medium, Large };
 
@@ -17,14 +17,19 @@ namespace Dungeons.Common
         {
             Height = height;
             Width = width;
+            MinRC = (int)(Width * Height - 0.588 * Math.Pow(Width * Height, 0.7925));
         }
 
         public int Width { get; private set; }
         public int Height { get; private set; }
+        public int MinRC { get; set; }
         public Size Size => new Size(Width, Height);
         public int CritRange => (Math.Max(Width, Height) + 1) / 2;
         public int MaxRC => Width * Height;
-        public int MinRC => Math.Max(2, 5 * (MaxRC - 4) / 6);
+        // 0.7925 is approximately 0.5*log_2(3). Minimum allowed rc, before gaps almost surely disconnect the map.
+        // Experimentally, the 50% threshold for probability that the gaps disconnect the map is at 0.588 * (#rooms)^0.7925.
+        // If we set gaps to (#rooms)^0.7925, the number of attempts to generate a valid set of gaps will be around 200 on average.
+        public int MinAllowedRC => (int)(Width * Height - Math.Pow(Width * Height, 0.7925));
         // e.g. 4 for larges, 3 for meds, 2 for smalls.
         public int RareRCSpread => (MaxRC - MinRC) / 3;
         public int MinCrit => Math.Max(3, 7 * (MaxRC + 6) / 25);
@@ -42,7 +47,7 @@ namespace Dungeons.Common
             return Small;
         }
 
-        public bool Equals(FloorSize other) => Height == other.Height && Width == other.Width;
+        public bool Equals(FloorSize other) => Width == other.Width && Height == other.Height && MinRC == other.MinRC;
 
         public Point ClientToMapCoords(Point p, Size imageSize) => new Point((p.X - GetGridOffsetX(imageSize)) / MapUtils.RoomSize, Height - (p.Y - GetGridOffsetY(imageSize)) / MapUtils.RoomSize - 1);
 

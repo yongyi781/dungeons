@@ -63,13 +63,13 @@
             this.calibrateButton.TabIndex = 7;
             this.calibrateButton.Text = "Calibrate";
             this.calibrateButton.UseVisualStyleBackColor = false;
-            this.calibrateButton.Click += new System.EventHandler(this.calibrateButton_Click);
+            this.calibrateButton.Click += new System.EventHandler(this.CalibrateButton_Click);
             // 
             // timer
             // 
             this.timer.Enabled = true;
             this.timer.Interval = 600;
-            this.timer.Tick += new System.EventHandler(this.timer_Tick);
+            this.timer.Tick += new System.EventHandler(this.Timer_Tick);
             // 
             // dataLabel
             // 
@@ -94,7 +94,7 @@
             this.saveMapButton.TabIndex = 9;
             this.saveMapButton.Text = "Save Map";
             this.saveMapButton.UseVisualStyleBackColor = false;
-            this.saveMapButton.Click += new System.EventHandler(this.saveMapButton_Click);
+            this.saveMapButton.Click += new System.EventHandler(this.SaveMapButton_Click);
             // 
             // savedLabel
             // 
@@ -111,7 +111,7 @@
             // saveLabelHideTimer
             // 
             this.saveLabelHideTimer.Interval = 1500;
-            this.saveLabelHideTimer.Tick += new System.EventHandler(this.saveLabelHideTimer_Tick);
+            this.saveLabelHideTimer.Tick += new System.EventHandler(this.SaveLabelHideTimer_Tick);
             // 
             // clearAnnotationsButton
             // 
@@ -126,7 +126,7 @@
             this.clearAnnotationsButton.TabIndex = 10;
             this.clearAnnotationsButton.Text = "Clear Annotations";
             this.clearAnnotationsButton.UseVisualStyleBackColor = false;
-            this.clearAnnotationsButton.Click += new System.EventHandler(this.clearAnnotationsButton_Click);
+            this.clearAnnotationsButton.Click += new System.EventHandler(this.ClearAnnotationsButton_Click);
             // 
             // topMostCheckBox
             // 
@@ -138,7 +138,7 @@
             this.topMostCheckBox.TabIndex = 11;
             this.topMostCheckBox.Text = "Top-most";
             this.topMostCheckBox.UseVisualStyleBackColor = true;
-            this.topMostCheckBox.CheckedChanged += new System.EventHandler(this.topMostCheckBox_CheckedChanged);
+            this.topMostCheckBox.CheckedChanged += new System.EventHandler(this.TopMostCheckBox_CheckedChanged);
             // 
             // timerLabel
             // 
@@ -164,7 +164,7 @@
             this.resetTimerButton.TabIndex = 5;
             this.resetTimerButton.Text = "Reset";
             this.resetTimerButton.UseVisualStyleBackColor = false;
-            this.resetTimerButton.Click += new System.EventHandler(this.resetTimerButton_Click);
+            this.resetTimerButton.Click += new System.EventHandler(this.ResetTimerButton_Click);
             // 
             // plusTenButton
             // 
@@ -179,7 +179,7 @@
             this.plusTenButton.TabIndex = 4;
             this.plusTenButton.Text = "+10";
             this.plusTenButton.UseVisualStyleBackColor = false;
-            this.plusTenButton.Click += new System.EventHandler(this.plusOneOrTenButton_Click);
+            this.plusTenButton.Click += new System.EventHandler(this.PlusOneOrTenButton_Click);
             // 
             // plusOneButton
             // 
@@ -194,7 +194,7 @@
             this.plusOneButton.TabIndex = 3;
             this.plusOneButton.Text = "+1";
             this.plusOneButton.UseVisualStyleBackColor = false;
-            this.plusOneButton.Click += new System.EventHandler(this.plusOneOrTenButton_Click);
+            this.plusOneButton.Click += new System.EventHandler(this.PlusOneOrTenButton_Click);
             // 
             // tableLayoutPanel1
             // 
@@ -223,7 +223,7 @@
             this.mapPictureBox.Size = new System.Drawing.Size(280, 280);
             this.mapPictureBox.TabIndex = 1;
             this.mapPictureBox.TabStop = false;
-            this.mapPictureBox.MouseDown += new System.Windows.Forms.MouseEventHandler(this.mapPictureBox_MouseDown);
+            this.mapPictureBox.MouseDown += new System.Windows.Forms.MouseEventHandler(this.MapPictureBox_MouseDown);
             // 
             // minusTenButton
             // 
@@ -239,7 +239,7 @@
             this.minusTenButton.Tag = "-1";
             this.minusTenButton.Text = "-10";
             this.minusTenButton.UseVisualStyleBackColor = false;
-            this.minusTenButton.Click += new System.EventHandler(this.plusOneOrTenButton_Click);
+            this.minusTenButton.Click += new System.EventHandler(this.PlusOneOrTenButton_Click);
             // 
             // winterfaceButton
             // 
