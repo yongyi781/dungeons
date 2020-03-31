@@ -5,9 +5,9 @@ namespace Dungeons.Common
 {
     public struct FloorSize : IEquatable<FloorSize>
     {
-        public static readonly FloorSize Small = new FloorSize { Height = 4, Width = 4, MinRC = 10 };
-        public static readonly FloorSize Medium = new FloorSize { Height = 8, Width = 4, MinRC = 23 };
-        public static readonly FloorSize Large = new FloorSize { Height = 8, Width = 8, MinRC = 50 };
+        public static readonly FloorSize Small = new FloorSize { Width = 4, Height = 4  };
+        public static readonly FloorSize Medium = new FloorSize { Width = 4, Height = 8 };
+        public static readonly FloorSize Large = new FloorSize { Width = 8, Height = 8 };
 
         public static readonly FloorSize[] RSSizes = { Small, Medium, Large };
 
@@ -15,14 +15,20 @@ namespace Dungeons.Common
 
         public FloorSize(int width, int height)
         {
-            Height = height;
             Width = width;
-            MinRC = (int)(Width * Height - 0.588 * Math.Pow(Width * Height, 0.7925));
+            Height = height;
+            MinRC = (width, height) switch
+            {
+                (4, 4) => 10,
+                (4, 8) => 23,
+                (8, 8) => 50,
+                _ => (int)(Width * Height - 0.57 * Math.Pow(Width * Height, 0.7925))
+            };
         }
 
         public int Width { get; private set; }
         public int Height { get; private set; }
-        public int MinRC { get; set; }
+        public int MinRC { get; }
         public Size Size => new Size(Width, Height);
         public int CritRange => (Math.Max(Width, Height) + 1) / 2;
         public int MaxRC => Width * Height;
