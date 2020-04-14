@@ -119,7 +119,7 @@ namespace Dungeons
                 desktopBounds.Offset(-SystemInformation.VirtualScreen.X, -SystemInformation.VirtualScreen.Y);
                 foreach (var floorSize in FloorSize.RSSizes)
                 {
-                    var match = UnsafeBitmap.FindMatch(bmp, floorSize.GetMapMarker(), p => !desktopBounds.Contains(p), MapReader.MapEdgeColorTolerance);
+                    var match = UnsafeBitmap.FindMapByCorners(bmp, rsMapSizes[floorSize], p => !desktopBounds.Contains(p));
                     if (match != MapUtils.Invalid)
                     {
                         match.Offset(SystemInformation.VirtualScreen.X, SystemInformation.VirtualScreen.Y);

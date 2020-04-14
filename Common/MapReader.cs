@@ -9,9 +9,8 @@ namespace Dungeons.Common
     // A class to read maps from an image.
     public class MapReader
     {
-        public const int MapEdgeColorTolerance = 100;
-
-        public static readonly Color MapCornerColor = Color.FromArgb(105, 92, 70);
+        public static readonly Color MapCornerColorMin = Color.FromArgb(100, 87, 65);
+        public static readonly Color MapCornerColorMax = Color.FromArgb(117, 104, 83);
 
         private readonly Dictionary<RoomType, Color[]> signatures = new Dictionary<RoomType, Color[]>();
 
@@ -94,7 +93,7 @@ namespace Dungeons.Common
             {
                 foreach (var p in new Point[] { new Point(0, 0), new Point(bmp.Width - 1, 0), new Point(0, bmp.Height - 1), new Point(bmp.Width - 1, bmp.Height - 1) })
                 {
-                    if (UnsafeBitmap.ColorDistance(u.GetPixel(p.X, p.Y), MapCornerColor) > MapEdgeColorTolerance)
+                    if (!u.GetPixel(p.X, p.Y).IsBetween(MapCornerColorMin, MapCornerColorMax))
                         return false;
                 }
             }

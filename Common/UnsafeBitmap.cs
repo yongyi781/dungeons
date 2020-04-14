@@ -32,16 +32,16 @@ namespace Dungeons.Common
             GC.SuppressFinalize(this);
         }
 
-        public static Point FindMatch(Bitmap bitmap, Bitmap template, int tolerance)
-        {
-            using var u = new UnsafeBitmap(bitmap);
-            return u.FindMatch(template, tolerance);
-        }
-
         public static Point FindMatch(Bitmap bitmap, Bitmap template, Predicate<Point> condition, int tolerance)
         {
             using var u = new UnsafeBitmap(bitmap);
             return u.FindMatch(template, condition, tolerance);
+        }
+
+        public static Point FindMapByCorners(Bitmap bitmap, Size size, Predicate<Point> condition)
+        {
+            using var u = new UnsafeBitmap(bitmap);
+            return u.FindMatchByCorners(size, condition);
         }
 
         public static bool IsMatch(Bitmap bitmap, Bitmap template, int offX, int offY, int tolerance)
@@ -80,6 +80,15 @@ namespace Dungeons.Common
             return new Point(-1, -1);
         }
 
+        public Point FindMatchByCorners(Size size, Predicate<Point> condition)
+        {
+            for (int offY = 0; offY < Height - size.Height + 1; offY++)
+                for (int offX = 0; offX < Width - size.Width + 1; offX++)
+                    if (IsMatchByCorner(size, offX, offY) && condition(new Point(offX, offY)))
+                        return new Point(offX, offY);
+            return new Point(-1, -1);
+        }
+
         public bool IsMatch(Bitmap template, int offX, int offY, int tolerance)
         {
             using var u = new UnsafeBitmap(template, ImageLockMode.ReadOnly);
@@ -92,6 +101,16 @@ namespace Dungeons.Common
                 for (int x = 0; x < template.Width; x++)
                     if ((template[x, y] & 0xFF000000) != 0 && ColorDistance(GetPixel(x + offX, y + offY), template.GetPixel(x, y)) > tolerance)
                         return false;
+            return true;
+        }
+
+        public bool IsMatchByCorner(Size size, int offX, int offY)
+        {
+            foreach (var p in new Point[] { new Point(0, 0), new Point(size.Width - 1, 0), new Point(0, size.Height - 1), new Point(size.Width - 1, size.Height - 1) })
+            {
+                if (!GetPixel(p.X + offX, p.Y + offY).IsBetween(MapReader.MapCornerColorMin, MapReader.MapCornerColorMax))
+                    return false;
+            }
             return true;
         }
 

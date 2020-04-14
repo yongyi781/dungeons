@@ -180,5 +180,11 @@ namespace Dungeons.Common
                 return floorSize.MinRC + floorSize.RareRCSpread + random.Next(spread - 2 * floorSize.RareRCSpread);
             }
         }
+
+        // Color utils
+        public static bool IsBetween(this Color color, Color min, Color max) =>
+            color.R >= min.R && color.R <= max.R &&
+                color.G >= min.G && color.G <= max.G &&
+                color.B >= min.B && color.B <= max.B;
     }
 }
