@@ -5,9 +5,6 @@
     <Setting Name="MapSaveLocation" Type="System.String" Scope="User">
       <Value Profile="(Default)">Maps</Value>
     </Setting>
-    <Setting Name="MapLocation" Type="System.Drawing.Point" Scope="User">
-      <Value Profile="(Default)">2703, 370</Value>
-    </Setting>
     <Setting Name="WinterfaceSaveLocation" Type="System.String" Scope="User">
       <Value Profile="(Default)">Winterfaces</Value>
     </Setting>

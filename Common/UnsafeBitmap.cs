@@ -38,10 +38,10 @@ namespace Dungeons.Common
             return u.FindMatch(template, condition, tolerance);
         }
 
-        public static Point FindMapByCorners(Bitmap bitmap, Size size, Predicate<Point> condition)
+        public static Point FindMapByCorners(Bitmap bitmap, Size size)
         {
             using var u = new UnsafeBitmap(bitmap);
-            return u.FindMatchByCorners(size, condition);
+            return u.FindMatchByCorners(size);
         }
 
         public static bool IsMatch(Bitmap bitmap, Bitmap template, int offX, int offY, int tolerance)
@@ -80,11 +80,11 @@ namespace Dungeons.Common
             return new Point(-1, -1);
         }
 
-        public Point FindMatchByCorners(Size size, Predicate<Point> condition)
+        public Point FindMatchByCorners(Size size)
         {
             for (int offY = 0; offY < Height - size.Height + 1; offY++)
                 for (int offX = 0; offX < Width - size.Width + 1; offX++)
-                    if (IsMatchByCorner(size, offX, offY) && condition(new Point(offX, offY)))
+                    if (IsMatchByCorner(size, offX, offY))
                         return new Point(offX, offY);
             return new Point(-1, -1);
         }

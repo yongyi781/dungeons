@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
@@ -11,14 +12,14 @@ using System.Windows.Forms;
 
 namespace Dungeons
 {
-    public partial class WinterfaceWindow : Form
+    public partial class DataWindow : Form
     {
         static readonly Point NotFound = new Point(-1, -1);
         static readonly Point DefaultOffset = new Point(710, 330);
 
         private readonly Form1 parent;
 
-        public WinterfaceWindow(Form1 parent)
+        public DataWindow(Form1 parent)
         {
             InitializeComponent();
 
@@ -33,6 +34,8 @@ namespace Dungeons
             UpdateSaveLocationTextBoxes();
         }
 
+        public ProcessWindow SelectedWindow => comboBox1.SelectedItem as ProcessWindow;
+
         public DataGridViewRow AddRow(Dictionary<string, string> row)
         {
             if (row == null)
@@ -46,12 +49,19 @@ namespace Dungeons
             return gridRow;
         }
 
+        public void Log(string text)
+        {
+            logTextBox.AppendText(text + Environment.NewLine);
+        }
+
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
 
             NativeMethods.RegisterHotKey(Handle, 0, 0, NativeMethods.VK_F11);
             dataGridView1.Font = new Font("Calibri", 11);
+
+            comboBox1.DataSource = (from x in Process.GetProcessesByName("rs2client") select new ProcessWindow(x)).ToList();
         }
 
         protected override void OnFormClosing(FormClosingEventArgs e)
@@ -196,6 +206,19 @@ namespace Dungeons
                 Properties.Settings.Default.Save();
                 UpdateSaveLocationTextBoxes();
             }
+        }
+
+        private void ComboBox1_DropDown(object sender, EventArgs e)
+        {
+            var selectedItem = comboBox1.SelectedItem;
+            comboBox1.DataSource = (from x in Process.GetProcessesByName("rs2client") select new ProcessWindow(x)).ToList();
+            comboBox1.SelectedItem = selectedItem;
+        }
+
+        private void ComboBox1_SelectionChangeCommitted(object sender, EventArgs e)
+        {
+            Log("Selected index changed, calibrating");
+            parent.Calibrate();
         }
     }
 }

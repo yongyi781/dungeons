@@ -1,6 +1,6 @@
 ﻿namespace Dungeons
 {
-    partial class WinterfaceWindow
+    partial class DataWindow
     {
         /// <summary>
         /// Required designer variable.
@@ -48,6 +48,7 @@
             this.Roomcount = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.DeadEnds = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.browseWinterfaceSaveLocationButton = new System.Windows.Forms.Button();
             this.winterfaceSaveLocationTextBox = new System.Windows.Forms.TextBox();
             this.winterfaceSaveLocationLabel = new System.Windows.Forms.Label();
@@ -60,6 +61,7 @@
             this.soloColumnsRadioButton = new System.Windows.Forms.RadioButton();
             this.mapFolderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
             this.winterfaceFolderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
+            this.logTextBox = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
@@ -208,6 +210,7 @@
             // 
             this.panel1.AutoSize = true;
             this.panel1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.panel1.Controls.Add(this.comboBox1);
             this.panel1.Controls.Add(this.browseWinterfaceSaveLocationButton);
             this.panel1.Controls.Add(this.winterfaceSaveLocationTextBox);
             this.panel1.Controls.Add(this.winterfaceSaveLocationLabel);
@@ -223,6 +226,17 @@
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(765, 55);
             this.panel1.TabIndex = 1;
+            // 
+            // comboBox1
+            // 
+            this.comboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBox1.FormattingEnabled = true;
+            this.comboBox1.Location = new System.Drawing.Point(505, 2);
+            this.comboBox1.Name = "comboBox1";
+            this.comboBox1.Size = new System.Drawing.Size(248, 23);
+            this.comboBox1.TabIndex = 10;
+            this.comboBox1.DropDown += new System.EventHandler(this.ComboBox1_DropDown);
+            this.comboBox1.SelectionChangeCommitted += new System.EventHandler(this.ComboBox1_SelectionChangeCommitted);
             // 
             // browseWinterfaceSaveLocationButton
             // 
@@ -338,20 +352,32 @@
             // 
             this.winterfaceFolderBrowserDialog.Description = "Select winterface save location.";
             // 
-            // WinterfaceWindow
+            // logTextBox
+            // 
+            this.logTextBox.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.logTextBox.Font = new System.Drawing.Font("Consolas", 10F);
+            this.logTextBox.Location = new System.Drawing.Point(0, 291);
+            this.logTextBox.Multiline = true;
+            this.logTextBox.Name = "logTextBox";
+            this.logTextBox.ReadOnly = true;
+            this.logTextBox.Size = new System.Drawing.Size(765, 129);
+            this.logTextBox.TabIndex = 2;
+            // 
+            // DataWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
-            this.ClientSize = new System.Drawing.Size(765, 291);
+            this.ClientSize = new System.Drawing.Size(765, 420);
             this.Controls.Add(this.dataGridView1);
             this.Controls.Add(this.panel1);
+            this.Controls.Add(this.logTextBox);
             this.DoubleBuffered = true;
             this.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.Name = "WinterfaceWindow";
+            this.Name = "DataWindow";
             this.ShowIcon = false;
-            this.Text = "Winterface Reader";
+            this.Text = "Dungeons Data";
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
@@ -394,5 +420,7 @@
         private System.Windows.Forms.Label winterfaceSaveLocationLabel;
         private System.Windows.Forms.FolderBrowserDialog mapFolderBrowserDialog;
         private System.Windows.Forms.FolderBrowserDialog winterfaceFolderBrowserDialog;
+        private System.Windows.Forms.TextBox logTextBox;
+        private System.Windows.Forms.ComboBox comboBox1;
     }
 }

@@ -1,8 +1,6 @@
 ﻿using Dungeons.Common;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -17,7 +15,8 @@ namespace Dungeons
 
         private Point lastHomeLocation = MapUtils.Invalid;
         private int lastRoomCount = 0;
-        private readonly WinterfaceWindow winterfaceWindow;
+        private Point mapLocation = MapUtils.Invalid;
+        private readonly DataWindow dataWindow;
 
         private static readonly Keys[] KeysToEat =
         {
@@ -42,12 +41,14 @@ namespace Dungeons
 
             FontType.InitializeFonts();
             mapPictureBox.FloorSize = FloorSize;
-            winterfaceWindow = new WinterfaceWindow(this);
+            dataWindow = new DataWindow(this);
         }
 
         public DateTimeOffset FloorStartTime { get; private set; } = DateTimeOffset.MinValue;
         public int Roomcount => mapPictureBox.GameMap.OpenedRoomCount;
         public int LeafCount => mapPictureBox.GameMap.DeadEndCount;
+
+        public ProcessWindow RSWindow => dataWindow.SelectedWindow;
 
         public FloorSize FloorSize
         {
@@ -65,6 +66,20 @@ namespace Dungeons
 
                 savedLabel.Visible = true;
                 saveLabelHideTimer.Start();
+            }
+        }
+
+        public void Calibrate()
+        {
+            (mapLocation, _) = FindMap();
+            if (mapLocation != MapUtils.Invalid)
+            {
+                Log($"Calibrated: map location = {mapLocation}");
+                UpdateMap();
+            }
+            else
+            {
+                Log("Could not find map.");
             }
         }
 
@@ -101,28 +116,21 @@ namespace Dungeons
 
             // Start on top right, lol
             Location = new Point(Screen.PrimaryScreen.WorkingArea.Width - Width, 0);
-            winterfaceWindow.Show();
+            dataWindow.Show();
         }
 
         private (Point, FloorSize) FindMap()
         {
-            var size = SystemInformation.VirtualScreen.Size;
-            using (var bmp = new Bitmap(size.Width, size.Height))
+            var window = dataWindow.SelectedWindow;
+            if (window != null && !window.HasExited)
             {
-                using (var g = Graphics.FromImage(bmp))
-                {
-                    g.CopyFromScreen(SystemInformation.VirtualScreen.X, SystemInformation.VirtualScreen.Y, 0, 0, size);
-                }
-
+                using var bmp = window.Capture();
                 // Search for map marker
-                var desktopBounds = DesktopBounds;
-                desktopBounds.Offset(-SystemInformation.VirtualScreen.X, -SystemInformation.VirtualScreen.Y);
                 foreach (var floorSize in FloorSize.RSSizes)
                 {
-                    var match = UnsafeBitmap.FindMapByCorners(bmp, rsMapSizes[floorSize], p => !desktopBounds.Contains(p));
+                    var match = UnsafeBitmap.FindMapByCorners(bmp, rsMapSizes[floorSize]);
                     if (match != MapUtils.Invalid)
                     {
-                        match.Offset(SystemInformation.VirtualScreen.X, SystemInformation.VirtualScreen.Y);
                         return (match, floorSize);
                     }
                 }
@@ -133,23 +141,16 @@ namespace Dungeons
 
         private void UpdateMap()
         {
+            var window = dataWindow.SelectedWindow;
+            if (window == null || window.HasExited)
+                return;
+
             foreach (var floorSize in FloorSize.RSSizes)
             {
-                if (Properties.Settings.Default.MapLocation != MapUtils.Invalid)
+                if (mapLocation != MapUtils.Invalid)
                 {
                     var mapSize = rsMapSizes[floorSize];
-                    var bmp = new Bitmap(mapSize.Width, mapSize.Height);
-                    using (var g = Graphics.FromImage(bmp))
-                    {
-                        try
-                        {
-                            g.CopyFromScreen(Properties.Settings.Default.MapLocation.X, Properties.Settings.Default.MapLocation.Y, 0, 0, bmp.Size);
-                        }
-                        catch (Win32Exception)
-                        {
-                            return;
-                        }
-                    }
+                    var bmp = window.Capture(new Rectangle(mapLocation, mapSize));
                     if (MapReader.IsValidInGameMap(bmp))
                     {
                         FloorSize = floorSize;
@@ -197,16 +198,14 @@ namespace Dungeons
             return DateTimeOffset.Now - FloorStartTime;
         }
 
+        private void Log(string text)
+        {
+            dataWindow.Log(text);
+        }
+
         private void CalibrateButton_Click(object sender, EventArgs e)
         {
-            var (mapLocation, _) = FindMap();
-            if (mapLocation != MapUtils.Invalid)
-            {
-                Debug.WriteLine(mapLocation);
-                Properties.Settings.Default.MapLocation = mapLocation;
-                Properties.Settings.Default.Save();
-                UpdateMap();
-            }
+            Calibrate();
         }
 
         private void Timer_Tick(object sender, EventArgs e)
@@ -280,8 +279,8 @@ namespace Dungeons
 
         private void WinterfaceButton_Click(object sender, EventArgs e)
         {
-            winterfaceWindow.Show();
-            winterfaceWindow.Focus();
+            dataWindow.Show();
+            dataWindow.Focus();
         }
     }
 }

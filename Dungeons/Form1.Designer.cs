@@ -43,9 +43,9 @@
             this.plusTenButton = new System.Windows.Forms.Button();
             this.plusOneButton = new System.Windows.Forms.Button();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.mapPictureBox = new Dungeons.MapPictureBox();
             this.minusTenButton = new System.Windows.Forms.Button();
             this.winterfaceButton = new System.Windows.Forms.Button();
+            this.mapPictureBox = new Dungeons.MapPictureBox();
             this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.mapPictureBox)).BeginInit();
             this.SuspendLayout();
@@ -68,7 +68,7 @@
             // timer
             // 
             this.timer.Enabled = true;
-            this.timer.Interval = 600;
+            this.timer.Interval = 300;
             this.timer.Tick += new System.EventHandler(this.Timer_Tick);
             // 
             // dataLabel
@@ -212,19 +212,6 @@
             this.tableLayoutPanel1.Size = new System.Drawing.Size(280, 280);
             this.tableLayoutPanel1.TabIndex = 0;
             // 
-            // mapPictureBox
-            // 
-            this.mapPictureBox.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.mapPictureBox.DrawDistancesEnabled = false;
-            this.mapPictureBox.Location = new System.Drawing.Point(0, 0);
-            this.mapPictureBox.Margin = new System.Windows.Forms.Padding(0);
-            this.mapPictureBox.Name = "mapPictureBox";
-            this.mapPictureBox.SelectedLocation = new System.Drawing.Point(-1, -1);
-            this.mapPictureBox.Size = new System.Drawing.Size(280, 280);
-            this.mapPictureBox.TabIndex = 1;
-            this.mapPictureBox.TabStop = false;
-            this.mapPictureBox.MouseDown += new System.Windows.Forms.MouseEventHandler(this.MapPictureBox_MouseDown);
-            // 
             // minusTenButton
             // 
             this.minusTenButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
@@ -255,6 +242,19 @@
             this.winterfaceButton.Text = "Winterface";
             this.winterfaceButton.UseVisualStyleBackColor = false;
             this.winterfaceButton.Click += new System.EventHandler(this.WinterfaceButton_Click);
+            // 
+            // mapPictureBox
+            // 
+            this.mapPictureBox.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.mapPictureBox.DrawDistancesEnabled = false;
+            this.mapPictureBox.Location = new System.Drawing.Point(0, 0);
+            this.mapPictureBox.Margin = new System.Windows.Forms.Padding(0);
+            this.mapPictureBox.Name = "mapPictureBox";
+            this.mapPictureBox.SelectedLocation = new System.Drawing.Point(-1, -1);
+            this.mapPictureBox.Size = new System.Drawing.Size(280, 280);
+            this.mapPictureBox.TabIndex = 1;
+            this.mapPictureBox.TabStop = false;
+            this.mapPictureBox.MouseDown += new System.Windows.Forms.MouseEventHandler(this.MapPictureBox_MouseDown);
             // 
             // Form1
             // 
