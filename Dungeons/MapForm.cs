@@ -4,11 +4,12 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Dungeons
 {
-    public partial class Form1 : Form
+    public partial class MapForm : Form
     {
         const int WM_NCLBUTTONDOWN = 0xA1;
         const int HT_CAPTION = 0x2;
@@ -16,7 +17,7 @@ namespace Dungeons
         private Point lastHomeLocation = MapUtils.Invalid;
         private int lastRoomCount = 0;
         private Point mapLocation = MapUtils.Invalid;
-        private readonly DataWindow dataWindow;
+        private readonly MainForm dataWindow;
 
         private static readonly Keys[] KeysToEat =
         {
@@ -35,13 +36,13 @@ namespace Dungeons
             [FloorSize.Large] = new Size(280, 280)
         };
 
-        public Form1()
+        public MapForm(MainForm dataWindow)
         {
             InitializeComponent();
 
             FontType.InitializeFonts();
             mapPictureBox.FloorSize = FloorSize;
-            dataWindow = new DataWindow(this);
+            this.dataWindow = dataWindow;
         }
 
         public DateTimeOffset FloorStartTime { get; private set; } = DateTimeOffset.MinValue;
@@ -63,18 +64,17 @@ namespace Dungeons
             {
                 var fileName = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss");
                 mapPictureBox.Image.Save(Path.Combine(Properties.Settings.Default.MapSaveLocation, $"map_{fileName}.png"));
-
-                savedLabel.Visible = true;
-                saveLabelHideTimer.Start();
+                Log("Map saved!");
             }
         }
 
-        public void Calibrate()
+        public async Task CalibrateAsync()
         {
-            (mapLocation, _) = FindMap();
+            var (mapLocation, _) = await Task.Run(FindMap);
             if (mapLocation != MapUtils.Invalid)
             {
                 Log($"Calibrated: map location = {mapLocation}");
+                this.mapLocation = mapLocation;
                 UpdateMap();
             }
             else
@@ -116,7 +116,14 @@ namespace Dungeons
 
             // Start on top right, lol
             Location = new Point(Screen.PrimaryScreen.WorkingArea.Width - Width, 0);
-            dataWindow.Show();
+        }
+
+        protected override void OnFormClosing(FormClosingEventArgs e)
+        {
+            base.OnFormClosing(e);
+
+            if (e.CloseReason == CloseReason.UserClosing)
+                e.Cancel = true;
         }
 
         private (Point, FloorSize) FindMap()
@@ -151,6 +158,9 @@ namespace Dungeons
                 {
                     var mapSize = rsMapSizes[floorSize];
                     var bmp = window.Capture(new Rectangle(mapLocation, mapSize));
+                    if (bmp == null)
+                        return; // Break out of the loop, window capture won't work for the other cases either.
+
                     if (MapReader.IsValidInGameMap(bmp))
                     {
                         FloorSize = floorSize;
@@ -159,7 +169,6 @@ namespace Dungeons
                         if (mapPictureBox.Image != null)
                             mapPictureBox.Image.Dispose();
                         mapPictureBox.Image = bmp;
-                        saveMapButton.Enabled = true;
                         mapPictureBox.ReadMap();
                         UpdateDataLabel();
 
@@ -203,9 +212,9 @@ namespace Dungeons
             dataWindow.Log(text);
         }
 
-        private void CalibrateButton_Click(object sender, EventArgs e)
+        private async void CalibrateButton_Click(object sender, EventArgs e)
         {
-            Calibrate();
+            await CalibrateAsync();
         }
 
         private void Timer_Tick(object sender, EventArgs e)
@@ -230,16 +239,8 @@ namespace Dungeons
             SaveMap();
         }
 
-        private void SaveLabelHideTimer_Tick(object sender, EventArgs e)
-        {
-            savedLabel.Visible = false;
-            saveLabelHideTimer.Stop();
-        }
-
         private void MapPictureBox_MouseDown(object sender, MouseEventArgs e)
         {
-            // Close if on close button
-
             UpdateDataLabel();
         }
 
@@ -277,10 +278,14 @@ namespace Dungeons
             Close();
         }
 
-        private void WinterfaceButton_Click(object sender, EventArgs e)
+        private void TableLayoutPanel1_Paint(object sender, PaintEventArgs e)
         {
-            dataWindow.Show();
-            dataWindow.Focus();
+
+        }
+
+        private void MapPictureBox_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

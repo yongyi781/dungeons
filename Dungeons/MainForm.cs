@@ -8,22 +8,23 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Dungeons
 {
-    public partial class DataWindow : Form
+    public partial class MainForm : Form
     {
         static readonly Point NotFound = new Point(-1, -1);
         static readonly Point DefaultOffset = new Point(710, 330);
 
-        private readonly Form1 parent;
+        private readonly MapForm mapForm;
 
-        public DataWindow(Form1 parent)
+        public MainForm()
         {
             InitializeComponent();
 
-            this.parent = parent;
+            mapForm = new MapForm(this);
             typeof(DataGridView).InvokeMember("DoubleBuffered", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.SetProperty, null, dataGridView1, new object[] { true });
 
             foreach (DataGridViewColumn column in dataGridView1.Columns)
@@ -34,7 +35,7 @@ namespace Dungeons
             UpdateSaveLocationTextBoxes();
         }
 
-        public ProcessWindow SelectedWindow => comboBox1.SelectedItem as ProcessWindow;
+        public ProcessWindow SelectedWindow => windowComboBox.SelectedItem as ProcessWindow;
 
         public DataGridViewRow AddRow(Dictionary<string, string> row)
         {
@@ -61,18 +62,10 @@ namespace Dungeons
             NativeMethods.RegisterHotKey(Handle, 0, 0, NativeMethods.VK_F11);
             dataGridView1.Font = new Font("Calibri", 11);
 
-            comboBox1.DataSource = (from x in Process.GetProcessesByName("rs2client") select new ProcessWindow(x)).ToList();
-        }
-
-        protected override void OnFormClosing(FormClosingEventArgs e)
-        {
-            base.OnFormClosing(e);
-
-            if (e.CloseReason == CloseReason.UserClosing)
-            {
-                e.Cancel = true;
-                Hide();
-            }
+            windowComboBox.DataSource = (from x in Process.GetProcessesByName("rs2client") select new ProcessWindow(x)).ToList();
+            Log("Started up, calibrating");
+            _ = mapForm.CalibrateAsync();
+            mapForm.Show(this);
         }
 
         protected override void WndProc(ref Message m)
@@ -80,15 +73,13 @@ namespace Dungeons
             switch (m.Msg)
             {
                 case NativeMethods.WM_HOTKEY:
-                    var row = GrabFromScreen();
+                    var row = CaptureWinterface();
                     if (row != null)
                     {
                         var visibleCellValues = from DataGridViewCell cell in row.Cells
                                                 where cell.Visible
                                                 select cell.Value;
                         Clipboard.SetText(string.Join("\t", visibleCellValues));
-                        if (saveImagesCheckBox.Checked)
-                            parent.SaveMap();
                     }
                     break;
                 default:
@@ -97,21 +88,19 @@ namespace Dungeons
             }
         }
 
-        private DataGridViewRow GrabFromScreen()
+        private DataGridViewRow CaptureWinterface()
         {
             var size = SystemInformation.VirtualScreen.Size;
             Dictionary<string, string> dict;
-            using (var bmp = new Bitmap(size.Width, size.Height))
+            using (var bmp = mapForm.RSWindow.Capture())
             {
-                using (var g = Graphics.FromImage(bmp))
-                {
-                    g.CopyFromScreen(SystemInformation.VirtualScreen.X, SystemInformation.VirtualScreen.Y, 0, 0, size);
-                }
-
                 dict = ParseBitmap(bmp, saveImagesCheckBox.Checked);
             }
             if (dict == null)
+            {
+                Log("Could not find winterface.");
                 return null;
+            }
 
             if (dict["DifficultyMod"] == "+0")
             {
@@ -120,6 +109,8 @@ namespace Dungeons
                 if (dict["FloorSize"] == "Large")
                     dict["FloorSize"] = "Large2";
             }
+            if (saveImagesCheckBox.Checked)
+                mapForm.SaveMap();
             return AddRow(dict);
         }
 
@@ -153,10 +144,10 @@ namespace Dungeons
             var sizeText = floorSizeMod == "+15" ? "Large" : floorSizeMod == "+7" ? "Medium" : "Small";
             row["Floor"] = floor + redFloor;
             row["FloorSize"] = sizeText;
-            if (parent != null)
+            if (mapForm != null)
             {
-                row["Roomcount"] = parent.Roomcount.ToString();
-                row["DeadEnds"] = parent.LeafCount.ToString();
+                row["Roomcount"] = mapForm.Roomcount.ToString();
+                row["DeadEnds"] = mapForm.LeafCount.ToString();
             }
             var now = DateTime.Now;
             row["Timestamp"] = now.ToString();
@@ -183,11 +174,6 @@ namespace Dungeons
             dataGridView1.Columns["Partners"].Visible = multiplayerColumnsRadioButton.Checked;
         }
 
-        private void CaptureButton_Click(object sender, EventArgs e)
-        {
-            GrabFromScreen();
-        }
-
         private void browseMapSaveLocationButton_Click(object sender, EventArgs e)
         {
             if (mapFolderBrowserDialog.ShowDialog() == DialogResult.OK)
@@ -210,15 +196,30 @@ namespace Dungeons
 
         private void ComboBox1_DropDown(object sender, EventArgs e)
         {
-            var selectedItem = comboBox1.SelectedItem;
-            comboBox1.DataSource = (from x in Process.GetProcessesByName("rs2client") select new ProcessWindow(x)).ToList();
-            comboBox1.SelectedItem = selectedItem;
+            var selectedItem = windowComboBox.SelectedItem;
+            windowComboBox.DataSource = (from x in Process.GetProcessesByName("rs2client") select new ProcessWindow(x)).ToList();
+            windowComboBox.SelectedItem = selectedItem;
         }
 
-        private void ComboBox1_SelectionChangeCommitted(object sender, EventArgs e)
+        private async void ComboBox1_SelectionChangeCommitted(object sender, EventArgs e)
         {
             Log("Selected index changed, calibrating");
-            parent.Calibrate();
+            await mapForm.CalibrateAsync();
+        }
+
+        private async void CalibrateButton_Click(object sender, EventArgs e)
+        {
+            await mapForm.CalibrateAsync();
+        }
+
+        private void SaveMapButton_Click(object sender, EventArgs e)
+        {
+            mapForm.SaveMap();
+        }
+
+        private void CaptureButton_Click(object sender, EventArgs e)
+        {
+            CaptureWinterface();
         }
     }
 }
