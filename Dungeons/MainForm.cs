@@ -73,14 +73,7 @@ namespace Dungeons
             switch (m.Msg)
             {
                 case NativeMethods.WM_HOTKEY:
-                    var row = CaptureWinterface();
-                    if (row != null)
-                    {
-                        var visibleCellValues = from DataGridViewCell cell in row.Cells
-                                                where cell.Visible
-                                                select cell.Value;
-                        Clipboard.SetText(string.Join("\t", visibleCellValues));
-                    }
+                    captureButton.PerformClick();
                     break;
                 default:
                     base.WndProc(ref m);
@@ -88,19 +81,16 @@ namespace Dungeons
             }
         }
 
-        private DataGridViewRow CaptureWinterface()
+        /// <summary>
+        /// Captures the winterface.
+        /// </summary>
+        /// <returns>true if winterface was found; otherwise, false.</returns>
+        private async Task<bool> CaptureWinterfaceAsync()
         {
-            var size = SystemInformation.VirtualScreen.Size;
-            Dictionary<string, string> dict;
-            using (var bmp = mapForm.RSWindow.Capture())
-            {
-                dict = ParseBitmap(bmp, saveImagesCheckBox.Checked);
-            }
+            using var bmp = mapForm.RSWindow.Capture();
+            var dict = await Task.Run(() => ParseBitmap(bmp, saveImagesCheckBox.Checked));
             if (dict == null)
-            {
-                Log("Could not find winterface.");
-                return null;
-            }
+                return false;
 
             if (dict["DifficultyMod"] == "+0")
             {
@@ -111,7 +101,15 @@ namespace Dungeons
             }
             if (saveImagesCheckBox.Checked)
                 mapForm.SaveMap();
-            return AddRow(dict);
+            var row = AddRow(dict);
+            if (row != null)
+            {
+                var visibleCellValues = from DataGridViewCell cell in row.Cells
+                                        where cell.Visible
+                                        select cell.Value;
+                Clipboard.SetText(string.Join("\t", visibleCellValues));
+            }
+            return true;
         }
 
         private Dictionary<string, string> ParseBitmap(Bitmap bmp, bool saveToFile = false)
@@ -207,19 +205,15 @@ namespace Dungeons
             await mapForm.CalibrateAsync();
         }
 
-        private async void CalibrateButton_Click(object sender, EventArgs e)
-        {
-            await mapForm.CalibrateAsync();
-        }
-
         private void SaveMapButton_Click(object sender, EventArgs e)
         {
             mapForm.SaveMap();
         }
 
-        private void CaptureButton_Click(object sender, EventArgs e)
+        private async void CaptureButton_Click(object sender, EventArgs e)
         {
-            CaptureWinterface();
+            if (!await CaptureWinterfaceAsync())
+                await mapForm.CalibrateAsync();
         }
     }
 }

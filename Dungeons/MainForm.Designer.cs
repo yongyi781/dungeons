@@ -49,7 +49,6 @@
             this.Roomcount = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.DeadEnds = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.calibrateButton = new System.Windows.Forms.Button();
             this.saveMapButton = new System.Windows.Forms.Button();
             this.windowComboBox = new System.Windows.Forms.ComboBox();
             this.browseWinterfaceSaveLocationButton = new System.Windows.Forms.Button();
@@ -213,7 +212,6 @@
             // 
             this.panel1.AutoSize = true;
             this.panel1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.panel1.Controls.Add(this.calibrateButton);
             this.panel1.Controls.Add(this.saveMapButton);
             this.panel1.Controls.Add(this.windowComboBox);
             this.panel1.Controls.Add(this.browseWinterfaceSaveLocationButton);
@@ -232,21 +230,10 @@
             this.panel1.Size = new System.Drawing.Size(765, 93);
             this.panel1.TabIndex = 0;
             // 
-            // calibrateButton
-            // 
-            this.calibrateButton.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.calibrateButton.Location = new System.Drawing.Point(179, 10);
-            this.calibrateButton.Name = "calibrateButton";
-            this.calibrateButton.Size = new System.Drawing.Size(75, 23);
-            this.calibrateButton.TabIndex = 1;
-            this.calibrateButton.Text = "Calibrate";
-            this.calibrateButton.UseVisualStyleBackColor = true;
-            this.calibrateButton.Click += new System.EventHandler(this.CalibrateButton_Click);
-            // 
             // saveMapButton
             // 
             this.saveMapButton.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.saveMapButton.Location = new System.Drawing.Point(260, 10);
+            this.saveMapButton.Location = new System.Drawing.Point(335, 10);
             this.saveMapButton.Name = "saveMapButton";
             this.saveMapButton.Size = new System.Drawing.Size(75, 23);
             this.saveMapButton.TabIndex = 2;
@@ -327,7 +314,7 @@
             this.saveImagesCheckBox.Checked = true;
             this.saveImagesCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
             this.saveImagesCheckBox.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.saveImagesCheckBox.Location = new System.Drawing.Point(439, 12);
+            this.saveImagesCheckBox.Location = new System.Drawing.Point(416, 12);
             this.saveImagesCheckBox.Name = "saveImagesCheckBox";
             this.saveImagesCheckBox.Size = new System.Drawing.Size(148, 20);
             this.saveImagesCheckBox.TabIndex = 4;
@@ -337,11 +324,11 @@
             // captureButton
             // 
             this.captureButton.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.captureButton.Location = new System.Drawing.Point(341, 10);
+            this.captureButton.Location = new System.Drawing.Point(179, 10);
             this.captureButton.Name = "captureButton";
-            this.captureButton.Size = new System.Drawing.Size(92, 23);
+            this.captureButton.Size = new System.Drawing.Size(150, 23);
             this.captureButton.TabIndex = 3;
-            this.captureButton.Text = "Capture (F11)";
+            this.captureButton.Text = "Capture/Calibrate (F11)";
             this.captureButton.UseVisualStyleBackColor = true;
             this.captureButton.Click += new System.EventHandler(this.CaptureButton_Click);
             // 
@@ -449,6 +436,5 @@
         private System.Windows.Forms.TextBox logTextBox;
         private System.Windows.Forms.ComboBox windowComboBox;
         private System.Windows.Forms.Button saveMapButton;
-        private System.Windows.Forms.Button calibrateButton;
     }
 }

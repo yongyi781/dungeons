@@ -43,6 +43,13 @@ namespace Dungeons
             FontType.InitializeFonts();
             mapPictureBox.FloorSize = FloorSize;
             this.dataWindow = dataWindow;
+            if (Properties.Settings.Default.UpgradeRequired)
+            {
+                Properties.Settings.Default.Upgrade();
+                Properties.Settings.Default.UpgradeRequired = false;
+                Properties.Settings.Default.Save();
+                Log("Imported settings from previous version");
+            }
         }
 
         public DateTimeOffset FloorStartTime { get; private set; } = DateTimeOffset.MinValue;
@@ -70,16 +77,16 @@ namespace Dungeons
 
         public async Task CalibrateAsync()
         {
-            var (mapLocation, _) = await Task.Run(FindMap);
+            var (mapLocation, floorSize) = await FindMapAsync();
             if (mapLocation != MapUtils.Invalid)
             {
-                Log($"Calibrated: map location = {mapLocation}");
+                Log($"Calibrated! Map location = {mapLocation}, Size = {floorSize}");
                 this.mapLocation = mapLocation;
                 UpdateMap();
             }
             else
             {
-                Log("Could not find map.");
+                Log($"Could not find map. Current map search location = {this.mapLocation}");
             }
         }
 
@@ -118,15 +125,13 @@ namespace Dungeons
             Location = new Point(Screen.PrimaryScreen.WorkingArea.Width - Width, 0);
         }
 
-        protected override void OnFormClosing(FormClosingEventArgs e)
+        protected override void OnFormClosed(FormClosedEventArgs e)
         {
-            base.OnFormClosing(e);
-
-            if (e.CloseReason == CloseReason.UserClosing)
-                e.Cancel = true;
+            base.OnFormClosed(e);
+            Application.Exit();
         }
 
-        private (Point, FloorSize) FindMap()
+        private async Task<(Point, FloorSize)> FindMapAsync()
         {
             var window = dataWindow.SelectedWindow;
             if (window != null && !window.HasExited)
@@ -135,7 +140,7 @@ namespace Dungeons
                 // Search for map marker
                 foreach (var floorSize in FloorSize.RSSizes)
                 {
-                    var match = UnsafeBitmap.FindMapByCorners(bmp, rsMapSizes[floorSize]);
+                    var match = await Task.Run(() => UnsafeBitmap.FindMapByCorners(bmp, rsMapSizes[floorSize]));
                     if (match != MapUtils.Invalid)
                     {
                         return (match, floorSize);
@@ -276,16 +281,6 @@ namespace Dungeons
         private void CloseButton_Click(object sender, EventArgs e)
         {
             Close();
-        }
-
-        private void TableLayoutPanel1_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
-
-        private void MapPictureBox_Click(object sender, EventArgs e)
-        {
-
         }
     }
 }
