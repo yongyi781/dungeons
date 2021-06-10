@@ -166,20 +166,8 @@ namespace Dungeons.Common
             return Invalid;
         }
 
-        public static int RandomRoomcount(this Random random, FloorSize floorSize)
-        {
-            var spread = floorSize.MaxRC - floorSize.MinRC + 1;
-
-            if (random.Next(3) == 0)
-            {
-                // Generate 50-53 or 61-64
-                return floorSize.MinRC + random.Next(floorSize.RareRCSpread) + (spread - floorSize.RareRCSpread) * random.Next(2);
-            }
-            else
-            {
-                return floorSize.MinRC + floorSize.RareRCSpread + random.Next(spread - 2 * floorSize.RareRCSpread);
-            }
-        }
+        public static int RandomRoomcount(this Random random, FloorSize floorSize) =>
+            random.Next(3) == 0 ? random.Next(floorSize.MinRC, floorSize.MaxRC) : random.Next(floorSize.MinRC + floorSize.RareRCSpread, floorSize.MaxRC - floorSize.RareRCSpread);
 
         // Color utils
         public static bool IsBetween(this Color color, Color min, Color max) =>

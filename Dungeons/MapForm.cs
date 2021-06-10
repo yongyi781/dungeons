@@ -16,7 +16,7 @@ namespace Dungeons
 
         private Point lastHomeLocation = MapUtils.Invalid;
         private int lastRoomCount = 0;
-        private Point mapLocation = MapUtils.Invalid;
+        private Point mapLocation = new Point(121, 0);
         private readonly MainForm dataWindow;
 
         private static readonly Keys[] KeysToEat =
@@ -155,7 +155,10 @@ namespace Dungeons
         {
             var window = dataWindow.SelectedWindow;
             if (window == null || window.HasExited)
+            {
+                dataWindow.RefreshProcessesList();
                 return;
+            }
 
             foreach (var floorSize in FloorSize.RSSizes)
             {
@@ -183,7 +186,7 @@ namespace Dungeons
                             && mapPictureBox.GameMap.Base != lastHomeLocation)
                             || (lastRoomCount > 1 && mapPictureBox.GameMap.OpenedRoomCount == 1))
                         {
-                            FloorStartTime = DateTimeOffset.Now.AddSeconds(-1);
+                            FloorStartTime = DateTimeOffset.Now.AddSeconds(-2);
                         }
                         // Found a floor size that aligns correctly with the rooms, this must be the right one.
                         lastRoomCount = mapPictureBox.GameMap.OpenedRoomCount;
@@ -203,8 +206,7 @@ namespace Dungeons
         {
             var minutes = GetElapsedTime().TotalMinutes;
             var roomsPerMinStr = ((mapPictureBox.GameMap.OpenedRoomCount - 0.8) / minutes).ToString("0.0");
-            var rrpmStr = ((mapPictureBox.GameMap.OpenedRoomCount - 0.8 * (1 + mapPictureBox.GameMap.DeadEndCount)) / minutes).ToString("0.0");
-            dataLabel.Text = $"{mapPictureBox.GameMap.OpenedRoomCount} rooms | {roomsPerMinStr} rpm | {mapPictureBox.GameMap.DeadEndCount} dead ends | {rrpmStr} rrpm";
+            dataLabel.Text = $"{mapPictureBox.GameMap.OpenedRoomCount} rooms | {roomsPerMinStr} rpm | {mapPictureBox.GameMap.DeadEndCount} dead ends";
         }
 
         private TimeSpan GetElapsedTime()

@@ -50,7 +50,8 @@
             "Real perpendicular base test",
             "Real base-boss distance test",
             "Real matrices",
-            "Find duplicate and guide mode maps"});
+            "Find duplicate and guide mode maps",
+            "Real no wall map test"});
             this.comboBox1.Location = new System.Drawing.Point(12, 12);
             this.comboBox1.Name = "comboBox1";
             this.comboBox1.Size = new System.Drawing.Size(295, 23);

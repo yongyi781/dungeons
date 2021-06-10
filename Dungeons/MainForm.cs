@@ -55,6 +55,13 @@ namespace Dungeons
             logTextBox.AppendText(text + Environment.NewLine);
         }
 
+        public void RefreshProcessesList()
+        {
+            var selectedItem = windowComboBox.SelectedItem;
+            windowComboBox.DataSource = (from x in Process.GetProcessesByName("rs2client") select new ProcessWindow(x)).ToList();
+            windowComboBox.SelectedItem = selectedItem;
+        }
+
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
@@ -87,6 +94,9 @@ namespace Dungeons
         /// <returns>true if winterface was found; otherwise, false.</returns>
         private async Task<bool> CaptureWinterfaceAsync()
         {
+            if (mapForm.RSWindow == null)
+                return false;
+
             using var bmp = mapForm.RSWindow.Capture();
             var dict = await Task.Run(() => ParseBitmap(bmp, saveImagesCheckBox.Checked));
             if (dict == null)
@@ -194,9 +204,7 @@ namespace Dungeons
 
         private void ComboBox1_DropDown(object sender, EventArgs e)
         {
-            var selectedItem = windowComboBox.SelectedItem;
-            windowComboBox.DataSource = (from x in Process.GetProcessesByName("rs2client") select new ProcessWindow(x)).ToList();
-            windowComboBox.SelectedItem = selectedItem;
+            RefreshProcessesList();
         }
 
         private async void ComboBox1_SelectionChangeCommitted(object sender, EventArgs e)

@@ -13,8 +13,8 @@ namespace MapGenerator
 {
     public partial class StatsForm : Form
     {
-        MapGenerator generator = new MapGenerator(0, FloorSize.Large);
-        readonly Random random = new Random();
+        MapGenerator generator = new(0, FloorSize.Large);
+        readonly Random random = new();
 
         public StatsForm()
         {
@@ -45,7 +45,7 @@ namespace MapGenerator
                 var (t, tw, tn, te) = kv.Value;
                 if (t > 0)
                 {
-                    Log($"Perpendicular base {kv.Key.ToChessString()}, maps={t}, w={(double)tw / t:f2}, n={(double)tn / t:f2}, e={(double)te / t:f2}{Environment.NewLine}");
+                    Log($"Perpendicular base {kv.Key.ToChessString()}, maps={t}, w={(double)tw / t:f2}, n={(double)tn / t:f2}, e={(double)te / t:f2}");
                 }
             }
         }
@@ -88,7 +88,7 @@ namespace MapGenerator
                 generator.GenerateBoss(map);
                 generator.GenerateGaps(map, roomcount);
 
-                if (HasColumnOrRowGap(map))
+                if (HasFullRowColumnOrRowGap(map))
                     ++count;
             }
             Log($"rc={roomcount}, trials={trials}, p={(double)count / trials}{Environment.NewLine}");
@@ -193,12 +193,11 @@ namespace MapGenerator
             var bossMatrix = new int[8, 8];
             var baseMatrix = new int[8, 8];
             var deMatrix = new int[8, 8];
-            //var treeHeights = new List<int>();
-            //var bossEccs = new List<int>();
-            //var diameters = new List<int>();
-            //var countWallBosses = 0;
-            //var wallDes = 0;
-            //var totalDes = 0;
+            var maxDistsFromBase = new List<int>();
+            var maxDistsFromBoss = new List<int>();
+            var diameters = new List<int>();
+            var wallBases = 0;
+            var wallBosses = 0;
             foreach (var file in Directory.EnumerateFiles(path, "*.png"))
             {
                 var bmp = new Bitmap(file);
@@ -211,26 +210,33 @@ namespace MapGenerator
                         ++count;
                         var map = gameMap.Map;
                         rcs.Add(gameMap.OpenedRoomCount);
-                        if (map[new Point(0, 0)] <= Direction.None &&
-                            map[new Point(0, 7)] <= Direction.None &&
-                            map[new Point(7, 0)] <= Direction.None &&
-                            map[new Point(7, 7)] <= Direction.None)
-                        {
-                            Log($"No corner: {Path.GetFileName(file)}");
-                        }
+
+                        ++baseMatrix[map.Base.X, map.Base.Y];
+                        ++bossMatrix[map.Boss.X, map.Boss.Y];
+                        var deadEndList = map.GetDeadEnds();
+                        foreach (var d in deadEndList)
+                            ++deMatrix[d.X, d.Y];
+
+                        var gapList = map.GetNonRooms();
+                        foreach (var g in gapList)
+                            ++gapMatrix[g.X, g.Y];
+                        if (map.Base.IsOnWall(8, 8))
+                            ++wallBases;
+                        if (map.Boss.IsOnWall(8, 8))
+                            ++wallBosses;
+                        maxDistsFromBase.Add(map.GetTreeHeight());
+                        maxDistsFromBoss.Add(map.GetEccentricity(map.Boss));
                     }
                 }
             }
             Log($"Scoured {count} files\r\navg rc={rcs.Average()}");
-            //Log($"Base matrix:\r\n{baseMatrix.Normalize().ToPrettyString(a => a.ToString("f4"))}");
-            //Log($"Boss matrix:\r\n{bossMatrix.ToPrettyString(a => a.ToString())}");
-            //Log($"Gap matrix:\r\n{gapMatrix.ToPrettyString(a => a.ToString())}");
-            //Log($"Dead end matrix:\r\n{deMatrix.ToPrettyString(a => a.ToString())}");
-            //Log($"Wall bases={(double)countWallBosses / count}");
-            //Log($"Average wall dead ends={(double)wallDes / totalDes}");
-            //Log(string.Join(", ", treeHeights) + "\r\n");
-            //Log(string.Join(", ", bossEccs) + "\r\n");
-            //Log(string.Join(", ", diameters));
+            Log($"Base matrix:\r\n{baseMatrix.Normalize().ToPrettyString(a => a.ToString("f4"))}");
+            Log($"Boss matrix:\r\n{bossMatrix.Normalize().ToPrettyString(a => a.ToString("f4"))}");
+            Log($"Gap matrix:\r\n{gapMatrix.Normalize().ToPrettyString(a => a.ToString("f4"))}");
+            Log($"Dead end matrix:\r\n{deMatrix.Normalize().ToPrettyString(a => a.ToString("f4"))}");
+            Log($"Wall bases={(double)wallBases / count}");
+            Log($"Avg max dist from base: {maxDistsFromBase.Average()}");
+            Log($"Avg max dist from boss: {maxDistsFromBoss.Average()}");
         }
 
         private void RealBaseBossDistanceTest(string path)
@@ -312,6 +318,49 @@ namespace MapGenerator
                     Log($"Perpendicular base {kv.Key.ToChessString()}, maps={t}, w={(double)tw / t:f2}, n={(double)tn / t:f2}, e={(double)te / t:f2}{Environment.NewLine}");
                 }
             }
+        }
+
+        private void RealNoWallGapTest(string path)
+        {
+            if (!Directory.Exists(path))
+            {
+                Log("Directory not found." + Environment.NewLine);
+                return;
+            }
+
+            int total = 0;
+            int count = 0;
+            Dictionary<int, int> rcDist = new();
+            var reader = new MapReader(Resources.ResourceManager);
+            foreach (var file in Directory.EnumerateFiles(path, "*.png"))
+            {
+                var bmp = new Bitmap(file);
+                var floorSize = FloorSize.ByImageSize(bmp.Size);
+                if (floorSize == FloorSize.Large)
+                {
+                    var gameMap = reader.ReadMap(bmp, floorSize);
+                    if (gameMap.OpenedRoomCount >= 50 && gameMap.IsComplete)
+                    {
+                        ++total;
+                        var map = gameMap.Map;
+                        if (!HasGapOnWall(map))
+                        {
+                            ++count;
+                            rcDist[map.Roomcount] = rcDist.GetValueOrDefault(map.Roomcount) + 1;
+                            if (map.Roomcount <= 64)
+                            {
+                                Log($"Found interesting map: {Path.GetFileName(file)}, rc = {map.Roomcount}");
+                            }
+                        }
+                    }
+                }
+            }
+            Log($"Scoured {total} files\r\nMaps with no wall gaps: {count}");
+            var pairs = from pair in rcDist
+                        orderby pair.Key
+                        select pair.Key + ":" + pair.Value;
+            var str = "{" + string.Join(", ", pairs) + "}";
+            Log($"RC distribution: {str}");
         }
 
         private void RunBaseBossDistanceTest(int trials = 10000)
@@ -413,9 +462,9 @@ namespace MapGenerator
             Log($"Scoured {count} files");
         }
 
-        private bool HasColumnOrRowGap(Map map)
+        private static bool HasFullRowColumnOrRowGap(Map map)
         {
-            bool HasRowGap(int y)
+            bool HasFullRowGap(int y)
             {
                 for (int x = 0; x < map.Width; x++)
                 {
@@ -425,7 +474,7 @@ namespace MapGenerator
                 return true;
             }
 
-            bool HasColumnGap(int x)
+            bool HasFullColumnGap(int x)
             {
                 for (int y = 0; y < map.Height; y++)
                 {
@@ -433,6 +482,31 @@ namespace MapGenerator
                         return false;
                 }
                 return true;
+            }
+
+            return HasFullRowGap(0) || HasFullRowGap(map.Height - 1) || HasFullColumnGap(0) || HasFullColumnGap(map.Width - 1);
+        }
+
+        private static bool HasGapOnWall(Map map)
+        {
+            bool HasRowGap(int y)
+            {
+                for (int x = 0; x < map.Width; x++)
+                {
+                    if (map[new Point(x, y)] is Direction.Gap or Direction.None)
+                        return true;
+                }
+                return false;
+            }
+
+            bool HasColumnGap(int x)
+            {
+                for (int y = 0; y < map.Height; y++)
+                {
+                    if (map[new Point(x, y)] is Direction.Gap or Direction.None)
+                        return true;
+                }
+                return false;
             }
 
             return HasRowGap(0) || HasRowGap(map.Height - 1) || HasColumnGap(0) || HasColumnGap(map.Width - 1);
@@ -443,7 +517,9 @@ namespace MapGenerator
             switch (test)
             {
                 case 0:
-                    RunPerpendicularBaseTest();
+                    if (!int.TryParse(textBox1.Text, out int trials))
+                        trials = 1000;
+                    RunPerpendicularBaseTest(trials);
                     break;
                 case 1:
                     RunWallTest();
@@ -476,6 +552,9 @@ namespace MapGenerator
                 case 10:
                     FindDuplicateAndGuideModeMaps(textBox1.Text);
                     break;
+                case 11:
+                    RealNoWallGapTest(textBox1.Text);
+                    break;
                 default:
                     Log("This shouldn't happen");
                     break;
@@ -485,7 +564,8 @@ namespace MapGenerator
         private async void runButton_Click(object sender, EventArgs e)
         {
             runButton.Enabled = false;
-            await Task.Run(() => RunStatsTest(comboBox1.SelectedIndex));
+            var index = comboBox1.SelectedIndex;
+            await Task.Run(() => RunStatsTest(index));
             runButton.Enabled = true;
         }
     }
