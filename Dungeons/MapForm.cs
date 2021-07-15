@@ -29,7 +29,7 @@ namespace Dungeons
             Keys.Down
         };
 
-        private static readonly Dictionary<FloorSize, Size> rsMapSizes = new Dictionary<FloorSize, Size>
+        private static readonly Dictionary<FloorSize, Size> rsMapSizes = new()
         {
             [FloorSize.Small] = new Size(140, 140),
             [FloorSize.Medium] = new Size(140, 280),
@@ -43,13 +43,6 @@ namespace Dungeons
             FontType.InitializeFonts();
             mapPictureBox.FloorSize = FloorSize;
             this.dataWindow = dataWindow;
-            if (Properties.Settings.Default.UpgradeRequired)
-            {
-                Properties.Settings.Default.Upgrade();
-                Properties.Settings.Default.UpgradeRequired = false;
-                Properties.Settings.Default.Save();
-                Log("Imported settings from previous version");
-            }
         }
 
         public DateTimeOffset FloorStartTime { get; private set; } = DateTimeOffset.MinValue;
@@ -121,8 +114,15 @@ namespace Dungeons
         {
             base.OnLoad(e);
 
-            // Start on top right, lol
-            Location = new Point(Screen.PrimaryScreen.WorkingArea.Width - Width, 0);
+            if (Screen.FromPoint(Properties.Settings.Default.MapFormLocation) != null)
+            {
+                Location = Properties.Settings.Default.MapFormLocation;
+            }
+            else
+            {
+                // Start on top right, lol
+                Location = new Point(Screen.PrimaryScreen.WorkingArea.Width - Width, 0);
+            }
         }
 
         protected override void OnFormClosed(FormClosedEventArgs e)

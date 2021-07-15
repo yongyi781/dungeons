@@ -30,6 +30,22 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            this.panel1 = new System.Windows.Forms.Panel();
+            this.saveMapButton = new System.Windows.Forms.Button();
+            this.windowComboBox = new System.Windows.Forms.ComboBox();
+            this.browseWinterfaceSaveLocationButton = new System.Windows.Forms.Button();
+            this.winterfaceSaveLocationTextBox = new System.Windows.Forms.TextBox();
+            this.winterfaceSaveLocationLabel = new System.Windows.Forms.Label();
+            this.browseMapSaveLocationButton = new System.Windows.Forms.Button();
+            this.mapSaveLocationTextBox = new System.Windows.Forms.TextBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.saveImagesCheckBox = new System.Windows.Forms.CheckBox();
+            this.captureButton = new System.Windows.Forms.Button();
+            this.multiplayerColumnsRadioButton = new System.Windows.Forms.RadioButton();
+            this.soloColumnsRadioButton = new System.Windows.Forms.RadioButton();
+            this.mapFolderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
+            this.winterfaceFolderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
+            this.logTextBox = new System.Windows.Forms.TextBox();
             this.ID = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Timestamp = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Partners = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -48,22 +64,8 @@
             this.Boss = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Roomcount = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.DeadEnds = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.panel1 = new System.Windows.Forms.Panel();
-            this.saveMapButton = new System.Windows.Forms.Button();
-            this.windowComboBox = new System.Windows.Forms.ComboBox();
-            this.browseWinterfaceSaveLocationButton = new System.Windows.Forms.Button();
-            this.winterfaceSaveLocationTextBox = new System.Windows.Forms.TextBox();
-            this.winterfaceSaveLocationLabel = new System.Windows.Forms.Label();
-            this.browseMapSaveLocationButton = new System.Windows.Forms.Button();
-            this.mapSaveLocationTextBox = new System.Windows.Forms.TextBox();
-            this.label1 = new System.Windows.Forms.Label();
-            this.saveImagesCheckBox = new System.Windows.Forms.CheckBox();
-            this.captureButton = new System.Windows.Forms.Button();
-            this.multiplayerColumnsRadioButton = new System.Windows.Forms.RadioButton();
-            this.soloColumnsRadioButton = new System.Windows.Forms.RadioButton();
-            this.mapFolderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
-            this.winterfaceFolderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
-            this.logTextBox = new System.Windows.Forms.TextBox();
+            this.AvgCombatLevel = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Notes = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
@@ -93,120 +95,14 @@
             this.FinalXP,
             this.Boss,
             this.Roomcount,
-            this.DeadEnds});
+            this.DeadEnds,
+            this.AvgCombatLevel,
+            this.Notes});
             this.dataGridView1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dataGridView1.Location = new System.Drawing.Point(0, 93);
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.Size = new System.Drawing.Size(765, 198);
             this.dataGridView1.TabIndex = 1;
-            // 
-            // ID
-            // 
-            this.ID.HeaderText = "ID";
-            this.ID.Name = "ID";
-            this.ID.Width = 5;
-            // 
-            // Timestamp
-            // 
-            this.Timestamp.HeaderText = "Timestamp";
-            this.Timestamp.Name = "Timestamp";
-            this.Timestamp.Width = 5;
-            // 
-            // Partners
-            // 
-            this.Partners.HeaderText = "Partners";
-            this.Partners.Name = "Partners";
-            this.Partners.Width = 5;
-            // 
-            // Floor
-            // 
-            this.Floor.HeaderText = "Floor";
-            this.Floor.Name = "Floor";
-            this.Floor.Width = 5;
-            // 
-            // FloorSize
-            // 
-            this.FloorSize.HeaderText = "Size";
-            this.FloorSize.Name = "FloorSize";
-            this.FloorSize.Width = 5;
-            // 
-            // Time
-            // 
-            this.Time.HeaderText = "Time";
-            this.Time.Name = "Time";
-            this.Time.Width = 5;
-            // 
-            // FloorXP
-            // 
-            this.FloorXP.HeaderText = "Floor XP";
-            this.FloorXP.Name = "FloorXP";
-            this.FloorXP.Width = 5;
-            // 
-            // PrestigeXP
-            // 
-            this.PrestigeXP.HeaderText = "Prestige XP";
-            this.PrestigeXP.Name = "PrestigeXP";
-            this.PrestigeXP.Width = 5;
-            // 
-            // BaseXP
-            // 
-            this.BaseXP.HeaderText = "Base XP";
-            this.BaseXP.Name = "BaseXP";
-            this.BaseXP.Width = 5;
-            // 
-            // SizeMod
-            // 
-            this.SizeMod.HeaderText = "Size +%";
-            this.SizeMod.Name = "SizeMod";
-            this.SizeMod.Width = 5;
-            // 
-            // BonusMod
-            // 
-            this.BonusMod.HeaderText = "Bonus +%";
-            this.BonusMod.Name = "BonusMod";
-            this.BonusMod.Width = 5;
-            // 
-            // LevelMod
-            // 
-            this.LevelMod.HeaderText = "Level mod %";
-            this.LevelMod.Name = "LevelMod";
-            this.LevelMod.Width = 5;
-            // 
-            // DifficultyMod
-            // 
-            this.DifficultyMod.HeaderText = "Difficulty %";
-            this.DifficultyMod.Name = "DifficultyMod";
-            this.DifficultyMod.Width = 5;
-            // 
-            // TotalMod
-            // 
-            this.TotalMod.HeaderText = "Total Mod";
-            this.TotalMod.Name = "TotalMod";
-            this.TotalMod.Width = 5;
-            // 
-            // FinalXP
-            // 
-            this.FinalXP.HeaderText = "FinalXP";
-            this.FinalXP.Name = "FinalXP";
-            this.FinalXP.Width = 5;
-            // 
-            // Boss
-            // 
-            this.Boss.HeaderText = "Boss";
-            this.Boss.Name = "Boss";
-            this.Boss.Width = 5;
-            // 
-            // Roomcount
-            // 
-            this.Roomcount.HeaderText = "Roomcount";
-            this.Roomcount.Name = "Roomcount";
-            this.Roomcount.Width = 5;
-            // 
-            // DeadEnds
-            // 
-            this.DeadEnds.HeaderText = "Dead Ends";
-            this.DeadEnds.Name = "DeadEnds";
-            this.DeadEnds.Width = 5;
             // 
             // panel1
             // 
@@ -378,6 +274,126 @@
             this.logTextBox.Size = new System.Drawing.Size(765, 129);
             this.logTextBox.TabIndex = 2;
             // 
+            // ID
+            // 
+            this.ID.HeaderText = "ID";
+            this.ID.Name = "ID";
+            this.ID.Width = 5;
+            // 
+            // Timestamp
+            // 
+            this.Timestamp.HeaderText = "Timestamp";
+            this.Timestamp.Name = "Timestamp";
+            this.Timestamp.Width = 5;
+            // 
+            // Partners
+            // 
+            this.Partners.HeaderText = "Partners";
+            this.Partners.Name = "Partners";
+            this.Partners.Width = 5;
+            // 
+            // Floor
+            // 
+            this.Floor.HeaderText = "Floor";
+            this.Floor.Name = "Floor";
+            this.Floor.Width = 5;
+            // 
+            // FloorSize
+            // 
+            this.FloorSize.HeaderText = "Size";
+            this.FloorSize.Name = "FloorSize";
+            this.FloorSize.Width = 5;
+            // 
+            // Time
+            // 
+            this.Time.HeaderText = "Time";
+            this.Time.Name = "Time";
+            this.Time.Width = 5;
+            // 
+            // FloorXP
+            // 
+            this.FloorXP.HeaderText = "Floor XP";
+            this.FloorXP.Name = "FloorXP";
+            this.FloorXP.Width = 5;
+            // 
+            // PrestigeXP
+            // 
+            this.PrestigeXP.HeaderText = "Prestige XP";
+            this.PrestigeXP.Name = "PrestigeXP";
+            this.PrestigeXP.Width = 5;
+            // 
+            // BaseXP
+            // 
+            this.BaseXP.HeaderText = "Base XP";
+            this.BaseXP.Name = "BaseXP";
+            this.BaseXP.Width = 5;
+            // 
+            // SizeMod
+            // 
+            this.SizeMod.HeaderText = "Size +%";
+            this.SizeMod.Name = "SizeMod";
+            this.SizeMod.Width = 5;
+            // 
+            // BonusMod
+            // 
+            this.BonusMod.HeaderText = "Bonus +%";
+            this.BonusMod.Name = "BonusMod";
+            this.BonusMod.Width = 5;
+            // 
+            // LevelMod
+            // 
+            this.LevelMod.HeaderText = "Level mod %";
+            this.LevelMod.Name = "LevelMod";
+            this.LevelMod.Width = 5;
+            // 
+            // DifficultyMod
+            // 
+            this.DifficultyMod.HeaderText = "Difficulty %";
+            this.DifficultyMod.Name = "DifficultyMod";
+            this.DifficultyMod.Width = 5;
+            // 
+            // TotalMod
+            // 
+            this.TotalMod.HeaderText = "Total Mod";
+            this.TotalMod.Name = "TotalMod";
+            this.TotalMod.Width = 5;
+            // 
+            // FinalXP
+            // 
+            this.FinalXP.HeaderText = "Final XP";
+            this.FinalXP.Name = "FinalXP";
+            this.FinalXP.Width = 5;
+            // 
+            // Boss
+            // 
+            this.Boss.HeaderText = "Boss";
+            this.Boss.Name = "Boss";
+            this.Boss.Width = 5;
+            // 
+            // Roomcount
+            // 
+            this.Roomcount.HeaderText = "Roomcount";
+            this.Roomcount.Name = "Roomcount";
+            this.Roomcount.Width = 5;
+            // 
+            // DeadEnds
+            // 
+            this.DeadEnds.HeaderText = "Dead Ends";
+            this.DeadEnds.Name = "DeadEnds";
+            this.DeadEnds.Width = 5;
+            // 
+            // AvgCombatLevel
+            // 
+            this.AvgCombatLevel.HeaderText = "Average Combat Level";
+            this.AvgCombatLevel.Name = "AvgCombatLevel";
+            this.AvgCombatLevel.Width = 5;
+            // 
+            // Notes
+            // 
+            this.Notes.HeaderText = "Notes";
+            this.Notes.Name = "Notes";
+            this.Notes.Width = 5;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
@@ -406,6 +422,18 @@
         private System.Windows.Forms.RadioButton multiplayerColumnsRadioButton;
         private System.Windows.Forms.RadioButton soloColumnsRadioButton;
         private System.Windows.Forms.Button captureButton;
+        private System.Windows.Forms.CheckBox saveImagesCheckBox;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.TextBox mapSaveLocationTextBox;
+        private System.Windows.Forms.Button browseMapSaveLocationButton;
+        private System.Windows.Forms.Button browseWinterfaceSaveLocationButton;
+        private System.Windows.Forms.TextBox winterfaceSaveLocationTextBox;
+        private System.Windows.Forms.Label winterfaceSaveLocationLabel;
+        private System.Windows.Forms.FolderBrowserDialog mapFolderBrowserDialog;
+        private System.Windows.Forms.FolderBrowserDialog winterfaceFolderBrowserDialog;
+        private System.Windows.Forms.TextBox logTextBox;
+        private System.Windows.Forms.ComboBox windowComboBox;
+        private System.Windows.Forms.Button saveMapButton;
         private System.Windows.Forms.DataGridViewTextBoxColumn ID;
         private System.Windows.Forms.DataGridViewTextBoxColumn Timestamp;
         private System.Windows.Forms.DataGridViewTextBoxColumn Partners;
@@ -424,17 +452,7 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn Boss;
         private System.Windows.Forms.DataGridViewTextBoxColumn Roomcount;
         private System.Windows.Forms.DataGridViewTextBoxColumn DeadEnds;
-        private System.Windows.Forms.CheckBox saveImagesCheckBox;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.TextBox mapSaveLocationTextBox;
-        private System.Windows.Forms.Button browseMapSaveLocationButton;
-        private System.Windows.Forms.Button browseWinterfaceSaveLocationButton;
-        private System.Windows.Forms.TextBox winterfaceSaveLocationTextBox;
-        private System.Windows.Forms.Label winterfaceSaveLocationLabel;
-        private System.Windows.Forms.FolderBrowserDialog mapFolderBrowserDialog;
-        private System.Windows.Forms.FolderBrowserDialog winterfaceFolderBrowserDialog;
-        private System.Windows.Forms.TextBox logTextBox;
-        private System.Windows.Forms.ComboBox windowComboBox;
-        private System.Windows.Forms.Button saveMapButton;
+        private System.Windows.Forms.DataGridViewTextBoxColumn AvgCombatLevel;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Notes;
     }
 }

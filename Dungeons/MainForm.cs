@@ -1,6 +1,7 @@
 ﻿using Dungeons.Common;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
 using System.Drawing;
@@ -25,7 +26,7 @@ namespace Dungeons
             InitializeComponent();
 
             mapForm = new MapForm(this);
-            typeof(DataGridView).InvokeMember("DoubleBuffered", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.SetProperty, null, dataGridView1, new object[] { true });
+            //typeof(DataGridView).InvokeMember("DoubleBuffered", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.SetProperty, null, dataGridView1, new object[] { true });
 
             foreach (DataGridViewColumn column in dataGridView1.Columns)
             {
@@ -33,6 +34,13 @@ namespace Dungeons
             }
 
             UpdateSaveLocationTextBoxes();
+            if (Properties.Settings.Default.UpgradeRequired)
+            {
+                Properties.Settings.Default.Upgrade();
+                Properties.Settings.Default.UpgradeRequired = false;
+                Properties.Settings.Default.Save();
+                Log("Imported settings from previous version");
+            }
         }
 
         public ProcessWindow SelectedWindow => windowComboBox.SelectedItem as ProcessWindow;
@@ -72,7 +80,20 @@ namespace Dungeons
             windowComboBox.DataSource = (from x in Process.GetProcessesByName("rs2client") select new ProcessWindow(x)).ToList();
             Log("Started up, calibrating");
             _ = mapForm.CalibrateAsync();
+            if (Screen.FromPoint(Properties.Settings.Default.MainFormLocation) != null)
+            {
+                Location = Properties.Settings.Default.MainFormLocation;
+            }
             mapForm.Show(this);
+        }
+
+        protected override void OnClosing(CancelEventArgs e)
+        {
+            base.OnClosing(e);
+
+            Properties.Settings.Default.MainFormLocation = Location;
+            Properties.Settings.Default.MapFormLocation = mapForm.Location;
+            Properties.Settings.Default.Save();
         }
 
         protected override void WndProc(ref Message m)
@@ -94,30 +115,44 @@ namespace Dungeons
         /// <returns>true if winterface was found; otherwise, false.</returns>
         private async Task<bool> CaptureWinterfaceAsync()
         {
-            if (mapForm.RSWindow == null)
-                return false;
-
-            using var bmp = mapForm.RSWindow.Capture();
-            var dict = await Task.Run(() => ParseBitmap(bmp, saveImagesCheckBox.Checked));
-            if (dict == null)
-                return false;
-
-            if (dict["DifficultyMod"] == "+0")
+            Bitmap GrabScreenshot()
             {
-                // Change to solo if it's a 1:1
-                soloColumnsRadioButton.Checked = true;
-                if (dict["FloorSize"] == "Large")
-                    dict["FloorSize"] = "Large2";
+                if (mapForm.RSWindow != null)
+                {
+                    return mapForm.RSWindow.Capture();
+                }
+                var size = SystemInformation.VirtualScreen.Size;
+                var bmp = new Bitmap(size.Width, size.Height);
+                using (var g = Graphics.FromImage(bmp))
+                {
+                    g.CopyFromScreen(SystemInformation.VirtualScreen.X, SystemInformation.VirtualScreen.Y, 0, 0, size);
+                }
+                return bmp;
             }
-            if (saveImagesCheckBox.Checked)
-                mapForm.SaveMap();
-            var row = AddRow(dict);
-            if (row != null)
+
+            using (var bmp = GrabScreenshot())
             {
-                var visibleCellValues = from DataGridViewCell cell in row.Cells
-                                        where cell.Visible
-                                        select cell.Value;
-                Clipboard.SetText(string.Join("\t", visibleCellValues));
+                var dict = await Task.Run(() => ParseBitmap(bmp, saveImagesCheckBox.Checked));
+                if (dict == null)
+                    return false;
+
+                if (dict["DifficultyMod"] == "+0")
+                {
+                    // Change to solo if it's a 1:1
+                    soloColumnsRadioButton.Checked = true;
+                    if (dict["FloorSize"] == "Large")
+                        dict["FloorSize"] = "Large2";
+                }
+                if (saveImagesCheckBox.Checked)
+                    mapForm.SaveMap();
+                var row = AddRow(dict);
+                if (row != null)
+                {
+                    var visibleCellValues = from DataGridViewCell cell in row.Cells
+                                            where cell.Visible
+                                            select cell.Value;
+                    Clipboard.SetText(string.Join("\t", visibleCellValues));
+                }
             }
             return true;
         }
