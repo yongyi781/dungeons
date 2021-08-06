@@ -215,8 +215,9 @@ namespace Dungeons
             var minutes = GetElapsedTime().TotalMinutes;
             var roomsPerMinStr = ((mapPictureBox.GameMap.OpenedRoomCount - 0.8) / minutes).ToString("0.0");
             var c = mapPictureBox.GameMap.OpenedRoomCount;
+            var m = mapPictureBox.GameMap.MysteryCount;
             var roomsText = c == 1 ? "room" : "rooms";
-            dataLabel.Text = $"{c} {roomsText} | {roomsPerMinStr} rpm | {mapPictureBox.GameMap.DeadEndCount} dead ends";
+            dataLabel.Text = $"{c} {roomsText} ({c + m}) | {roomsPerMinStr} rpm | {mapPictureBox.GameMap.DeadEndCount} dead ends";
         }
 
         private TimeSpan GetElapsedTime()

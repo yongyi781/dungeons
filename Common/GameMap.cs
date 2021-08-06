@@ -31,6 +31,10 @@ namespace Dungeons.Common
                         if (roomType.IsLeaf() && !roomType.IsBoss() && !roomType.IsBase())
                             ++DeadEndCount;
                     }
+                    else if (roomType.IsMystery())
+                    {
+                        ++MysteryCount;
+                    }
                 }
             }
 
@@ -75,6 +79,7 @@ namespace Dungeons.Common
         public Point Base => Map.Base;
         public Point Boss => Map.Boss;
         public int OpenedRoomCount { get; private set; }
+        public int MysteryCount { get; private set; }
         public int DeadEndCount { get; private set; }
         public bool IsComplete => OpenedRoomCount > 0 && MapUtils.Range2D(FloorSize.Width, FloorSize.Height).All(p => (RoomTypes[p.X, p.Y] & RoomType.Mystery) == 0);
     }
