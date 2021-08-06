@@ -38,10 +38,11 @@
             this.resetTimerButton = new System.Windows.Forms.Button();
             this.plusTenButton = new System.Windows.Forms.Button();
             this.plusOneButton = new System.Windows.Forms.Button();
-            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.mapPictureBox = new Dungeons.MapPictureBox();
             this.minusTenButton = new System.Windows.Forms.Button();
-            this.tableLayoutPanel1.SuspendLayout();
+            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.flowLayoutPanel = new System.Windows.Forms.FlowLayoutPanel();
+            this.mapPictureBox = new Dungeons.MapPictureBox();
+            this.flowLayoutPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.mapPictureBox)).BeginInit();
             this.SuspendLayout();
             // 
@@ -53,12 +54,14 @@
             // 
             // dataLabel
             // 
-            this.dataLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.dataLabel.AutoSize = true;
-            this.dataLabel.Location = new System.Drawing.Point(9, 285);
+            this.dataLabel.Location = new System.Drawing.Point(3, 283);
+            this.dataLabel.Margin = new System.Windows.Forms.Padding(3);
             this.dataLabel.Name = "dataLabel";
-            this.dataLabel.Size = new System.Drawing.Size(0, 15);
+            this.dataLabel.Size = new System.Drawing.Size(87, 15);
             this.dataLabel.TabIndex = 6;
+            this.dataLabel.Text = "No map active.";
+            this.dataLabel.MouseDown += new System.Windows.Forms.MouseEventHandler(this.dataLabel_MouseDown);
             // 
             // clearAnnotationsButton
             // 
@@ -143,35 +146,6 @@
             this.plusOneButton.UseVisualStyleBackColor = false;
             this.plusOneButton.Click += new System.EventHandler(this.PlusOneOrTenButton_Click);
             // 
-            // tableLayoutPanel1
-            // 
-            this.tableLayoutPanel1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.tableLayoutPanel1.BackColor = System.Drawing.Color.Black;
-            this.tableLayoutPanel1.ColumnCount = 1;
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.Controls.Add(this.mapPictureBox, 0, 0);
-            this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
-            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.RowCount = 1;
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(280, 282);
-            this.tableLayoutPanel1.TabIndex = 0;
-            // 
-            // mapPictureBox
-            // 
-            this.mapPictureBox.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.mapPictureBox.DrawDistancesEnabled = false;
-            this.mapPictureBox.Location = new System.Drawing.Point(0, 1);
-            this.mapPictureBox.Margin = new System.Windows.Forms.Padding(0);
-            this.mapPictureBox.Name = "mapPictureBox";
-            this.mapPictureBox.SelectedLocation = new System.Drawing.Point(-1, -1);
-            this.mapPictureBox.Size = new System.Drawing.Size(280, 280);
-            this.mapPictureBox.TabIndex = 1;
-            this.mapPictureBox.TabStop = false;
-            this.mapPictureBox.MouseDown += new System.Windows.Forms.MouseEventHandler(this.MapPictureBox_MouseDown);
-            // 
             // minusTenButton
             // 
             this.minusTenButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
@@ -188,6 +162,48 @@
             this.minusTenButton.UseVisualStyleBackColor = false;
             this.minusTenButton.Click += new System.EventHandler(this.PlusOneOrTenButton_Click);
             // 
+            // tableLayoutPanel1
+            // 
+            this.tableLayoutPanel1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tableLayoutPanel1.BackColor = System.Drawing.Color.Black;
+            this.tableLayoutPanel1.ColumnCount = 1;
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
+            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
+            this.tableLayoutPanel1.RowCount = 1;
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 282F));
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(280, 282);
+            this.tableLayoutPanel1.TabIndex = 0;
+            // 
+            // flowLayoutPanel
+            // 
+            this.flowLayoutPanel.Controls.Add(this.mapPictureBox);
+            this.flowLayoutPanel.Controls.Add(this.dataLabel);
+            this.flowLayoutPanel.Dock = System.Windows.Forms.DockStyle.Top;
+            this.flowLayoutPanel.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
+            this.flowLayoutPanel.Location = new System.Drawing.Point(0, 0);
+            this.flowLayoutPanel.Name = "flowLayoutPanel";
+            this.flowLayoutPanel.Size = new System.Drawing.Size(280, 301);
+            this.flowLayoutPanel.TabIndex = 12;
+            this.flowLayoutPanel.WrapContents = false;
+            this.flowLayoutPanel.MouseDown += new System.Windows.Forms.MouseEventHandler(this.flowLayoutPanel_MouseDown);
+            // 
+            // mapPictureBox
+            // 
+            this.mapPictureBox.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.mapPictureBox.DrawDistancesEnabled = false;
+            this.mapPictureBox.Location = new System.Drawing.Point(0, 0);
+            this.mapPictureBox.Margin = new System.Windows.Forms.Padding(0);
+            this.mapPictureBox.Name = "mapPictureBox";
+            this.mapPictureBox.SelectedLocation = new System.Drawing.Point(-1, -1);
+            this.mapPictureBox.Size = new System.Drawing.Size(280, 280);
+            this.mapPictureBox.TabIndex = 1;
+            this.mapPictureBox.TabStop = false;
+            this.mapPictureBox.MouseDown += new System.Windows.Forms.MouseEventHandler(this.MapPictureBox_MouseDown);
+            // 
             // MapForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
@@ -195,6 +211,7 @@
             this.BackColor = System.Drawing.Color.Black;
             this.ClientSize = new System.Drawing.Size(280, 392);
             this.ControlBox = false;
+            this.Controls.Add(this.flowLayoutPanel);
             this.Controls.Add(this.minusTenButton);
             this.Controls.Add(this.tableLayoutPanel1);
             this.Controls.Add(this.plusOneButton);
@@ -203,7 +220,6 @@
             this.Controls.Add(this.timerLabel);
             this.Controls.Add(this.topMostCheckBox);
             this.Controls.Add(this.clearAnnotationsButton);
-            this.Controls.Add(this.dataLabel);
             this.DoubleBuffered = true;
             this.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.ForeColor = System.Drawing.Color.White;
@@ -216,7 +232,8 @@
             this.ShowIcon = false;
             this.ShowInTaskbar = false;
             this.Text = "Dungeons";
-            this.tableLayoutPanel1.ResumeLayout(false);
+            this.flowLayoutPanel.ResumeLayout(false);
+            this.flowLayoutPanel.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.mapPictureBox)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -233,8 +250,9 @@
         private System.Windows.Forms.Button plusTenButton;
         private System.Windows.Forms.Button plusOneButton;
         private MapPictureBox mapPictureBox;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.Button minusTenButton;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
+        private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel;
     }
 }
 

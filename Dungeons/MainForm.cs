@@ -258,5 +258,10 @@ namespace Dungeons
             if (!await CaptureWinterfaceAsync())
                 await mapForm.CalibrateAsync();
         }
+
+        private void hideMapCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            mapForm.SetShowMapStatsOnly(hideMapCheckBox.Checked);
+        }
     }
 }

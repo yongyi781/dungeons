@@ -18,6 +18,7 @@ namespace Dungeons
         private int lastRoomCount = 0;
         private Point mapLocation = new Point(121, 0);
         private readonly MainForm dataWindow;
+        private Size startingSize;
 
         private static readonly Keys[] KeysToEat =
         {
@@ -83,6 +84,12 @@ namespace Dungeons
             }
         }
 
+        public void SetShowMapStatsOnly(bool value)
+        {
+            mapPictureBox.Visible = !value;
+            Height = value ? dataLabel.Height + 7 : startingSize.Height;
+        }
+
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
             if (KeysToEat.Contains(keyData))
@@ -113,6 +120,7 @@ namespace Dungeons
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
+            startingSize = Size;
 
             if (Screen.FromPoint(Properties.Settings.Default.MapFormLocation) != null)
             {
@@ -206,7 +214,9 @@ namespace Dungeons
         {
             var minutes = GetElapsedTime().TotalMinutes;
             var roomsPerMinStr = ((mapPictureBox.GameMap.OpenedRoomCount - 0.8) / minutes).ToString("0.0");
-            dataLabel.Text = $"{mapPictureBox.GameMap.OpenedRoomCount} rooms | {roomsPerMinStr} rpm | {mapPictureBox.GameMap.DeadEndCount} dead ends";
+            var c = mapPictureBox.GameMap.OpenedRoomCount;
+            var roomsText = c == 1 ? "room" : "rooms";
+            dataLabel.Text = $"{c} {roomsText} | {roomsPerMinStr} rpm | {mapPictureBox.GameMap.DeadEndCount} dead ends";
         }
 
         private TimeSpan GetElapsedTime()
@@ -283,6 +293,24 @@ namespace Dungeons
         private void CloseButton_Click(object sender, EventArgs e)
         {
             Close();
+        }
+
+        private void flowLayoutPanel_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+            {
+                NativeMethods.ReleaseCapture();
+                NativeMethods.SendMessage(Handle, WM_NCLBUTTONDOWN, (IntPtr)HT_CAPTION, IntPtr.Zero);
+            }
+        }
+
+        private void dataLabel_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+            {
+                NativeMethods.ReleaseCapture();
+                NativeMethods.SendMessage(Handle, WM_NCLBUTTONDOWN, (IntPtr)HT_CAPTION, IntPtr.Zero);
+            }
         }
     }
 }
