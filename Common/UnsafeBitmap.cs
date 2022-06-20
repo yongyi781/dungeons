@@ -118,12 +118,12 @@ namespace Dungeons.Common
         /// Returns true if the template matches the image at the corresponding offset; otherwise false.
         /// Transparent pixels in the template (alpha < 255) are required to be a different color in order for it to match. 
         /// </summary>
-        public bool IsMatchAlphaColor(UnsafeBitmap template, int offX, int offY, Color color)
+        public bool IsMatchAlphaColor(UnsafeBitmap template, int offX, int offY, Color color, int tolerance = 20)
         {
             for (int y = 0; y < template.Height; y++)
                 for (int x = 0; x < template.Width; x++)
-                    if ((template.GetPixel(x, y).A == 255 && GetPixel(x + offX, y + offY) != color) ||
-                        (template.GetPixel(x, y).A != 255) && GetPixel(x + offX, y + offY) == color)
+                    if ((template.GetPixel(x, y).A == 255 && ColorDistance(GetPixel(x + offX, y + offY), color) > tolerance) ||
+                        (template.GetPixel(x, y).A != 255 && GetPixel(x + offX, y + offY) == color))
                         return false;
             return true;
         }

@@ -121,12 +121,14 @@ namespace Dungeons
         {
             base.OnLoad(e);
             startingSize = Size;
+            var isValidLocation = false;
 
             if (Screen.FromPoint(Properties.Settings.Default.MapFormLocation) != null)
             {
                 Location = Properties.Settings.Default.MapFormLocation;
+                isValidLocation = this.IsOnScreen();
             }
-            else
+            if (!isValidLocation)
             {
                 // Start on top right, lol
                 Location = new Point(Screen.PrimaryScreen.WorkingArea.Width - Width, 0);

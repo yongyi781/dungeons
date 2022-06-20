@@ -16,8 +16,8 @@ namespace Dungeons
 {
     public partial class MainForm : Form
     {
-        static readonly Point NotFound = new Point(-1, -1);
-        static readonly Point DefaultOffset = new Point(710, 330);
+        static readonly Point NotFound = new(-1, -1);
+        static readonly Point DefaultOffset = new(710, 330);
 
         private readonly MapForm mapForm;
 
@@ -66,7 +66,11 @@ namespace Dungeons
         public void RefreshProcessesList()
         {
             var selectedItem = windowComboBox.SelectedItem;
-            windowComboBox.DataSource = (from x in Process.GetProcessesByName("rs2client") select new ProcessWindow(x)).ToList();
+            var list = (from x in Process.GetProcessesByName("rs2client") select new ProcessWindow(x)).ToList();
+#if DEBUG
+            list.Add(new ProcessWindow(null));
+#endif
+            windowComboBox.DataSource = list;
             windowComboBox.SelectedItem = selectedItem;
         }
 
@@ -83,6 +87,10 @@ namespace Dungeons
             if (Screen.FromPoint(Properties.Settings.Default.MainFormLocation) != null)
             {
                 Location = Properties.Settings.Default.MainFormLocation;
+                if (!this.IsOnScreen())
+                {
+                    Location = new Point(Screen.PrimaryScreen.WorkingArea.Width - Width, 0);
+                }
             }
             mapForm.Show(this);
         }
@@ -115,23 +123,11 @@ namespace Dungeons
         /// <returns>true if winterface was found; otherwise, false.</returns>
         private async Task<bool> CaptureWinterfaceAsync()
         {
-            Bitmap GrabScreenshot()
-            {
-                if (mapForm.RSWindow != null)
-                {
-                    return mapForm.RSWindow.Capture();
-                }
-                var size = SystemInformation.VirtualScreen.Size;
-                var bmp = new Bitmap(size.Width, size.Height);
-                using (var g = Graphics.FromImage(bmp))
-                {
-                    g.CopyFromScreen(SystemInformation.VirtualScreen.X, SystemInformation.VirtualScreen.Y, 0, 0, size);
-                }
-                return bmp;
-            }
 
-            using (var bmp = GrabScreenshot())
+            using (var bmp = mapForm.RSWindow?.Capture())
             {
+                if (bmp == null)
+                    return false;
                 var dict = await Task.Run(() => ParseBitmap(bmp, saveImagesCheckBox.Checked));
                 if (dict == null)
                     return false;
@@ -161,7 +157,6 @@ namespace Dungeons
         {
             using var b = new UnsafeBitmap(bmp, ImageLockMode.ReadOnly);
             Point p;
-            var firstPointToTry = new Point(710, 330);
             if (b.IsMatch(Properties.Resources.WinterfaceMarker, DefaultOffset.X, DefaultOffset.Y, 0))
                 p = DefaultOffset;
             else
@@ -173,10 +168,19 @@ namespace Dungeons
             }
             var w = new Winterface(b, p.X, p.Y);
 
-            var fields = new List<Field> { Field.Time, Field.FloorXP, Field.PrestigeXP, Field.AverageBaseXP, Field.SizeMod, Field.BonusMod, Field.LevelMod };
-            fields.Add(Field.DifficultyMod);
-            fields.Add(Field.TotalMod);
-            fields.Add(Field.FinalXP);
+            var fields = new List<Field>
+            {
+                Field.Time,
+                Field.FloorXP,
+                Field.PrestigeXP,
+                Field.AverageBaseXP,
+                Field.SizeMod,
+                Field.BonusMod,
+                Field.LevelMod,
+                Field.DifficultyMod,
+                Field.TotalMod,
+                Field.FinalXP
+            };
 
             var row = (from f in fields
                        select new { Key = f.Name, Value = w.ReadField(f) }).ToDictionary(a => a.Key, a => a.Value);
