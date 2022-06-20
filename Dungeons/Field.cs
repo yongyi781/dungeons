@@ -4,7 +4,7 @@ namespace Dungeons
 {
     public class Field
     {
-        public static readonly Field Time = new Field { Name = "Time", FontType = FontType.SmallFont, ForeColor = Color.FromArgb(255, 255, 255), Y = 308, StartX = 35 };
+        public static readonly Field Time = new Field { Name = "Time", FontType = FontType.SmallFont, ForeColor = Color.FromArgb(255, 255, 255), Y = 308, StartX = 28 };
         public static readonly Field Floor = new Field { Name = "Floor", FontType = FontType.BaseFont, ForeColor = Color.FromArgb(198, 155, 1), Y = 56, StartX = 78 };
         public static readonly Field RedFloor = new Field { Name = "Floor", FontType = FontType.BaseFont, ForeColor = Color.FromArgb(160, 0, 0), Y = 56, StartX = 78 };
         public static readonly Field FloorXP = new Field { Name = "FloorXP", FontType = FontType.BaseFont, ForeColor = Color.FromArgb(226, 226, 162), Y = 70, StartX = 47 };
