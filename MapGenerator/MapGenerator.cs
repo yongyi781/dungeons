@@ -1,10 +1,4 @@
 ﻿using Dungeons.Common;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Drawing;
-using System.Linq;
-using System.Runtime.CompilerServices;
 
 namespace MapGenerator
 {
@@ -247,7 +241,7 @@ namespace MapGenerator
         {
             // DFS, also time it
 #if DEBUG
-            var sw = Stopwatch.StartNew();
+            var sw = System.Diagnostics.Stopwatch.StartNew();
 #endif
             var stack = new Stack<Point>(new Point[] { map.Boss.Add(map.BossFaceDirection) });
             // Count boss as visited.

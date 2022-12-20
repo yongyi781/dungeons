@@ -1,14 +1,12 @@
-﻿using System;
-using System.Diagnostics;
-using System.Windows.Forms;
+﻿using System.Diagnostics;
 
 namespace MapGenerator
 {
     public class Logger
     {
-        public static readonly Logger Global = new Logger();
+        public static readonly Logger Global = new();
 
-        public TextBox TextBox { get; set; }
+        public TextBox? TextBox { get; set; }
         public LogLevel LogLevel { get; set; }
 
         public void Log(LogLevel level, string text)
@@ -19,10 +17,7 @@ namespace MapGenerator
 
         void LogHelper(string text)
         {
-            if (TextBox != null)
-            {
-                TextBox.Invoke((Action)(() => TextBox.AppendText(text + Environment.NewLine)));
-            }
+            TextBox?.Invoke(() => TextBox.AppendText(text + Environment.NewLine));
             Debug.WriteLine(text);
         }
     }

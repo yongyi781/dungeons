@@ -13,9 +13,9 @@ namespace Dungeons.Common
             this.resources = resources;
         }
 
-        public Image BaseOverlay => (Image)resources.GetObject("BaseOverlay");
-        public Image BossOverlay => (Image)resources.GetObject("BossOverlay");
-        
+        public Image? BaseOverlay => resources.GetObject("BaseOverlay") as Image;
+        public Image? BossOverlay => resources.GetObject("BossOverlay") as Image;
+
         public void Draw(Graphics g, Map map, bool drawCritRooms = false, bool drawDeadEnds = true)
         {
             g.Clear(Color.Black);
@@ -29,7 +29,7 @@ namespace Dungeons.Common
                     if (map[p] != Direction.Gap)
                     {
                         var roomType = map.GetRoomType(p);
-                        var roomBmp =  RoomTypeToBitmap(drawCritRooms && critRooms.Contains(p) ? roomType | RoomType.Crit : roomType);
+                        var roomBmp = RoomTypeToBitmap(drawCritRooms && critRooms.Contains(p) ? roomType | RoomType.Crit : roomType);
                         if (roomBmp != null)
                         {
                             g.DrawImage(roomBmp, x * 32, (map.Height - 1 - y) * 32, 32, 32);
@@ -56,6 +56,6 @@ namespace Dungeons.Common
             return bmp;
         }
 
-        private Bitmap RoomTypeToBitmap(RoomType type) => (Bitmap)resources.GetObject(type.ToResourceString());
+        private Bitmap? RoomTypeToBitmap(RoomType type) => resources.GetObject(type.ToResourceString()) as Bitmap;
     }
 }

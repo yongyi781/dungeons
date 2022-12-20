@@ -16,7 +16,6 @@ namespace Dungeons
 
         private Point lastHomeLocation = MapUtils.Invalid;
         private int lastRoomCount = 0;
-        private Point mapLocation = new Point(121, 0);
         private readonly MainForm dataWindow;
         private Size startingSize;
 
@@ -75,12 +74,13 @@ namespace Dungeons
             if (mapLocation != MapUtils.Invalid)
             {
                 Log($"Calibrated! Map location = {mapLocation}, Size = {floorSize}");
-                this.mapLocation = mapLocation;
+                Properties.Settings.Default.MapLocation = mapLocation;
+                Properties.Settings.Default.Save();
                 UpdateMap();
             }
             else
             {
-                Log($"Could not find map. Current map search location = {this.mapLocation}");
+                Log($"Could not find map. Current map search location = {Properties.Settings.Default.MapLocation}");
             }
         }
 
@@ -172,10 +172,10 @@ namespace Dungeons
 
             foreach (var floorSize in FloorSize.RSSizes)
             {
-                if (mapLocation != MapUtils.Invalid)
+                if (Properties.Settings.Default.MapLocation != MapUtils.Invalid)
                 {
                     var mapSize = rsMapSizes[floorSize];
-                    var bmp = window.Capture(new Rectangle(mapLocation, mapSize));
+                    var bmp = window.Capture(new Rectangle(Properties.Settings.Default.MapLocation, mapSize));
                     if (bmp == null)
                         return; // Break out of the loop, window capture won't work for the other cases either.
 

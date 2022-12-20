@@ -11,27 +11,24 @@ namespace Dungeons.Common
         public static readonly Color MapCornerColorMin = Color.FromArgb(100, 87, 65);
         public static readonly Color MapCornerColorMax = Color.FromArgb(117, 104, 83);
 
-        private readonly Dictionary<RoomType, Color[]> signatures = new Dictionary<RoomType, Color[]>();
+        private readonly Dictionary<RoomType, Color[]> signatures = new();
 
         public MapReader(ResourceManager resources)
         {
             // Normal and crit rooms
             foreach (var roomType in MapUtils.EnumerateRoomTypes())
             {
-                signatures.Add(roomType, ComputeSignature((Bitmap)resources.GetObject(roomType.ToResourceString())));
+                signatures.Add(roomType, ComputeSignature((Bitmap)resources.GetObject(roomType.ToResourceString())!));
                 var critRoomType = roomType | RoomType.Crit;
-                var critBmp = (Bitmap)resources.GetObject(critRoomType.ToResourceString());
-                if (critBmp != null)
+                if (resources.GetObject(critRoomType.ToResourceString()) is Bitmap critBmp)
                     signatures.Add(critRoomType, ComputeSignature(critBmp));
             }
             foreach (var dir in MapUtils.Directions)
             {
                 var roomType = dir.ToRoomType() | RoomType.Mystery;
-                signatures.Add(roomType, ComputeSignature((Bitmap)resources.GetObject(roomType.ToResourceString())));
+                signatures.Add(roomType, ComputeSignature((Bitmap)resources.GetObject(roomType.ToResourceString())!));
             }
         }
-
-        public Dictionary<RoomType, Bitmap> RoomImageDict { get; }
 
         public static Color[] ComputeSignature(Bitmap bmp, int offX = 0, int offY = 0)
         {
@@ -88,13 +85,11 @@ namespace Dungeons.Common
         public static bool IsValidInGameMap(Bitmap bmp)
         {
             // Test if corners are at most tolerance away from the map corner color
-            using (var u = new UnsafeBitmap(bmp))
+            using var u = new UnsafeBitmap(bmp);
+            foreach (var p in new Point[] { new Point(0, 0), new Point(bmp.Width - 1, 0), new Point(0, bmp.Height - 1), new Point(bmp.Width - 1, bmp.Height - 1) })
             {
-                foreach (var p in new Point[] { new Point(0, 0), new Point(bmp.Width - 1, 0), new Point(0, bmp.Height - 1), new Point(bmp.Width - 1, bmp.Height - 1) })
-                {
-                    if (!u.GetPixel(p.X, p.Y).IsBetween(MapCornerColorMin, MapCornerColorMax))
-                        return false;
-                }
+                if (!u.GetPixel(p.X, p.Y).IsBetween(MapCornerColorMin, MapCornerColorMax))
+                    return false;
             }
             return true;
         }

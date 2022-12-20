@@ -5,7 +5,7 @@ namespace Dungeons.Common
 {
     public struct FloorSize : IEquatable<FloorSize>
     {
-        public static readonly FloorSize Small = new FloorSize { Width = 4, Height = 4  };
+        public static readonly FloorSize Small = new FloorSize { Width = 4, Height = 4 };
         public static readonly FloorSize Medium = new FloorSize { Width = 4, Height = 8 };
         public static readonly FloorSize Large = new FloorSize { Width = 8, Height = 8 };
 
@@ -87,7 +87,7 @@ namespace Dungeons.Common
             return Height.GetHashCode() ^ Width.GetHashCode();
         }
 
-        public override bool Equals(object obj) => obj != null && Equals((FloorSize)obj);
+        public override bool Equals(object? obj) => obj != null && Equals((FloorSize)obj);
 
         public override string ToString() => (Width, Height) switch
         {

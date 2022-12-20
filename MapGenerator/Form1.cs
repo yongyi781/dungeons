@@ -1,9 +1,4 @@
 ﻿using Dungeons.Common;
-using System;
-using System.Drawing;
-using System.IO;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace MapGenerator
 {
@@ -14,8 +9,8 @@ namespace MapGenerator
         private readonly string[] Algorithms = { "Prim", "AldousBroder", "PrimVariant", "RandomEdges" };
         private readonly FloorSize[] FloorSizes = { FloorSize.Small, FloorSize.Medium, FloorSize.Large, new FloorSize(12, 12), new FloorSize(16, 16) };
 
-        private Map map;
-        private MapGenerator mapGenerator;
+        private Map? map;
+        private MapGenerator? mapGenerator;
 
         public Form1()
         {
@@ -38,6 +33,8 @@ namespace MapGenerator
 
         private void Generate(int roomcount, string algorithm)
         {
+            if (map == null)
+                throw new InvalidOperationException("map is null.");
             mapGenerator = new MapGenerator((int)seedUpDown.Value, new FloorSize(map.Width, map.Height));
             mapGenerator.Generate(map, roomcount, algorithm);
 
@@ -46,6 +43,8 @@ namespace MapGenerator
 
         private void RenderMap()
         {
+            if (map == null)
+                throw new InvalidOperationException("map is null.");
             textBox1.Text = map.ToString();
             using (var g = Graphics.FromImage(pictureBox.Image))
             {
@@ -82,7 +81,8 @@ namespace MapGenerator
                 var rc = randomRcCheckbox.Checked ? 0 : (int)rcUpDown.Value;
                 var alg = Algorithms[algorithmComboBox.SelectedIndex];
                 await Task.Run(() => Generate(rc, alg));
-                rcUpDown.Value = map.Roomcount;
+                if (map != null)
+                    rcUpDown.Value = map.Roomcount;
                 RenderMap();
             }
             finally
