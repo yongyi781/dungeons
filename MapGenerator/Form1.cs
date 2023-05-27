@@ -48,6 +48,7 @@ namespace MapGenerator
             textBox1.Text = map.ToString();
             using (var g = Graphics.FromImage(pictureBox.Image))
             {
+                Logger.Global.Log(LogLevel.Information, pictureBox.Image.Size.ToString());
                 mapWriter.Draw(g, map, drawCritCheckBox.Checked, drawDeadEndsCheckBox.Checked);
             }
             pictureBox.Refresh();
@@ -58,11 +59,11 @@ namespace MapGenerator
             var index = sizeComboBox.SelectedIndex;
             var size = index == sizeComboBox.Items.Count - 1 ? new FloorSize((int)sizeUpDown.Value, (int)sizeUpDown.Value) : FloorSizes[index];
 
+            pictureBox.Width = LogicalToDeviceUnits(size.Width * MapUtils.RoomSize + 24);
+            pictureBox.Height = LogicalToDeviceUnits(size.Height * MapUtils.RoomSize + 24);
             if (map?.Size != size.Size)
             {
                 map = new Map(size.Width, size.Height);
-                pictureBox.Width = size.Width * MapUtils.RoomSize + 24;
-                pictureBox.Height = size.Height * MapUtils.RoomSize + 24;
                 pictureBox.Image = new Bitmap(size.Width * MapUtils.RoomSize, size.Height * MapUtils.RoomSize);
             }
         }
@@ -140,6 +141,11 @@ namespace MapGenerator
         private void SizeComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             sizeUpDown.Enabled = sizeComboBox.SelectedIndex == sizeComboBox.Items.Count - 1;
+        }
+
+        private void pictureBox_DpiChangedAfterParent(object sender, EventArgs e)
+        {
+            UpdateSize();
         }
     }
 }

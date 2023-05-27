@@ -13,8 +13,8 @@ namespace Dungeons.Common
             this.resources = resources;
         }
 
-        public Image? BaseOverlay => resources.GetObject("BaseOverlay") as Image;
-        public Image? BossOverlay => resources.GetObject("BossOverlay") as Image;
+        public Bitmap? BaseOverlay => resources.GetObject("BaseOverlay") as Bitmap;
+        public Bitmap? BossOverlay => resources.GetObject("BossOverlay") as Bitmap;
 
         public void Draw(Graphics g, Map map, bool drawCritRooms = false, bool drawDeadEnds = true)
         {
@@ -43,9 +43,9 @@ namespace Dungeons.Common
             }
 
             if (BaseOverlay != null)
-                g.DrawImage(BaseOverlay, 32 * map.Base.X, 32 * (map.Height - 1 - map.Base.Y));
+                g.DrawImage(BaseOverlay, 32 * map.Base.X, 32 * (map.Height - 1 - map.Base.Y), 32, 32);
             if (BossOverlay != null)
-                g.DrawImage(BossOverlay, 32 * map.Boss.X, 32 * (map.Height - 1 - map.Boss.Y));
+                g.DrawImage(BossOverlay, 32 * map.Boss.X, 32 * (map.Height - 1 - map.Boss.Y), 32, 32);
         }
 
         public Bitmap WriteToImage(Map map, bool drawCritRooms = false, bool drawDeadEnds = false)
