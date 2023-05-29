@@ -203,6 +203,7 @@
             this.mapPictureBox.TabIndex = 1;
             this.mapPictureBox.TabStop = false;
             this.mapPictureBox.MouseDown += new System.Windows.Forms.MouseEventHandler(this.MapPictureBox_MouseDown);
+            this.mapPictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             // 
             // MapForm
             // 

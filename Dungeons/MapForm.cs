@@ -182,7 +182,7 @@ namespace Dungeons
                     if (MapReader.IsValidInGameMap(bmp))
                     {
                         FloorSize = floorSize;
-                        mapPictureBox.Size = mapSize;
+                        mapPictureBox.Size = LogicalToDeviceUnits(mapSize);
                         timer.Start();
                         if (mapPictureBox.Image != null)
                             mapPictureBox.Image.Dispose();
