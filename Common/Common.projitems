@@ -92,6 +92,6 @@
     <Content Include="$(MSBuildThisFileDirectory)Resources\SmallColon.png" />
     <Content Include="$(MSBuildThisFileDirectory)Resources\SmallMinus.png" />
     <Content Include="$(MSBuildThisFileDirectory)Resources\SmallPlus.png" />
-    <Content Include="$(MSBuildThisFileDirectory)Resources\WinterfaceMarker.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Resources\WinterfaceMarker2.png" />
   </ItemGroup>
 </Project>

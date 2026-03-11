@@ -22,7 +22,7 @@ namespace Dungeons
 
         public string ReadField(Field field)
         {
-            StringBuilder sb = new StringBuilder();
+            StringBuilder sb = new();
 
             int x = FindStartX(field);
 

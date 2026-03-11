@@ -86,7 +86,7 @@ namespace Dungeons.Common
         {
             // Test if corners are at most tolerance away from the map corner color
             using var u = new UnsafeBitmap(bmp);
-            foreach (var p in new Point[] { new Point(0, 0), new Point(bmp.Width - 1, 0), new Point(0, bmp.Height - 1), new Point(bmp.Width - 1, bmp.Height - 1) })
+            foreach (var p in new Point[] { new(0, 0), new(0, bmp.Height - 1), new(bmp.Width - 1, bmp.Height - 1) })
             {
                 if (!u.GetPixel(p.X, p.Y).IsBetween(MapCornerColorMin, MapCornerColorMax))
                     return false;
