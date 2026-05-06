@@ -70,7 +70,7 @@ namespace Dungeons
             list.Add(new ProcessWindow(null));
 #endif
             windowComboBox.DataSource = list;
-            windowComboBox.SelectedItem = selectedItem;
+            windowComboBox.SelectedItem = selectedItem == null ? list.FirstOrDefault() : selectedItem;
         }
 
         protected override void OnLoad(EventArgs e)

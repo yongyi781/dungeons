@@ -106,11 +106,12 @@ namespace Dungeons.Common
 
         public bool IsMatchByCorner(Size size, int offX, int offY)
         {
-            foreach (var p in new Point[] { new Point(0, 0), new Point(size.Width - 1, 0), new Point(0, size.Height - 1), new Point(size.Width - 1, size.Height - 1) })
-            {
+            if (GetPixel(offX + size.Width - 1, offY) != MapReader.MapTopRightCornerColor) 
+                return false;
+            foreach (var p in new Point[] { new(0, 0), new(0, size.Height - 1), new(size.Width - 1, size.Height - 1) })
                 if (!GetPixel(p.X + offX, p.Y + offY).IsBetween(MapReader.MapCornerColorMin, MapReader.MapCornerColorMax))
                     return false;
-            }
+
             return true;
         }
 

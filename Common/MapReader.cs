@@ -10,8 +10,9 @@ namespace Dungeons.Common
     {
         public static readonly Color MapCornerColorMin = Color.FromArgb(100, 87, 65);
         public static readonly Color MapCornerColorMax = Color.FromArgb(117, 104, 83);
+        public static readonly Color MapTopRightCornerColor = Color.FromArgb(122, 52, 44);
 
-        private readonly Dictionary<RoomType, Color[]> signatures = new();
+        private readonly Dictionary<RoomType, Color[]> signatures = [];
 
         public MapReader(ResourceManager resources)
         {
@@ -32,13 +33,13 @@ namespace Dungeons.Common
 
         public static Color[] ComputeSignature(Bitmap bmp, int offX = 0, int offY = 0)
         {
-            return new Color[]
-            {
+            return
+            [
                 bmp.GetPixel(offX + 6, offY + 7),
                 bmp.GetPixel(offX + 7, offY + 7),
                 bmp.GetPixel(offX + 6, offY + 8),
                 bmp.GetPixel(offX + 7, offY + 8)
-            };
+            ];
         }
 
         public GameMap ReadMap(Bitmap image, FloorSize floorSize)
