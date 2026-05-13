@@ -39,9 +39,10 @@ namespace Dungeons
                         {
                             sb.Append(i);
                         }
-                        else if (i == 10)   // Plus
+                        else if (i == 10)   // Plus if small, comma if large. Ignore commas.
                         {
-                            sb.Append("+");
+                            if (field.FontType == FontType.SmallFont)
+                                sb.Append("+");
                         }
                         else if (i == 11)   // Minus
                         {

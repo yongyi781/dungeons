@@ -15,9 +15,9 @@ namespace Dungeons
 
         public static void InitializeFonts()
         {
-            BaseFont = new FontType { NumberImageList = GetNumberList("Base").ToList() };
-            SmallFont = new FontType { NumberImageList = GetNumberList("Small").Concat(new Bitmap[] { Properties.Resources.SmallPlus, Properties.Resources.SmallMinus, Properties.Resources.SmallColon }).ToList() };
-            LargeFont = new FontType { NumberImageList = GetNumberList("Large").ToList() };
+            BaseFont = new FontType { NumberImageList = [.. GetNumberList("Base")] };
+            SmallFont = new FontType { NumberImageList = [.. GetNumberList("Small"), Properties.Resources.SmallPlus, Properties.Resources.SmallMinus, Properties.Resources.SmallColon] };
+            LargeFont = new FontType { NumberImageList = [.. GetNumberList("Large"), Properties.Resources.LargeComma] };
         }
 
         static IEnumerable<Bitmap> GetNumberList(string prefix) =>

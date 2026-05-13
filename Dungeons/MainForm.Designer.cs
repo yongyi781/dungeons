@@ -30,27 +30,8 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
-            this.ID = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Timestamp = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Partners = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Floor = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.FloorSize = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Time = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.FloorXP = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.PrestigeXP = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.BaseXP = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.SizeMod = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.BonusMod = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.LevelMod = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.DifficultyMod = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.TotalMod = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.FinalXP = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Boss = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Roomcount = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.DeadEnds = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.AvgCombatLevel = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Notes = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.hideMapCheckBox = new System.Windows.Forms.CheckBox();
             this.saveMapButton = new System.Windows.Forms.Button();
             this.windowComboBox = new System.Windows.Forms.ComboBox();
             this.browseWinterfaceSaveLocationButton = new System.Windows.Forms.Button();
@@ -61,12 +42,23 @@
             this.label1 = new System.Windows.Forms.Label();
             this.saveImagesCheckBox = new System.Windows.Forms.CheckBox();
             this.captureButton = new System.Windows.Forms.Button();
-            this.multiplayerColumnsRadioButton = new System.Windows.Forms.RadioButton();
-            this.soloColumnsRadioButton = new System.Windows.Forms.RadioButton();
             this.mapFolderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
             this.winterfaceFolderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
             this.logTextBox = new System.Windows.Forms.TextBox();
-            this.hideMapCheckBox = new System.Windows.Forms.CheckBox();
+            this.ID = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Timestamp = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Partners = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Floor = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.FloorSize = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Time = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.BonusMod = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.LevelMod = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.FloorXPBoost = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.TotalMod = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.FinalXP = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Roomcount = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.DeadEnds = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Notes = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
@@ -85,145 +77,19 @@
             this.Floor,
             this.FloorSize,
             this.Time,
-            this.FloorXP,
-            this.PrestigeXP,
-            this.BaseXP,
-            this.SizeMod,
             this.BonusMod,
             this.LevelMod,
-            this.DifficultyMod,
+            this.FloorXPBoost,
             this.TotalMod,
             this.FinalXP,
-            this.Boss,
             this.Roomcount,
             this.DeadEnds,
-            this.AvgCombatLevel,
             this.Notes});
             this.dataGridView1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dataGridView1.Location = new System.Drawing.Point(0, 93);
+            this.dataGridView1.Location = new System.Drawing.Point(0, 67);
             this.dataGridView1.Name = "dataGridView1";
-            this.dataGridView1.Size = new System.Drawing.Size(765, 198);
+            this.dataGridView1.Size = new System.Drawing.Size(765, 224);
             this.dataGridView1.TabIndex = 1;
-            // 
-            // ID
-            // 
-            this.ID.HeaderText = "ID";
-            this.ID.Name = "ID";
-            this.ID.Width = 5;
-            // 
-            // Timestamp
-            // 
-            this.Timestamp.HeaderText = "Timestamp";
-            this.Timestamp.Name = "Timestamp";
-            this.Timestamp.Width = 5;
-            // 
-            // Partners
-            // 
-            this.Partners.HeaderText = "Partners";
-            this.Partners.Name = "Partners";
-            this.Partners.Width = 5;
-            // 
-            // Floor
-            // 
-            this.Floor.HeaderText = "Floor";
-            this.Floor.Name = "Floor";
-            this.Floor.Width = 5;
-            // 
-            // FloorSize
-            // 
-            this.FloorSize.HeaderText = "Size";
-            this.FloorSize.Name = "FloorSize";
-            this.FloorSize.Width = 5;
-            // 
-            // Time
-            // 
-            this.Time.HeaderText = "Time";
-            this.Time.Name = "Time";
-            this.Time.Width = 5;
-            // 
-            // FloorXP
-            // 
-            this.FloorXP.HeaderText = "Floor XP";
-            this.FloorXP.Name = "FloorXP";
-            this.FloorXP.Width = 5;
-            // 
-            // PrestigeXP
-            // 
-            this.PrestigeXP.HeaderText = "Prestige XP";
-            this.PrestigeXP.Name = "PrestigeXP";
-            this.PrestigeXP.Width = 5;
-            // 
-            // BaseXP
-            // 
-            this.BaseXP.HeaderText = "Base XP";
-            this.BaseXP.Name = "BaseXP";
-            this.BaseXP.Width = 5;
-            // 
-            // SizeMod
-            // 
-            this.SizeMod.HeaderText = "Size +%";
-            this.SizeMod.Name = "SizeMod";
-            this.SizeMod.Width = 5;
-            // 
-            // BonusMod
-            // 
-            this.BonusMod.HeaderText = "Bonus +%";
-            this.BonusMod.Name = "BonusMod";
-            this.BonusMod.Width = 5;
-            // 
-            // LevelMod
-            // 
-            this.LevelMod.HeaderText = "Level mod %";
-            this.LevelMod.Name = "LevelMod";
-            this.LevelMod.Width = 5;
-            // 
-            // DifficultyMod
-            // 
-            this.DifficultyMod.HeaderText = "Difficulty %";
-            this.DifficultyMod.Name = "DifficultyMod";
-            this.DifficultyMod.Width = 5;
-            // 
-            // TotalMod
-            // 
-            this.TotalMod.HeaderText = "Total Mod";
-            this.TotalMod.Name = "TotalMod";
-            this.TotalMod.Width = 5;
-            // 
-            // FinalXP
-            // 
-            this.FinalXP.HeaderText = "Final XP";
-            this.FinalXP.Name = "FinalXP";
-            this.FinalXP.Width = 5;
-            // 
-            // Boss
-            // 
-            this.Boss.HeaderText = "Boss";
-            this.Boss.Name = "Boss";
-            this.Boss.Width = 5;
-            // 
-            // Roomcount
-            // 
-            this.Roomcount.HeaderText = "Roomcount";
-            this.Roomcount.Name = "Roomcount";
-            this.Roomcount.Width = 5;
-            // 
-            // DeadEnds
-            // 
-            this.DeadEnds.HeaderText = "Dead Ends";
-            this.DeadEnds.Name = "DeadEnds";
-            this.DeadEnds.Width = 5;
-            // 
-            // AvgCombatLevel
-            // 
-            this.AvgCombatLevel.HeaderText = "Average Combat Level";
-            this.AvgCombatLevel.Name = "AvgCombatLevel";
-            this.AvgCombatLevel.Width = 5;
-            // 
-            // Notes
-            // 
-            this.Notes.HeaderText = "Notes";
-            this.Notes.Name = "Notes";
-            this.Notes.Width = 5;
             // 
             // panel1
             // 
@@ -240,13 +106,23 @@
             this.panel1.Controls.Add(this.label1);
             this.panel1.Controls.Add(this.saveImagesCheckBox);
             this.panel1.Controls.Add(this.captureButton);
-            this.panel1.Controls.Add(this.multiplayerColumnsRadioButton);
-            this.panel1.Controls.Add(this.soloColumnsRadioButton);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(765, 93);
+            this.panel1.Size = new System.Drawing.Size(765, 67);
             this.panel1.TabIndex = 0;
+            // 
+            // hideMapCheckBox
+            // 
+            this.hideMapCheckBox.AutoSize = true;
+            this.hideMapCheckBox.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.hideMapCheckBox.Location = new System.Drawing.Point(570, 12);
+            this.hideMapCheckBox.Name = "hideMapCheckBox";
+            this.hideMapCheckBox.Size = new System.Drawing.Size(147, 20);
+            this.hideMapCheckBox.TabIndex = 13;
+            this.hideMapCheckBox.Text = "Hide all but map stats";
+            this.hideMapCheckBox.UseVisualStyleBackColor = true;
+            this.hideMapCheckBox.CheckedChanged += new System.EventHandler(this.hideMapCheckBox_CheckedChanged);
             // 
             // saveMapButton
             // 
@@ -350,32 +226,6 @@
             this.captureButton.UseVisualStyleBackColor = true;
             this.captureButton.Click += new System.EventHandler(this.CaptureButton_Click);
             // 
-            // multiplayerColumnsRadioButton
-            // 
-            this.multiplayerColumnsRadioButton.AutoSize = true;
-            this.multiplayerColumnsRadioButton.Checked = true;
-            this.multiplayerColumnsRadioButton.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.multiplayerColumnsRadioButton.Location = new System.Drawing.Point(115, 70);
-            this.multiplayerColumnsRadioButton.Name = "multiplayerColumnsRadioButton";
-            this.multiplayerColumnsRadioButton.Size = new System.Drawing.Size(140, 20);
-            this.multiplayerColumnsRadioButton.TabIndex = 12;
-            this.multiplayerColumnsRadioButton.TabStop = true;
-            this.multiplayerColumnsRadioButton.Text = "&Multiplayer columns";
-            this.multiplayerColumnsRadioButton.UseVisualStyleBackColor = true;
-            this.multiplayerColumnsRadioButton.CheckedChanged += new System.EventHandler(this.modeRadioButton_CheckedChanged);
-            // 
-            // soloColumnsRadioButton
-            // 
-            this.soloColumnsRadioButton.AutoSize = true;
-            this.soloColumnsRadioButton.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.soloColumnsRadioButton.Location = new System.Drawing.Point(11, 70);
-            this.soloColumnsRadioButton.Name = "soloColumnsRadioButton";
-            this.soloColumnsRadioButton.Size = new System.Drawing.Size(103, 20);
-            this.soloColumnsRadioButton.TabIndex = 11;
-            this.soloColumnsRadioButton.Text = "&Solo columns";
-            this.soloColumnsRadioButton.UseVisualStyleBackColor = true;
-            this.soloColumnsRadioButton.CheckedChanged += new System.EventHandler(this.modeRadioButton_CheckedChanged);
-            // 
             // mapFolderBrowserDialog
             // 
             this.mapFolderBrowserDialog.Description = "Select map save location.";
@@ -396,17 +246,89 @@
             this.logTextBox.Size = new System.Drawing.Size(765, 129);
             this.logTextBox.TabIndex = 2;
             // 
-            // hideMapCheckBox
+            // ID
             // 
-            this.hideMapCheckBox.AutoSize = true;
-            this.hideMapCheckBox.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.hideMapCheckBox.Location = new System.Drawing.Point(570, 12);
-            this.hideMapCheckBox.Name = "hideMapCheckBox";
-            this.hideMapCheckBox.Size = new System.Drawing.Size(147, 20);
-            this.hideMapCheckBox.TabIndex = 13;
-            this.hideMapCheckBox.Text = "Hide all but map stats";
-            this.hideMapCheckBox.UseVisualStyleBackColor = true;
-            this.hideMapCheckBox.CheckedChanged += new System.EventHandler(this.hideMapCheckBox_CheckedChanged);
+            this.ID.HeaderText = "ID";
+            this.ID.Name = "ID";
+            this.ID.Width = 5;
+            // 
+            // Timestamp
+            // 
+            this.Timestamp.HeaderText = "Timestamp";
+            this.Timestamp.Name = "Timestamp";
+            this.Timestamp.Width = 5;
+            // 
+            // Partners
+            // 
+            this.Partners.HeaderText = "Partners";
+            this.Partners.Name = "Partners";
+            this.Partners.Width = 5;
+            // 
+            // Floor
+            // 
+            this.Floor.HeaderText = "Floor";
+            this.Floor.Name = "Floor";
+            this.Floor.Width = 5;
+            // 
+            // FloorSize
+            // 
+            this.FloorSize.HeaderText = "Size";
+            this.FloorSize.Name = "FloorSize";
+            this.FloorSize.Width = 5;
+            // 
+            // Time
+            // 
+            this.Time.HeaderText = "Time";
+            this.Time.Name = "Time";
+            this.Time.Width = 5;
+            // 
+            // BonusMod
+            // 
+            this.BonusMod.HeaderText = "Bonus";
+            this.BonusMod.Name = "BonusMod";
+            this.BonusMod.Width = 5;
+            // 
+            // LevelMod
+            // 
+            this.LevelMod.HeaderText = "Mobs killed";
+            this.LevelMod.Name = "LevelMod";
+            this.LevelMod.Width = 5;
+            // 
+            // FloorXPBoost
+            // 
+            this.FloorXPBoost.HeaderText = "Floor XP Boost";
+            this.FloorXPBoost.Name = "FloorXPBoost";
+            this.FloorXPBoost.Width = 5;
+            // 
+            // TotalMod
+            // 
+            this.TotalMod.HeaderText = "Total Mod";
+            this.TotalMod.Name = "TotalMod";
+            this.TotalMod.Width = 5;
+            // 
+            // FinalXP
+            // 
+            this.FinalXP.HeaderText = "Final XP";
+            this.FinalXP.Name = "FinalXP";
+            this.FinalXP.Width = 5;
+            // 
+            // Roomcount
+            // 
+            this.Roomcount.HeaderText = "Roomcount";
+            this.Roomcount.Name = "Roomcount";
+            this.Roomcount.Width = 5;
+            // 
+            // DeadEnds
+            // 
+            this.DeadEnds.HeaderText = "Dead Ends";
+            this.DeadEnds.Name = "DeadEnds";
+            this.DeadEnds.Width = 5;
+            // 
+            // Notes
+            // 
+            this.Notes.HeaderText = "Notes";
+            this.Notes.Name = "Notes";
+            this.Notes.Width = 5;
             // 
             // MainForm
             // 
@@ -433,8 +355,6 @@
 
         private System.Windows.Forms.DataGridView dataGridView1;
         private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.RadioButton multiplayerColumnsRadioButton;
-        private System.Windows.Forms.RadioButton soloColumnsRadioButton;
         private System.Windows.Forms.Button captureButton;
         private System.Windows.Forms.CheckBox saveImagesCheckBox;
         private System.Windows.Forms.Label label1;
@@ -448,26 +368,20 @@
         private System.Windows.Forms.TextBox logTextBox;
         private System.Windows.Forms.ComboBox windowComboBox;
         private System.Windows.Forms.Button saveMapButton;
+        private System.Windows.Forms.CheckBox hideMapCheckBox;
         private System.Windows.Forms.DataGridViewTextBoxColumn ID;
         private System.Windows.Forms.DataGridViewTextBoxColumn Timestamp;
         private System.Windows.Forms.DataGridViewTextBoxColumn Partners;
         private System.Windows.Forms.DataGridViewTextBoxColumn Floor;
         private System.Windows.Forms.DataGridViewTextBoxColumn FloorSize;
         private System.Windows.Forms.DataGridViewTextBoxColumn Time;
-        private System.Windows.Forms.DataGridViewTextBoxColumn FloorXP;
-        private System.Windows.Forms.DataGridViewTextBoxColumn PrestigeXP;
-        private System.Windows.Forms.DataGridViewTextBoxColumn BaseXP;
-        private System.Windows.Forms.DataGridViewTextBoxColumn SizeMod;
         private System.Windows.Forms.DataGridViewTextBoxColumn BonusMod;
         private System.Windows.Forms.DataGridViewTextBoxColumn LevelMod;
-        private System.Windows.Forms.DataGridViewTextBoxColumn DifficultyMod;
+        private System.Windows.Forms.DataGridViewTextBoxColumn FloorXPBoost;
         private System.Windows.Forms.DataGridViewTextBoxColumn TotalMod;
         private System.Windows.Forms.DataGridViewTextBoxColumn FinalXP;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Boss;
         private System.Windows.Forms.DataGridViewTextBoxColumn Roomcount;
         private System.Windows.Forms.DataGridViewTextBoxColumn DeadEnds;
-        private System.Windows.Forms.DataGridViewTextBoxColumn AvgCombatLevel;
         private System.Windows.Forms.DataGridViewTextBoxColumn Notes;
-        private System.Windows.Forms.CheckBox hideMapCheckBox;
     }
 }

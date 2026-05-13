@@ -31,8 +31,8 @@ namespace Dungeons
 
         private static readonly Dictionary<FloorSize, Size> rsMapSizes = new()
         {
-            [FloorSize.Small] = new Size(140, 140),
-            [FloorSize.Medium] = new Size(140, 280),
+            [FloorSize.Small] = new Size(152, 152),
+            [FloorSize.Medium] = new Size(152, 280),
             [FloorSize.Large] = new Size(280, 280)
         };
 

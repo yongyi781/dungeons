@@ -44,15 +44,16 @@ namespace Dungeons
 
         public ProcessWindow SelectedWindow => windowComboBox.SelectedItem as ProcessWindow;
 
-        public DataGridViewRow AddRow(Dictionary<string, string> row)
+        public DataGridViewRow AddRow(Dictionary<string, string> data)
         {
-            if (row == null)
+            if (data == null)
                 return null;
 
             var gridRow = dataGridView1.Rows[dataGridView1.Rows.Add()];
-            foreach (var pair in row)
+            foreach (var pair in data)
             {
-                gridRow.Cells[pair.Key] = new DataGridViewTextBoxCell { Value = pair.Value };
+                if (dataGridView1.Columns.Contains(pair.Key))
+                    gridRow.Cells[pair.Key] = new DataGridViewTextBoxCell { Value = pair.Value };
             }
             return gridRow;
         }
@@ -122,37 +123,27 @@ namespace Dungeons
         /// <returns>true if winterface was found; otherwise, false.</returns>
         private async Task<bool> CaptureWinterfaceAsync()
         {
+            using var bmp = mapForm.RSWindow?.Capture();
+            if (bmp == null)
+                return false;
+            var dict = await Task.Run(() => ParseWinterfaceBitmap(bmp, saveImagesCheckBox.Checked));
+            if (dict == null)
+                return false;
 
-            using (var bmp = mapForm.RSWindow?.Capture())
+            if (saveImagesCheckBox.Checked)
+                mapForm.SaveMap();
+            var row = AddRow(dict);
+            if (row != null)
             {
-                if (bmp == null)
-                    return false;
-                var dict = await Task.Run(() => ParseBitmap(bmp, saveImagesCheckBox.Checked));
-                if (dict == null)
-                    return false;
-
-                if (dict["DifficultyMod"] == "+0")
-                {
-                    // Change to solo if it's a 1:1
-                    soloColumnsRadioButton.Checked = true;
-                    if (dict["FloorSize"] == "Large")
-                        dict["FloorSize"] = "Large2";
-                }
-                if (saveImagesCheckBox.Checked)
-                    mapForm.SaveMap();
-                var row = AddRow(dict);
-                if (row != null)
-                {
-                    var visibleCellValues = from DataGridViewCell cell in row.Cells
-                                            where cell.Visible
-                                            select cell.Value;
-                    Clipboard.SetText(string.Join("\t", visibleCellValues));
-                }
+                var visibleCellValues = from DataGridViewCell cell in row.Cells
+                                        where cell.Visible
+                                        select cell.Value;
+                Clipboard.SetText(string.Join("\t", visibleCellValues));
             }
             return true;
         }
 
-        private Dictionary<string, string> ParseBitmap(Bitmap bmp, bool saveToFile = false)
+        private Dictionary<string, string> ParseWinterfaceBitmap(Bitmap bmp, bool saveToFile = false)
         {
             using var b = new UnsafeBitmap(bmp, ImageLockMode.ReadOnly);
             Point p;
@@ -162,41 +153,39 @@ namespace Dungeons
                 p = b.FindMatch(Properties.Resources.WinterfaceMarker, 0);
 
             if (p == NotFound)
-            {
                 return null;
-            }
+
             var w = new Winterface(b, p.X, p.Y);
 
             var fields = new List<Field>
             {
                 Field.Time,
+                Field.Floor,
                 Field.FloorXP,
                 Field.PrestigeXP,
-                Field.AverageBaseXP,
+                Field.BaseXP,
                 Field.SizeMod,
                 Field.BonusMod,
-                Field.LevelMod,
                 Field.DifficultyMod,
+                Field.LevelMod,
+                Field.FloorXPBoost,
                 Field.TotalMod,
                 Field.FinalXP
             };
 
-            var row = (from f in fields
-                       select new { Key = f.Name, Value = w.ReadField(f) }).ToDictionary(a => a.Key, a => a.Value);
+            var data = (from f in fields
+                        select new { Key = f.Name, Value = w.ReadField(f) }).ToDictionary(a => a.Key, a => a.Value);
 
-            var floor = w.ReadField(Field.Floor);
-            var redFloor = w.ReadField(Field.RedFloor);
-            var floorSizeMod = row["SizeMod"];
-            var sizeText = floorSizeMod == "+15" ? "Large" : floorSizeMod == "+7" ? "Medium" : "Small";
-            row["Floor"] = floor + redFloor;
-            row["FloorSize"] = sizeText;
+            var floorSizeMod = data["SizeMod"];
+            var sizeText = floorSizeMod == "+850" ? "Large" : floorSizeMod == "+350" ? "Medium" : "Small";
+            data["FloorSize"] = sizeText;
             if (mapForm != null)
             {
-                row["Roomcount"] = mapForm.Roomcount.ToString();
-                row["DeadEnds"] = mapForm.LeafCount.ToString();
+                data["Roomcount"] = mapForm.Roomcount.ToString();
+                data["DeadEnds"] = mapForm.LeafCount.ToString();
             }
             var now = DateTime.Now;
-            row["Timestamp"] = now.ToString();
+            data["Timestamp"] = now.ToString();
 
             Directory.CreateDirectory(Properties.Settings.Default.WinterfaceSaveLocation);
             if (saveToFile && Directory.Exists(Properties.Settings.Default.WinterfaceSaveLocation))
@@ -205,19 +194,13 @@ namespace Dungeons
                 w.Save(Path.Combine(Properties.Settings.Default.WinterfaceSaveLocation, now.ToString("yyyy-MM-dd HH-mm-ss.pn\\g")));
             }
 
-            return row;
+            return data;
         }
 
         private void UpdateSaveLocationTextBoxes()
         {
             mapSaveLocationTextBox.Text = Properties.Settings.Default.MapSaveLocation;
             winterfaceSaveLocationTextBox.Text = Properties.Settings.Default.WinterfaceSaveLocation;
-        }
-
-        private void modeRadioButton_CheckedChanged(object sender, EventArgs e)
-        {
-            dataGridView1.Columns["DifficultyMod"].Visible = multiplayerColumnsRadioButton.Checked;
-            dataGridView1.Columns["Partners"].Visible = multiplayerColumnsRadioButton.Checked;
         }
 
         private void browseMapSaveLocationButton_Click(object sender, EventArgs e)

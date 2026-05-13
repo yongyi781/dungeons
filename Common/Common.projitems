@@ -56,6 +56,7 @@
     <Content Include="$(MSBuildThisFileDirectory)Resources\Large7.png" />
     <Content Include="$(MSBuildThisFileDirectory)Resources\Large8.png" />
     <Content Include="$(MSBuildThisFileDirectory)Resources\Large9.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Resources\LargeComma.png" />
     <Content Include="$(MSBuildThisFileDirectory)Resources\Mystery\MysteryE.png" />
     <Content Include="$(MSBuildThisFileDirectory)Resources\Mystery\MysteryN.png" />
     <Content Include="$(MSBuildThisFileDirectory)Resources\Mystery\MysteryS.png" />
@@ -64,6 +65,7 @@
     <Content Include="$(MSBuildThisFileDirectory)Resources\OutlineLarge.png" />
     <Content Include="$(MSBuildThisFileDirectory)Resources\OutlineMedium.png" />
     <Content Include="$(MSBuildThisFileDirectory)Resources\OutlineSmall.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Resources\Player1Overlay.png" />
     <Content Include="$(MSBuildThisFileDirectory)Resources\RoomE.png" />
     <Content Include="$(MSBuildThisFileDirectory)Resources\RoomEN.png" />
     <Content Include="$(MSBuildThisFileDirectory)Resources\RoomENS.png" />
@@ -92,6 +94,6 @@
     <Content Include="$(MSBuildThisFileDirectory)Resources\SmallColon.png" />
     <Content Include="$(MSBuildThisFileDirectory)Resources\SmallMinus.png" />
     <Content Include="$(MSBuildThisFileDirectory)Resources\SmallPlus.png" />
-    <Content Include="$(MSBuildThisFileDirectory)Resources\WinterfaceMarker2.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Resources\WinterfaceMarker.png" />
   </ItemGroup>
 </Project>
