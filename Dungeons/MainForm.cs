@@ -165,7 +165,6 @@ namespace Dungeons
                 Field.PrestigeXP,
                 Field.BaseXP,
                 Field.SizeMod,
-                Field.BonusMod,
                 Field.DifficultyMod,
                 Field.LevelMod,
                 Field.FloorXPBoost,
@@ -179,6 +178,7 @@ namespace Dungeons
             var floorSizeMod = data["SizeMod"];
             var sizeText = floorSizeMod == "+850" ? "Large" : floorSizeMod == "+350" ? "Medium" : "Small";
             data["FloorSize"] = sizeText;
+            data["BonusMod"] = w.GetBonus().ToString("P1");
             if (mapForm != null)
             {
                 data["Roomcount"] = mapForm.Roomcount.ToString();

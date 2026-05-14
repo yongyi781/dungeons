@@ -15,7 +15,7 @@ namespace Dungeons
         public static readonly Field LevelMod = new() { Name = "LevelMod", FontType = FontType.SmallFont, ForeColor = Color.FromArgb(226, 226, 162), Y = 162, StartX = 298 };
         public static readonly Field FloorXPBoost = new() { Name = "FloorXPBoost", FontType = FontType.SmallFont, ForeColor = Color.FromArgb(226, 226, 162), Y = 184, StartX = 298 };
         public static readonly Field DeathsMod = new() { Name = "DeathsMod", FontType = FontType.SmallFont, ForeColor = Color.FromArgb(226, 226, 162), Y = 209, StartX = 298 };
-        public static readonly Field TotalMod = new() { Name = "TotalMod", FontType = FontType.BaseFont, ForeColor = Color.FromArgb(226, 226, 162), Y = 236, StartX = 130 };
+        public static readonly Field TotalMod = new() { Name = "TotalMod", FontType = FontType.BaseFont, ForeColor = Color.FromArgb(226, 226, 162), Y = 236, StartX = 126 };
         public static readonly Field FinalXP = new() { Name = "FinalXP", FontType = FontType.LargeFont, ForeColor = Color.FromArgb(226, 226, 162), Y = 271, StartX = 116 };
 
         public string Name { get; set; }
