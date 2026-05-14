@@ -83,7 +83,7 @@ namespace Dungeons
                 else
                     high_x = mid;
             }
-            return ((double)low_x - begin) / (end - begin - 1);
+            return ((double)low_x - begin + 1) / (end - begin);
         }
 
         public void Save(string fileName)
