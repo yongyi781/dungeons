@@ -215,11 +215,25 @@ namespace Dungeons
         private void UpdateDataLabel()
         {
             var minutes = GetElapsedTime().TotalMinutes;
-            var roomsPerMinStr = ((mapPictureBox.GameMap.OpenedRoomCount - 0.8) / minutes).ToString("0.0");
+            var roomsPerMin = ((mapPictureBox.GameMap.OpenedRoomCount - 0.8) / minutes);
             var c = mapPictureBox.GameMap.OpenedRoomCount;
             var m = mapPictureBox.GameMap.MysteryCount;
             var roomsText = c == 1 ? "room" : "rooms";
-            dataLabel.Text = $"{c} {roomsText} ({c + m}) | {roomsPerMinStr} rpm | {mapPictureBox.GameMap.DeadEndCount} dead ends";
+            dataLabel.Text = $"{c} {roomsText} ({c + m}) | {roomsPerMin:0.0} rpm | {mapPictureBox.GameMap.DeadEndCount} dead ends";
+    
+            // Not plumbed to gui
+            var targetRpm = 3;
+            
+            var labelColor = mapPictureBox.Visible ? Color.Black : getLabelColor(roomsPerMin, targetRpm);
+            dataLabel.BackColor = labelColor;
+            dataLabel.Parent.BackColor = labelColor;
+        }
+
+        private Color getLabelColor(double rpm, int target)
+        {
+            if (rpm - target > 1) return Color.DarkGreen;
+            if (rpm - target < -1) return Color.DarkRed;
+            return Color.Goldenrod;
         }
 
         private TimeSpan GetElapsedTime()
